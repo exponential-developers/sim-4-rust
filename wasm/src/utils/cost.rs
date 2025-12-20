@@ -2,9 +2,11 @@ use std::fmt::Debug;
 use num::Float;
 use crate::utils::lognum::LogNum;
 
-pub trait Cost: Debug + Copy {
+pub trait Cost {
     fn get_cost(self, level: i32) -> LogNum;
 }
+
+
 
 
 #[derive(Debug, Clone, Copy)]

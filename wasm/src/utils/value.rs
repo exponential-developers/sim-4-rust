@@ -3,12 +3,10 @@ use num::Float;
 
 use crate::utils::lognum::{self, LogNum};
 
-pub trait Value: Debug + Copy {
+pub trait Value {
     fn recompute(self, level: i32) -> LogNum;
 
-    fn compute_new(self, _old_value: LogNum, current_level: i32) -> LogNum {
-        self.recompute(current_level + 1)
-    }
+    fn compute_new(self, _old_value: LogNum, current_level: i32) -> LogNum;
 }
 
 #[derive(Debug, Clone, Copy)]
