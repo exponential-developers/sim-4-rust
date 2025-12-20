@@ -2,6 +2,8 @@ use crate::utils::lognum::LogNum;
 use num::complex::Complex;
 
 fn _test() {
-    let a: Complex<LogNum> = Complex::new(LogNum::from(2.), LogNum::from(3.));
-    let b: Complex<LogNum> = Complex::new(LogNum::from(4.), LogNum::from(-1.));
+    let a: Complex<LogNum> = Complex::new(LogNum::from_f64(2.), LogNum::from_f64(3.));
+    let b: Complex<LogNum> = Complex::new(LogNum::from_f64(4.), LogNum::from_f64(-1.));
+    let c = a.powc(b);
+    
 }
