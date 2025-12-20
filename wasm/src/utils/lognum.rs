@@ -1,12 +1,12 @@
 use core::f64;
+use std::cmp::Ordering;
 use std::fmt::Display;
 use std::ops::{
     Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Sub, SubAssign,
 };
 use std::str::FromStr;
-use std::cmp::Ordering;
 
-use num::{Float, Num, NumCast, ToPrimitive, Zero, One};
+use num::{Float, Num, NumCast, One, ToPrimitive, Zero};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct LogNum {
@@ -32,6 +32,12 @@ impl LogNum {
 impl From<f64> for LogNum {
     fn from(value: f64) -> Self {
         LogNum::from_f64(value)
+    }
+}
+
+impl From<i32> for LogNum {
+    fn from(value: i32) -> Self {
+        LogNum::from_f64(value as f64)
     }
 }
 
@@ -183,7 +189,7 @@ impl PartialOrd for LogNum {
             (1, -1) => Some(Ordering::Greater),
             (-1, 1) => Some(Ordering::Less),
             (-1, -1) => other.value.partial_cmp(&self.value),
-            _ => None
+            _ => None,
         }
     }
 }
@@ -236,7 +242,6 @@ impl ToPrimitive for LogNum {
     }
 }
 
-
 impl NumCast for LogNum {
     fn from<T: num::ToPrimitive>(n: T) -> Option<Self> {
         Some(LogNum::from_f64(n.to_f64()?))
@@ -285,7 +290,7 @@ impl Float for LogNum {
     }
 
     fn powi(self, n: i32) -> Self {
-        LogNum::new(self.value * n as f64, self.sign.pow(n.abs() as u32) as i8)
+        LogNum::new(self.value * n as f64, self.sign.pow(n.unsigned_abs()))
     }
 
     fn cbrt(self) -> Self {
@@ -311,14 +316,11 @@ impl Float for LogNum {
     fn classify(self) -> std::num::FpCategory {
         if self.value == f64::INFINITY {
             std::num::FpCategory::Infinite
-        }
-        else if self.is_zero() {
+        } else if self.is_zero() {
             std::num::FpCategory::Zero
-        }
-        else if self.value.is_nan() {
+        } else if self.value.is_nan() {
             std::num::FpCategory::Nan
-        }
-        else {
+        } else {
             std::num::FpCategory::Normal
         }
     }
@@ -366,7 +368,7 @@ impl Float for LogNum {
     }
 
     fn sqrt(self) -> Self {
-        self.powf64(1./2.)
+        self.powf64(1. / 2.)
     }
 
     fn hypot(self, other: Self) -> Self {
@@ -382,7 +384,8 @@ impl Float for LogNum {
     }
 
     fn is_finite(self) -> bool {
-        self.classify() == std::num::FpCategory::Normal || self.classify() == std::num::FpCategory::Zero
+        self.classify() == std::num::FpCategory::Normal
+            || self.classify() == std::num::FpCategory::Zero
     }
 
     fn is_infinite(self) -> bool {
@@ -418,7 +421,10 @@ impl Float for LogNum {
     }
 
     fn log(self, base: Self) -> Self {
-        LogNum::new(self.value.log10() + 10f64.log(base.to_f64().unwrap()).log10(), 1)
+        LogNum::new(
+            self.value.log10() + 10f64.log(base.to_f64().unwrap()).log10(),
+            1,
+        )
     }
 
     fn log10(self) -> Self {
@@ -466,7 +472,11 @@ impl Float for LogNum {
     }
 
     fn signum(self) -> Self {
-        if self.is_nan() { LogNum::new(f64::NAN, 1) } else { LogNum::from_f64(self.sign as f64) }
+        if self.is_nan() {
+            LogNum::new(f64::NAN, 1)
+        } else {
+            LogNum::from_f64(self.sign as f64)
+        }
     }
 
     fn sin(self) -> Self {
@@ -498,6 +508,7 @@ impl Float for LogNum {
     }
 }
 
+#[allow(dead_code)]
 impl LogNum {
     pub fn pow(self, other: Self) -> Self {
         self.powf(other)
