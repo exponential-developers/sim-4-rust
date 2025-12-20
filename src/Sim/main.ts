@@ -4,6 +4,8 @@ import { writeSimResponse } from "./write";
 import { setSimState } from "../UI/simState";
 import { qs, event } from "../Utils/DOMhelpers";
 
+import init, { test } from "../../wasm/pkg/wasm";
+
 const output = qs(".output");
 
 //Buttons
@@ -21,6 +23,7 @@ async function simCall() {
     return;
   }
 
+  console.log(test("Mathis"));
   global.simulating = true;
   output.textContent = "";
   simulateButton.textContent = "Stop simulating";

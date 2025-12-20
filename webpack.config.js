@@ -1,6 +1,10 @@
 const path = require("path");
 
 module.exports = {
+  experiments: {
+    asyncWebAssembly: true,
+  },
+  
   entry: {
     main: [
       "./src/Sim/main.ts",
@@ -24,6 +28,10 @@ module.exports = {
         test: /\.ts$/,
         loader: 'ts-loader',
         exclude: /node_modules/,
+      },
+      {
+        test: /\.wasm$/,
+        type: "webassembly/async"
       }
     ]
   }

@@ -1,7 +1,8 @@
 {
   "scripts": {
-    "prod": "webpack --mode production",
-    "build": "webpack --mode development",
+    "wasm": "wasm-pack build wasm --target bundler",
+    "prod": "npm run wasm && webpack --mode production",
+    "build": "npm run wasm && webpack --mode development",
     "lint": "eslint src"
   },
   "dependencies": {
