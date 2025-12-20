@@ -6,7 +6,7 @@ use std::ops::{
 use std::str::FromStr;
 use std::cmp::Ordering;
 
-use num::{Float, Num, NumCast, ToPrimitive, Zero};
+use num::{Float, Num, NumCast, ToPrimitive, Zero, One};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct LogNum {
@@ -26,6 +26,12 @@ impl LogNum {
             value: value.abs().log10(),
             sign: value.signum() as i8,
         }
+    }
+}
+
+impl From<f64> for LogNum {
+    fn from(value: f64) -> Self {
+        LogNum::from_f64(value)
     }
 }
 
@@ -183,12 +189,12 @@ impl PartialOrd for LogNum {
 }
 
 impl LogNum {
-    fn powf64(self, rhs: f64) -> Self {
+    pub fn powf64(self, rhs: f64) -> Self {
         LogNum::new(self.value * rhs, (self.sign as f64).powf(rhs) as i8)
     }
 }
 
-impl num::Zero for LogNum {
+impl Zero for LogNum {
     fn zero() -> Self {
         ZERO
     }
@@ -198,7 +204,7 @@ impl num::Zero for LogNum {
     }
 }
 
-impl num::One for LogNum {
+impl One for LogNum {
     fn one() -> Self {
         ONE
     }
@@ -489,5 +495,11 @@ impl Float for LogNum {
 
     fn trunc(self) -> Self {
         LogNum::from_f64(self.to_f64().unwrap().trunc())
+    }
+}
+
+impl LogNum {
+    pub fn pow(self, other: Self) -> Self {
+        self.powf(other)
     }
 }
