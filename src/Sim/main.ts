@@ -1,4 +1,4 @@
-import { parseQuery } from "./parse";
+import { parseQuery, formatSimQuery } from "./parse";
 import { simulate } from "./simulate";
 import { writeSimResponse } from "./write";
 import { setSimState } from "../UI/simState";
@@ -29,7 +29,7 @@ async function simCall() {
 
   try {
     const query = parseQuery();
-    console.log(test(JSON.stringify(query)));
+    console.log(test(formatSimQuery(query)));
     const response = await simulate(query);
     writeSimResponse(response);
     output.textContent = "";

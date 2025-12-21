@@ -46,3 +46,12 @@ pub struct SimAllQuery {
     semi_idle: bool,
     settings: SimSettings
 }
+
+#[derive(Debug, Deserialize)]
+#[serde(tag = "type", content = "data", rename_all = "lowercase")]
+pub enum SimQuery {
+    SINGLE(SingleSimQuery),
+    CHAIN(ChainSimQuery),
+    STEP(StepSimQuery),
+    ALL(SimAllQuery)
+}

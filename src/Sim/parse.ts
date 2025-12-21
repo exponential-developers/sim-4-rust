@@ -180,3 +180,10 @@ export function parseQuery(): SimQuery {
         default: throw "This mode is not supported.";
     }
 }
+
+export function formatSimQuery(query: SimQuery): string {
+    return JSON.stringify({
+        "type": query.queryType,
+        "data": query
+    })
+}
