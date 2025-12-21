@@ -113,7 +113,7 @@ function parseChainSim(): ChainSimQuery {
         sigma: sigma,
         rho: parseCurrency(currencyInput.value, theory, sigma),
         cap: parseCurrency(capInput.value, theory, sigma),
-        hardCap: hardCap.checked,
+        hard_cap: hardCap.checked,
         settings: parseSettings()
     }
 }

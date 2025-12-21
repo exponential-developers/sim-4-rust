@@ -33,7 +33,7 @@ declare global {
     strat: string;
     rho: number;
     cap?: number;
-    lastStrat?: string;
+    last_strat?: string;
   }
 
   type ChainSimQuery = BaseSimQuery & {
@@ -42,7 +42,7 @@ declare global {
     strat: string;
     rho: number;
     cap: number;
-    hardCap: boolean;
+    hard_cap: boolean;
   }
 
   type StepSimQuery = BaseSimQuery & {

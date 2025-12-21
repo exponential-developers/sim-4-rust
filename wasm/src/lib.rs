@@ -1,4 +1,5 @@
 mod utils;
+mod api;
 use utils::lognum::LogNum;
 
 use wasm_bindgen::prelude::*;

@@ -4,7 +4,7 @@ pub mod lognum;
 //pub mod complex_lognum;
 //pub mod currency;
 pub mod var_buy;
-//pub mod settings;
+pub mod settings;
 
 use var_buy::VarBuy;
 

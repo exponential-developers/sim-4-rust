@@ -49,7 +49,7 @@ const simFunction: { [key in theoryType]: ((data: theoryData) => Promise<simResu
 
 async function singleSim(query: SingleSimQuery): Promise<SingleSimResponse> {
     const strats = jsonData.stratCategories.includes(query.strat) 
-        ? getStrats(query.theory, query.rho, query.strat, query.lastStrat ?? "")
+        ? getStrats(query.theory, query.rho, query.strat, query.last_strat ?? "")
         : [query.strat];
 
     let bestRes = defaultResult();
@@ -97,8 +97,8 @@ async function chainSim(query: ChainSimQuery): Promise<ChainSimResponse> {
             rho: rho,
             sigma: query.sigma,
             settings: query.settings,
-            cap: query.hardCap ? query.cap : undefined,
-            lastStrat: lastStrat
+            cap: query.hard_cap ? query.cap : undefined,
+            last_strat: lastStrat
         })).result;
         if (!global.simulating) break;
 
@@ -141,7 +141,7 @@ async function stepSim(query: StepSimQuery): Promise<StepSimResponse> {
             rho: rho,
             sigma: query.sigma,
             settings: query.settings,
-            lastStrat: lastStrat
+            last_strat: lastStrat
         })).result;
         if (!global.simulating) break;
 

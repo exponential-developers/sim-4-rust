@@ -1,15 +1,18 @@
+#[derive(Debug, Clone)]
 pub enum SimAllStrats {
     ALL,
     ACTIVE,
     IDLE
 }
 
+#[derive(Debug, Clone)]
 pub enum CompletedCTs {
     IN,
     END,
     NO
 }
 
+#[derive(Debug, Clone)]
 pub struct SimSettings {
     dt: f64,
     ddt: f64,

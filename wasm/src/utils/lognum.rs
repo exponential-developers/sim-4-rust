@@ -1,6 +1,5 @@
-use core::f64;
+use core::fmt::Display;
 use std::cmp::Ordering;
-use std::fmt::Display;
 use std::ops::{
     Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Sub, SubAssign,
 };
