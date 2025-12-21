@@ -164,9 +164,9 @@ function parseSimAll(): SimAllQuery {
         queryType: "all",
         sigma: sigma,
         values: values,
-        veryActive: hard_active.checked,
-        semiIdle: semi_idle.checked,
-        stratType: settings.sim_all_strats,
+        very_active: hard_active.checked,
+        semi_idle: semi_idle.checked,
+        strat_type: settings.sim_all_strats,
         settings: settings
     }
 }

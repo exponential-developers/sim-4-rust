@@ -57,9 +57,9 @@ declare global {
   type SimAllQuery = BaseSimQuery & {
     queryType: "all";
     values: number[];
-    veryActive: boolean;
-    semiIdle: boolean;
-    stratType: SettingsSimAllStratsMode;
+    very_active: boolean;
+    semi_idle: boolean;
+    strat_type: SettingsSimAllStratsMode;
   }
 
   type SimQuery = SingleSimQuery | ChainSimQuery | StepSimQuery | SimAllQuery;

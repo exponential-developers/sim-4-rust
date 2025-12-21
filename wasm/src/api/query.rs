@@ -16,6 +16,7 @@ pub struct SingleSimQuery {
     settings: SimSettings
 }
 
+#[derive(Debug, Deserialize)]
 pub struct ChainSimQuery {
     theory: String, // Maybe change to an enum later
     strat: String,
@@ -26,6 +27,7 @@ pub struct ChainSimQuery {
     settings: SimSettings
 }
 
+#[derive(Debug, Deserialize)]
 pub struct StepSimQuery {
     theory: String, // Maybe change to an enum later
     strat: String,
@@ -36,6 +38,7 @@ pub struct StepSimQuery {
     settings: SimSettings
 }
 
+#[derive(Debug, Deserialize)]
 pub struct SimAllQuery {
     values: Vec<LogNum>,
     sigma: i64, // Type could change

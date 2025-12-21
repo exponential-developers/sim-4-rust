@@ -176,22 +176,22 @@ async function simAll(query: SimAllQuery): Promise<SimAllResponse> {
             sigma: query.sigma,
             settings: query.settings
         }
-        const activeRes = query.stratType != "idle"
+        const activeRes = query.strat_type != "idle"
             ? (await singleSim({
-                strat: query.veryActive ? "Best Overall" : "Best Active",
+                strat: query.very_active ? "Best Overall" : "Best Active",
                 ...queryData
             })).result
             : defaultResult();
-        const idleRes = query.stratType != "active"
+        const idleRes = query.strat_type != "active"
             ? (await singleSim({
-                strat: query.semiIdle ? "Best Semi-Idle" : "Best Idle",
+                strat: query.semi_idle ? "Best Semi-Idle" : "Best Idle",
                 ...queryData
             })).result
             : defaultResult();
 
         results.push({
             theory: theory,
-            ratio: query.stratType == "all" ? activeRes.tauH / idleRes.tauH : 1,
+            ratio: query.strat_type == "all" ? activeRes.tauH / idleRes.tauH : 1,
             lastPub: rho,
             active: activeRes,
             idle: idleRes
@@ -201,7 +201,7 @@ async function simAll(query: SimAllQuery): Promise<SimAllResponse> {
     return {
         responseType: "all",
         sigma: query.sigma,
-        stratType: query.stratType,
+        stratType: query.strat_type,
         completedCTs: query.settings.completed_cts,
         results: results
     }
