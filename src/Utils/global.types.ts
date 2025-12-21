@@ -125,6 +125,7 @@ declare global {
     show_unofficials: boolean;
   }
 
+  // Deprecated in TS
   interface simResult {
     theory: theoryType;
     sigma: number;
@@ -138,6 +139,7 @@ declare global {
     bought_vars: varBuy[];
   }
 
+  // Deprecated in TS
   interface simAllResult {
     theory: theoryType;
     ratio: number;
@@ -145,4 +147,10 @@ declare global {
     active: simResult;
     idle: simResult;
   }
+
+  type API_response = {
+    response_type: "success" | "failure",
+    // Removing this any is a bit annoying, will do it later -Mathis
+    data: any
+  };
 }
