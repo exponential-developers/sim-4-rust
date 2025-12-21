@@ -21,9 +21,9 @@ pub struct SimResult {
 
 #[derive(Debug, Clone, Serialize)]
 pub struct SimAllResult {
-    theory: String,
-    ratio: f64,
-    last_pub: LogNum,
-    active: SimResult,
-    idle: SimResult
+    pub theory: String,
+    pub ratio: f64,
+    pub last_pub: LogNum,
+    pub active: SimResult,
+    pub idle: SimResult
 }

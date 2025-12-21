@@ -179,7 +179,7 @@ function writeSimAllResponse(response: SimAllResponse) {
             sets[0].push(res);
         }
         else {
-            if (response.completedCTs === "end" && res.last_pub * jsonData.theories[res.theory].tauFactor >= 600) {
+            if (response.completed_cts === "end" && res.last_pub * jsonData.theories[res.theory].tauFactor >= 600) {
                 sets[2].push(res);
             }
             else sets[1].push(res);
@@ -189,7 +189,7 @@ function writeSimAllResponse(response: SimAllResponse) {
 
     sets.forEach((set, i) => {
         set.forEach(res => {
-            if (response.stratType == "all") {
+            if (response.strat_type == "all") {
                 const rowActive = ce<HTMLTableRowElement>("tr");
                 const rowPassive = ce<HTMLTableRowElement>("tr");
     
@@ -204,7 +204,7 @@ function writeSimAllResponse(response: SimAllResponse) {
                 tbody.appendChild(rowPassive);
             }
             else {
-                const uniqueRes = response.stratType == "active" ? res.active : res.idle;
+                const uniqueRes = response.strat_type == "active" ? res.active : res.idle;
                 const row = ce<HTMLTableRowElement>("tr");
     
                 addTableCell(row, res.theory);
@@ -241,7 +241,7 @@ export function writeSimResponse(response: SimResponse) {
             `${response.sigma}<span style="font-size:0.9rem;">&sigma;</span><sub>t</sub>`,
             'Input'
         ];
-        if (response.stratType == "all") headers.push('Ratio');
+        if (response.strat_type == "all") headers.push('Ratio');
         headers.push(
             `${tau}/h`,
             'Multi',

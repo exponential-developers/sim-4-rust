@@ -85,8 +85,8 @@ declare global {
   type SimAllResponse = {
     responseType: "all";
     sigma: number;
-    stratType: SettingsSimAllStratsMode;
-    completedCTs: SettingsCompletedCTsMode;
+    strat_type: SettingsSimAllStratsMode;
+    completed_cts: SettingsCompletedCTsMode;
     results: simAllResult[];
   }
 

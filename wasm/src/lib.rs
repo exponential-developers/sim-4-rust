@@ -9,53 +9,78 @@ use utils::lognum::LogNum;
 
 use wasm_bindgen::prelude::*;
 
+use crate::utils::result::SimResult;
+
 #[wasm_bindgen]
 pub fn test(input: &str) -> String {
     let _q = serde_json::from_str::<api::query::SimQuery>(input);
 
     let res = serde_json::to_string(
-        &api::response::SimResponse::CHAIN(
-            api::response::ChainSimResponse {
+        &api::response::SimResponse::ALL(
+            api::response::SimAllResponse {
+                sigma: 20,
+                strat_type: utils::settings::SimAllStrats::ALL,
+                completed_cts: utils::settings::CompletedCTs::IN,
                 results: vec![
-                    utils::result::SimResult {
-                    theory: "T1".to_owned(),
-                    sigma: 20,
-                    last_pub: LogNum::from_str("1e20").unwrap(),
-                    pub_rho: LogNum::from_str("1e22").unwrap(),
-                    delta_tau: LogNum::from_f64(100.),
-                    pub_multi: 4.,
-                    strat: "Test".to_owned(),
-                    tau_h: 2.,
-                    time: 15.*60.,
-                    bought_vars: vec![utils::var_buy::VarBuy {
-                        var_name: "c1".to_owned(),
-                        level: 10,
-                        cost: LogNum::from_str("1e18").unwrap(),
-                        symbol: "ρ".to_owned(),
-                        timestamp: 10.*60.
-                    }]
-                },
-                utils::result::SimResult {
-                    theory: "T1".to_owned(),
-                    sigma: 20,
-                    last_pub: LogNum::from_str("1e22").unwrap(),
-                    pub_rho: LogNum::from_str("1e24").unwrap(),
-                    delta_tau: LogNum::from_f64(100.),
-                    pub_multi: 4.,
-                    strat: "Test".to_owned(),
-                    tau_h: 2.,
-                    time: 15.*60.,
-                    bought_vars: vec![utils::var_buy::VarBuy {
-                        var_name: "c1".to_owned(),
-                        level: 10,
-                        cost: LogNum::from_str("1e18").unwrap(),
-                        symbol: "ρ".to_owned(),
-                        timestamp: 10.*60.
-                    }]
-                }],
-                average_rate: 3.,
-                delta_tau: LogNum::from_str("e4").unwrap(),
-                total_time: 30.*60.
+                    utils::result::SimAllResult {
+                        theory: "T1".to_owned(),
+                        ratio: 1.2,
+                        last_pub: LogNum::from_str("1.5e25").unwrap(),
+                        active: SimResult {
+                            theory: "T1".to_owned(),
+                            sigma: 20,
+                            last_pub: LogNum::from_str("1.5e25").unwrap(),
+                            pub_rho: LogNum::from_str("1e27").unwrap(),
+                            delta_tau: LogNum::from(1e27 / 1.5e25),
+                            pub_multi: 3.,
+                            strat: "T1SolarXLII".to_owned(),
+                            tau_h: 2.5,
+                            time: 1000.,
+                            bought_vars: Vec::new()
+                        },
+                        idle: SimResult {
+                            theory: "T1".to_owned(),
+                            sigma: 20,
+                            last_pub: LogNum::from_str("1.5e25").unwrap(),
+                            pub_rho: LogNum::from_str("1e27").unwrap(),
+                            delta_tau: LogNum::from(1e27 / 1.5e25),
+                            pub_multi: 3.,
+                            strat: "T1C34".to_owned(),
+                            tau_h: 1.75,
+                            time: 1200.,
+                            bought_vars: Vec::new()
+                        },
+                    },
+                    utils::result::SimAllResult {
+                        theory: "T2".to_owned(),
+                        ratio: 1.05,
+                        last_pub: LogNum::from_str("1e400").unwrap(),
+                        active: SimResult {
+                            theory: "T2".to_owned(),
+                            sigma: 20,
+                            last_pub: LogNum::from_str("1e400").unwrap(),
+                            pub_rho: LogNum::from_str("1e420").unwrap(),
+                            delta_tau: LogNum::from(1e20),
+                            pub_multi: 700.,
+                            strat: "T2".to_owned(),
+                            tau_h: 0.8,
+                            time: 150000.,
+                            bought_vars: Vec::new()
+                        },
+                        idle: SimResult {
+                            theory: "T2".to_owned(),
+                            sigma: 20,
+                            last_pub: LogNum::from_str("1e400").unwrap(),
+                            pub_rho: LogNum::from_str("1e420").unwrap(),
+                            delta_tau: LogNum::from(1e20),
+                            pub_multi: 2.5,
+                            strat: "T2Idle".to_owned(),
+                            tau_h: 0.6,
+                            time: 155000.,
+                            bought_vars: Vec::new()
+                        },
+                    }
+                ]
             }
         )
     );

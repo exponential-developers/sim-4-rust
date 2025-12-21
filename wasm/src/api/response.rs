@@ -26,10 +26,10 @@ pub struct StepSimResponse {
 
 #[derive(Debug, Serialize)]
 pub struct SimAllResponse {
-    sigma: i64,
-    strat_type: settings::SimAllStrats,
-    completed_cts: settings::CompletedCTs,
-    results: Vec<SimAllResult>
+    pub sigma: i64,
+    pub strat_type: settings::SimAllStrats,
+    pub completed_cts: settings::CompletedCTs,
+    pub results: Vec<SimAllResult>
 }
 
 #[derive(Debug, Serialize)]
