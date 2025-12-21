@@ -1,4 +1,4 @@
-# sim-3.0
+# sim-4.0-rust
 
 Theory simulator for the mobile game [Exponential Idle](https://conicgames.github.io/exponentialidle/) based on sim-3.0
 
