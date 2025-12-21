@@ -103,7 +103,7 @@ async function chainSim(query: ChainSimQuery): Promise<ChainSimResponse> {
         if (!global.simulating) break;
 
         results.push(res);
-        rho = res.pubRho;
+        rho = res.pub_rho;
         lastStrat = res.strat.split(" ")[0];
         time += res.time;
     }
@@ -191,8 +191,8 @@ async function simAll(query: SimAllQuery): Promise<SimAllResponse> {
 
         results.push({
             theory: theory,
-            ratio: query.strat_type == "all" ? activeRes.tauH / idleRes.tauH : 1,
-            lastPub: rho,
+            ratio: query.strat_type == "all" ? activeRes.tau_h / idleRes.tau_h : 1,
+            last_pub: rho,
             active: activeRes,
             idle: idleRes
         })

@@ -4,7 +4,7 @@ use std::ops::{
     Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Sub, SubAssign,
 };
 use std::str::FromStr;
-use serde::{Deserialize, de};
+use serde::{Deserialize, Serialize, de};
 
 use num::{Float, Num, NumCast, One, ToPrimitive, Zero};
 
@@ -41,6 +41,7 @@ impl From<i32> for LogNum {
     }
 }
 
+#[derive(Debug)]
 pub struct LogNumParseError {}
 
 impl FromStr for LogNum {
@@ -183,7 +184,7 @@ impl RemAssign for LogNum {
 }
 
 impl PartialOrd for LogNum {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         match (self.sign, other.sign) {
             (1, 1) => self.value.partial_cmp(&other.value),
             (1, -1) => Some(Ordering::Greater),
@@ -550,5 +551,13 @@ impl<'de> Deserialize<'de> for LogNum {
         }
 
         deserializer.deserialize_any(LogNumVisitor)
+    }
+}
+
+impl Serialize for LogNum {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+        where
+            S: serde::Serializer {
+        serializer.serialize_f64(self.value)
     }
 }

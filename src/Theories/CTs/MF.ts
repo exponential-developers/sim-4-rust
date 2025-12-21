@@ -254,10 +254,10 @@ class mfSim extends theoryClass<theory> {
     this.resets++;
     if (this.resets>1) {
       this.boughtVars.push({
-        variable: 'Reset at V='+this.variables[5].level+","+this.variables[6].level+","+this.variables[7].level+","+this.variables[8].level,
+        var_name: 'Reset at V='+this.variables[5].level+","+this.variables[6].level+","+this.variables[7].level+","+this.variables[8].level,
         level: this.resets-1,
         cost: this.maxRho,
-        timeStamp: this.t
+        timestamp: this.t
       });
     }
     this.goalBundle = this.getGoalBundle();
@@ -504,10 +504,10 @@ class mfSim extends theoryClass<theory> {
         if (currency.value > this.normalVariables[i].cost && this.buyingConditions[i]() && this.variableAvailability[i]()) {
           if (this.maxRho + boughtVarsDelta > this.lastPub) {
             this.boughtVars.push({
-              variable: this.normalVariables[i].name,
+              var_name: this.normalVariables[i].name,
               level: this.normalVariables[i].level + 1,
               cost: this.normalVariables[i].cost,
-              timeStamp: this.t,
+              timestamp: this.t,
               symbol: currency.symbol
             });
           }
@@ -535,10 +535,10 @@ class mfSim extends theoryClass<theory> {
         if (currency.value > this.variables[i].cost && this.variableAvailability[i]()) {
           if (this.maxRho + boughtVarsDelta > this.lastPub) {
             this.boughtVars.push({
-              variable: this.variables[i].name,
+              var_name: this.variables[i].name,
               level: this.variables[i].level + 1,
               cost: this.variables[i].cost,
-              timeStamp: this.t,
+              timestamp: this.t,
               symbol: currency.symbol
             });
           }

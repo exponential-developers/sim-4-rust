@@ -20,7 +20,7 @@ export default async function t5(data: theoryData): Promise<simResult> {
     data2.strat = data2.strat.replace("Coast", "");
     const sim1 = new t5Sim(data2);
     const res1 = await sim1.simulate();
-    const lastQ1 = getLastLevel("q1", res1.boughtVars);
+    const lastQ1 = getLastLevel("q1", res1.bought_vars);
     const sim2 = new t5Sim(data);
     sim2.variables[0].setOriginalCap(lastQ1);
     sim2.variables[0].configureCap(13);

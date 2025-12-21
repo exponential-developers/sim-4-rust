@@ -144,14 +144,14 @@ export function defaultResult(): simResult {
   return {
       theory: "T1",
       sigma: 0,
-      lastPub: 0,
-      pubRho: 0,
-      deltaTau: 0,
-      pubMulti: 0,
+      last_pub: 0,
+      pub_rho: 0,
+      delta_tau: 0,
+      pub_multi: 0,
       strat: "Result undefined",
-      tauH: 0,
+      tau_h: 0,
       time: 0,
-      boughtVars: []
+      bought_vars: []
     };
 }
 
@@ -165,7 +165,7 @@ export function defaultResult(): simResult {
 export function getBestResult(res1: simResult | null, res2: simResult | null): simResult {
   if (res1 == null) res1 = defaultResult();
   if (res2 == null) res2 = defaultResult();
-  return res1.tauH >= res2.tauH ? res1 : res2;
+  return res1.tau_h >= res2.tau_h ? res1 : res2;
 }
 
 /**
@@ -176,7 +176,7 @@ export function getBestResult(res1: simResult | null, res2: simResult | null): s
  */
 export function getLastLevel(variable: string, arr: varBuy[]): number {
   for (let i = arr.length - 1; i >= 0; i--) {
-    if (arr[i].variable == variable) {
+    if (arr[i].var_name == variable) {
       return arr[i].level;
     }
   }

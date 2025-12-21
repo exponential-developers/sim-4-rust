@@ -163,9 +163,9 @@ export default async function rz(data: theoryData) {
         }
 
         let maxW1 = Infinity;
-        for (let i = bestSimRes.boughtVars.length - 1; i >= 0; i--){
-            if (bestSimRes.boughtVars[i].variable === "w1"){
-                maxW1 = bestSimRes.boughtVars[i].level;
+        for (let i = bestSimRes.bought_vars.length - 1; i >= 0; i--){
+            if (bestSimRes.bought_vars[i].var_name === "w1"){
+                maxW1 = bestSimRes.bought_vars[i].level;
                 break;
             }
         }
@@ -224,7 +224,7 @@ export default async function rz(data: theoryData) {
         let coastRets = [];
         for(let i = 0; i < normalRets.length; i++) {
             let ss = new rzSim(data);
-            ss.normalPubRho = normalRets[i].pubRho;
+            ss.normalPubRho = normalRets[i].pub_rho;
             ss.swapPointDelta = swapPointDeltas[i];
             coastRets.push(await ss.simulate());
         }

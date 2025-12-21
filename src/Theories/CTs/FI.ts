@@ -20,7 +20,7 @@ export default async function fi(data: theoryData): Promise<simResult> {
     data2.strat = data2.strat.replace("Coast", "");
     const sim1 = new fiSim(data2);
     const res1 = await sim1.simulate();
-    const lastQ1 = getLastLevel("q1", res1.boughtVars);
+    const lastQ1 = getLastLevel("q1", res1.bought_vars);
     let sim = new fiSim(data);
     sim.variables[1].setOriginalCap(lastQ1);
     // Maximum seen in the wild is 4, we test 5 and 6 to be safe.

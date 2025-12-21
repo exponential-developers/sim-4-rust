@@ -12,7 +12,7 @@ export default async function wsp(data: theoryData): Promise<simResult> {
     data2.strat = data2.strat.replace("Coast", "").replace("PostRecovery", "");
     const sim1 = new wspSim(data2);
     const res1 = await sim1.simulate();
-    const lastQ1 = getLastLevel("q1", res1.boughtVars);
+    const lastQ1 = getLastLevel("q1", res1.bought_vars);
     let sim = new wspSim(data);
     sim.variables[0].setOriginalCap(lastQ1);
     if(data.strat.includes("WSPd")) {

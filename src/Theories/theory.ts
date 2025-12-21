@@ -349,10 +349,10 @@ export default abstract class theoryClass<theory extends theoryType> {
         if (currency.value > this.variables[i].cost && this.buyingConditions[i]() && this.variableAvailability[i]() && this.extraBuyingCondition(i)) {
           if (this.maxRho + this.settings.bought_vars_delta > this.lastPub) {
             this.boughtVars.push({ 
-              variable: this.variables[i].name, 
+              var_name: this.variables[i].name, 
               level: this.variables[i].level + 1, 
               cost: this.variables[i].cost, 
-              timeStamp: this.t,
+              timestamp: this.t,
               symbol: currency.symbol
             });
           }
@@ -393,10 +393,10 @@ export default abstract class theoryClass<theory extends theoryType> {
         this.rho.subtract(this.variables[minCost[1]].cost);
         if (this.maxRho + this.settings.bought_vars_delta > this.lastPub) {
           this.boughtVars.push({ 
-            variable: this.variables[minCost[1]].name, 
+            var_name: this.variables[minCost[1]].name, 
             level: this.variables[minCost[1]].level + 1, 
             cost: this.variables[minCost[1]].cost, 
-            timeStamp: this.t 
+            timestamp: this.t 
           });
         }
         this.variables[minCost[1]].buy();
@@ -426,10 +426,10 @@ export default abstract class theoryClass<theory extends theoryType> {
           if (!confirmPurchase) break;
           if (this.maxRho + this.settings.bought_vars_delta > this.lastPub) {
             this.boughtVars.push({ 
-              variable: this.variables[i].name, 
+              var_name: this.variables[i].name, 
               level: this.variables[i].level + 1, 
               cost: this.variables[i].cost, 
-              timeStamp: this.t,
+              timestamp: this.t,
               symbol: currency.symbol
             });
           }
@@ -447,7 +447,7 @@ export default abstract class theoryClass<theory extends theoryType> {
    * Removes the variable purchases that occurred after the publication point
    */
   trimBoughtVars() {
-    while (this.boughtVars.length && this.boughtVars[this.boughtVars.length - 1].timeStamp > this.pubT) this.boughtVars.pop();
+    while (this.boughtVars.length && this.boughtVars[this.boughtVars.length - 1].timestamp > this.pubT) this.boughtVars.pop();
   }
 
   /**
@@ -458,14 +458,14 @@ export default abstract class theoryClass<theory extends theoryType> {
     return {
       theory: this.theory,
       sigma: this.sigma,
-      lastPub: this.lastPub,
-      pubRho: this.pubRho,
-      deltaTau: (this.pubRho - this.lastPub) * this.tauFactor,
-      pubMulti: 10 ** (this.getTotMult(this.pubRho) - this.totMult),
+      last_pub: this.lastPub,
+      pub_rho: this.pubRho,
+      delta_tau: (this.pubRho - this.lastPub) * this.tauFactor,
+      pub_multi: 10 ** (this.getTotMult(this.pubRho) - this.totMult),
       strat: this.strat as String + stratExtra,
-      tauH: this.maxTauH,
+      tau_h: this.maxTauH,
       time: Math.max(0, this.pubT - this.recovery.time),
-      boughtVars: this.boughtVars
+      bought_vars: this.boughtVars
     }
   }
 

@@ -100,10 +100,10 @@ function openVarModal(arr: varBuy[]) {
   removeAllChilds(varBuyTable);
   for (let varBuy of arr) {
     const row = ce<HTMLTableRowElement>("tr");
-    addTableCell(row, varBuy.variable);
+    addTableCell(row, varBuy.var_name);
     addTableCell(row, varBuy.level.toString());
     addTableCell(row, `${logToExp(varBuy.cost, 2)}<span style="margin-left:.1em">${getCurrencySymbol(varBuy.symbol)}</span>`);
-    addTableCell(row, convertTime(varBuy.timeStamp));
+    addTableCell(row, convertTime(varBuy.timestamp));
     varBuyTable.appendChild(row);
   }
   highlightResetCells();
@@ -121,14 +121,14 @@ function writeSingleSimResponse(response: SingleSimResponse) {
     const row = ce<HTMLTableRowElement>("tr");
     addTableCell(row, res.theory);
     addTableCell(row, res.sigma.toString());
-    addTableCell(row, logToExp(res.lastPub, 2));
-    addTableCell(row, logToExp(res.pubRho, 2));
-    addTableCell(row, logToExp(res.deltaTau, 2));
-    addTableCell(row, formatNumber(res.pubMulti));
+    addTableCell(row, logToExp(res.last_pub, 2));
+    addTableCell(row, logToExp(res.pub_rho, 2));
+    addTableCell(row, logToExp(res.delta_tau, 2));
+    addTableCell(row, formatNumber(res.pub_multi));
     addTableCell(row, res.strat);
-    addTableCell(row, res.tauH == 0 ? "0" : formatNumber(res.tauH));
+    addTableCell(row, res.tau_h == 0 ? "0" : formatNumber(res.tau_h));
     addTableCell(row, convertTime(res.time));
-    bindVarBuy(row, res.boughtVars);
+    bindVarBuy(row, res.bought_vars);
     tbody.append(row);
 }
 
@@ -164,13 +164,13 @@ function writeStepSimResponse(response: StepSimResponse) {
 
 function writeSimAllResponse(response: SimAllResponse) {
     const completeSimAllLine = (row: HTMLTableRowElement, res: simResult) => {
-        addTableCell(row, res.tauH == 0 ? "0" : formatNumber(res.tauH));
-        addTableCell(row, formatNumber(res.pubMulti));
+        addTableCell(row, res.tau_h == 0 ? "0" : formatNumber(res.tau_h));
+        addTableCell(row, formatNumber(res.pub_multi));
         addTableCell(row, res.strat);
         addTableCell(row, convertTime(res.time));
-        addTableCell(row, logToExp(res.deltaTau, 2));
-        addTableCell(row, logToExp(res.pubRho, 2));
-        bindVarBuy(row, res.boughtVars);
+        addTableCell(row, logToExp(res.delta_tau, 2));
+        addTableCell(row, logToExp(res.pub_rho, 2));
+        bindVarBuy(row, res.bought_vars);
     }
 
     let sets: simAllResult[][] = [[], [], []];
@@ -179,7 +179,7 @@ function writeSimAllResponse(response: SimAllResponse) {
             sets[0].push(res);
         }
         else {
-            if (response.completedCTs === "end" && res.lastPub * jsonData.theories[res.theory].tauFactor >= 600) {
+            if (response.completedCTs === "end" && res.last_pub * jsonData.theories[res.theory].tauFactor >= 600) {
                 sets[2].push(res);
             }
             else sets[1].push(res);
@@ -194,7 +194,7 @@ function writeSimAllResponse(response: SimAllResponse) {
                 const rowPassive = ce<HTMLTableRowElement>("tr");
     
                 addTableCell(rowActive, res.theory, 2);
-                addTableCell(rowActive, logToExp(res.lastPub, 2), 2);
+                addTableCell(rowActive, logToExp(res.last_pub, 2), 2);
                 addTableCell(rowActive, formatNumber(res.ratio, 4), 2);
     
                 completeSimAllLine(rowActive, res.active);
@@ -208,7 +208,7 @@ function writeSimAllResponse(response: SimAllResponse) {
                 const row = ce<HTMLTableRowElement>("tr");
     
                 addTableCell(row, res.theory);
-                addTableCell(row, logToExp(res.lastPub, 2));
+                addTableCell(row, logToExp(res.last_pub, 2));
                 completeSimAllLine(row, uniqueRes);
     
                 tbody.appendChild(row);

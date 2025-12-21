@@ -13,8 +13,8 @@ export default async function t1(data: theoryData): Promise<simResult> {
     data2.strat = data2.strat.replace("Coast", "")
     const sim1 = new t1Sim(data2);
     const res1 = await sim1.simulate();
-    const lastQ1 = getLastLevel("q1", res1.boughtVars);
-    const lastC3 = getLastLevel("c3", res1.boughtVars);
+    const lastQ1 = getLastLevel("q1", res1.bought_vars);
+    const lastC3 = getLastLevel("c3", res1.bought_vars);
     let sim = new t1Sim(data);
     if(["T1Coast", "T1C34Coast", "T1C4Coast"].includes(data.strat)) {
       // We actually force-skip 2 levels due to better pub cycle.

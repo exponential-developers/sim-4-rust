@@ -93,11 +93,11 @@ declare global {
   type SimResponse = SingleSimResponse | ChainSimResponse | StepSimResponse | SimAllResponse;
 
   interface varBuy {
-    variable: string;
+    var_name: string;
     level: number;
     cost: number;
     symbol?: string;
-    timeStamp: number;
+    timestamp: number;
   }
 
   interface theoryData {
@@ -128,20 +128,20 @@ declare global {
   interface simResult {
     theory: theoryType;
     sigma: number;
-    lastPub: number;
-    pubRho: number;
-    deltaTau: number;
-    pubMulti: number;
+    last_pub: number;
+    pub_rho: number;
+    delta_tau: number;
+    pub_multi: number;
     strat: string;
-    tauH: number;
+    tau_h: number;
     time: number;
-    boughtVars: varBuy[];
+    bought_vars: varBuy[];
   }
 
   interface simAllResult {
     theory: theoryType;
     ratio: number;
-    lastPub: number;
+    last_pub: number;
     active: simResult;
     idle: simResult;
   }
