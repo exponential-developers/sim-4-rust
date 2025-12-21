@@ -30,13 +30,13 @@ function parseSettings(): Settings {
     return {
         dt: parseFloat(dtOtp.textContent ?? "1.5"),
         ddt: parseFloat(ddtOtp.textContent ?? "1.0001"),
-        mfResetDepth: parseInt(mfDepthOtp.textContent ?? "0"),
-        boughtVarsDelta: parseInt(boughtVarsDeltaSlider.value),
+        mf_reset_depth: parseInt(mfDepthOtp.textContent ?? "0"),
+        bought_vars_delta: parseInt(boughtVarsDeltaSlider.value),
         theme: themeSelector.value,
-        simAllStrats: simAllStrats.value as SettingsSimAllStratsMode,
-        completedCTs: completedCTs.value as SettingsCompletedCTsMode,
-        showA23: showA23.checked,
-        showUnofficials: showUnofficials.checked
+        sim_all_strats: simAllStrats.value as SettingsSimAllStratsMode,
+        completed_cts: completedCTs.value as SettingsCompletedCTsMode,
+        show_a23: showA23.checked,
+        show_unofficials: showUnofficials.checked
     }
 }
 
@@ -153,8 +153,8 @@ function parseSimAll(): SimAllQuery {
 
     values = values.map((val, i) => {
         const theory = getTheoryFromIndex(i);
-        if (settings.completedCTs === "no" && i > 8 && val * jsonData.theories[theory].tauFactor >= 600) return 0;
-        if (!settings.showUnofficials && (jsonData.theories as TheoryDataStructure)[theory].UI_visible === false) return 0;
+        if (settings.completed_cts === "no" && i > 8 && val * jsonData.theories[theory].tauFactor >= 600) return 0;
+        if (!settings.show_unofficials && (jsonData.theories as TheoryDataStructure)[theory].UI_visible === false) return 0;
         return val;
     })
 
@@ -166,7 +166,7 @@ function parseSimAll(): SimAllQuery {
         values: values,
         veryActive: hard_active.checked,
         semiIdle: semi_idle.checked,
-        stratType: settings.simAllStrats,
+        stratType: settings.sim_all_strats,
         settings: settings
     }
 }

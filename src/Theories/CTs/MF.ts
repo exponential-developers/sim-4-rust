@@ -274,7 +274,7 @@ class mfSim extends theoryClass<theory> {
 
   constructor(data: theoryData, resetBundle: resetBundle) {
     super(data);
-    this.mfResetDepth = this.settings.mfResetDepth;
+    this.mfResetDepth = this.settings.mf_reset_depth;
     this.c = 0;
     this.x = 0;
     this.i = 0;
@@ -497,7 +497,7 @@ class mfSim extends theoryClass<theory> {
   // This method also removes reliance on this.extraBuyingCondition.
   buyNormalVariables() {
     // let bought = false;
-    let boughtVarsDelta = this.settings.boughtVarsDelta;
+    let boughtVarsDelta = this.settings.bought_vars_delta;
     for (let i = this.normalVariables.length - 1; i >= 0; i--) {
       let currency = this.normalVariables[i].currency ?? this.rho;
       while (true) {
@@ -528,7 +528,7 @@ class mfSim extends theoryClass<theory> {
   // we will always buy as many as we can.
   buyVVariables() {
     // let bought = false;
-    let boughtVarsDelta = this.settings.boughtVarsDelta;
+    let boughtVarsDelta = this.settings.bought_vars_delta;
     for (let i = 8; i >= 5; i--) {
       let currency = this.variables[i].currency ?? this.rho;
       while (true) {

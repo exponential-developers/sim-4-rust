@@ -116,13 +116,13 @@ declare global {
   type Settings = {
     dt: number;
     ddt: number;
-    mfResetDepth: number;
-    boughtVarsDelta: number;
+    mf_reset_depth: number;
+    bought_vars_delta: number;
     theme: string;
-    simAllStrats: SettingsSimAllStratsMode;
-    completedCTs: SettingsCompletedCTsMode;
-    showA23: boolean;
-    showUnofficials: boolean;
+    sim_all_strats: SettingsSimAllStratsMode;
+    completed_cts: SettingsCompletedCTsMode;
+    show_a23: boolean;
+    show_unofficials: boolean;
   }
 
   interface simResult {
