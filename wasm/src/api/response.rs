@@ -35,8 +35,8 @@ pub struct SimAllResponse {
 #[derive(Debug, Serialize)]
 #[serde(tag = "type", content = "data", rename_all = "lowercase")]
 pub enum SimResponse {
-    SINGLE(SingleSimResponse),
-    CHAIN(ChainSimResponse),
-    STEP(StepSimResponse),
-    ALL(SimAllResponse)
+    Single(SingleSimResponse),
+    Chain(ChainSimResponse),
+    Step(StepSimResponse),
+    All(SimAllResponse)
 }

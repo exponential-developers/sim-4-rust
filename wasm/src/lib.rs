@@ -11,14 +11,14 @@ use utils::lognum::LogNum;
 use api::response::SimResponse;
 use utils::result::SimResult;
 
-const DEFAULT_ERR: &'static str = "{\"response_type\": \"failure\", \"data\":\"API Error\"}";
+const DEFAULT_ERR: &str = "{\"response_type\": \"failure\", \"data\":\"API Error\"}";
 
 #[derive(Serialize)]
 #[serde(tag = "response_type", content = "data", rename_all = "lowercase")]
 #[allow(dead_code)]
 enum ApiResponse {
-    SUCCESS(SimResponse),
-    FAILURE(String)
+    Success(SimResponse),
+    Failure(String)
 }
 
 #[wasm_bindgen]
@@ -29,12 +29,13 @@ pub fn test(input: &str) -> String {
 }
 
 #[wasm_bindgen]
+#[allow(unused_variables)]
 pub fn main(input: &str) -> String {
-    let res = api::response::SimResponse::ALL(
+    let res = api::response::SimResponse::All(
         api::response::SimAllResponse {
             sigma: 20,
-            strat_type: utils::settings::SimAllStrats::ALL,
-            completed_cts: utils::settings::CompletedCTs::IN,
+            strat_type: utils::settings::SimAllStrats::All,
+            completed_cts: utils::settings::CompletedCTs::In,
             results: vec![
                 utils::result::SimAllResult {
                     theory: "T1".to_owned(),
@@ -98,7 +99,7 @@ pub fn main(input: &str) -> String {
         }
     );
 
-    serde_json::to_string(&ApiResponse::SUCCESS(res))
+    serde_json::to_string(&ApiResponse::Success(res))
         .unwrap_or(DEFAULT_ERR.to_owned())
 
     //serde_json::to_string(&ApiResponse::FAILURE("API not implemented".to_owned() + "\ninput was " + input))

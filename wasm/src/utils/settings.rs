@@ -3,17 +3,17 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum SimAllStrats {
-    ALL,
-    ACTIVE,
-    IDLE
+    All,
+    Active,
+    Idle
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum CompletedCTs {
-    IN,
-    END,
-    NO
+    In,
+    End,
+    No
 }
 
 #[derive(Debug, Clone, Deserialize)]
