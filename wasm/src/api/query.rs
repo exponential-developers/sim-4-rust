@@ -1,9 +1,11 @@
+use serde::Deserialize;
+
 use crate::utils::{
     lognum::LogNum,
     settings::SimSettings
 };
 
-
+#[derive(Debug, Deserialize)]
 pub struct SingleSimQuery {
     theory: String, // Maybe change to an enum later
     strat: String,

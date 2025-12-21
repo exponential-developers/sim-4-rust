@@ -1,18 +1,22 @@
-#[derive(Debug, Clone)]
+use serde::Deserialize;
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "lowercase")]
 pub enum SimAllStrats {
     ALL,
     ACTIVE,
     IDLE
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "lowercase")]
 pub enum CompletedCTs {
     IN,
     END,
     NO
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct SimSettings {
     dt: f64,
     ddt: f64,

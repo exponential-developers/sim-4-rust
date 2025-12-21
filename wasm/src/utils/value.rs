@@ -1,4 +1,3 @@
-use std::fmt::Debug;
 use num::Float;
 
 use crate::utils::lognum::{self, LogNum};

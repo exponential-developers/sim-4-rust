@@ -23,13 +23,13 @@ async function simCall() {
     return;
   }
 
-  console.log(test("Mathis"));
   global.simulating = true;
   output.textContent = "";
   simulateButton.textContent = "Stop simulating";
 
   try {
     const query = parseQuery();
+    console.log(test(JSON.stringify(query)));
     const response = await simulate(query);
     writeSimResponse(response);
     output.textContent = "";

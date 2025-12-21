@@ -1,5 +1,5 @@
-use std::fmt::Debug;
 use num::Float;
+
 use crate::utils::lognum::LogNum;
 
 pub trait Cost {
@@ -94,7 +94,7 @@ impl ConstantCost {
 }
 
 impl Cost for ConstantCost {
-    fn get_cost(self, level: i32) -> LogNum {
+    fn get_cost(self, _level: i32) -> LogNum {
         self.cost
     }
 }

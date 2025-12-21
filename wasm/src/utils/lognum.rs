@@ -1,9 +1,10 @@
-use core::fmt::Display;
+use core::fmt::{self, Display};
 use std::cmp::Ordering;
 use std::ops::{
     Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Sub, SubAssign,
 };
 use std::str::FromStr;
+use serde::{Deserialize, de};
 
 use num::{Float, Num, NumCast, One, ToPrimitive, Zero};
 
@@ -507,9 +508,47 @@ impl Float for LogNum {
     }
 }
 
-#[allow(dead_code)]
 impl LogNum {
     pub fn pow(self, other: Self) -> Self {
         self.powf(other)
+    }
+}
+
+impl<'de> Deserialize<'de> for LogNum {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+        where
+            D: serde::Deserializer<'de> {
+        struct LogNumVisitor;
+
+        impl<'de> de::Visitor<'de> for LogNumVisitor {
+            type Value = LogNum;
+
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("a number")
+            }
+
+            fn visit_f64<E>(self, v: f64) -> Result<Self::Value, E>
+            where
+                E: de::Error,
+            {
+                Ok(LogNum::new(v, 1))
+            }
+
+            fn visit_i64<E>(self, v: i64) -> Result<Self::Value, E>
+            where
+                E: de::Error,
+            {
+                Ok(LogNum::new(v as f64, 1))
+            }
+
+            fn visit_u64<E>(self, v: u64) -> Result<Self::Value, E>
+            where
+                E: de::Error,
+            {
+                Ok(LogNum::new(v as f64, 1))
+            }
+        }
+
+        deserializer.deserialize_any(LogNumVisitor)
     }
 }
