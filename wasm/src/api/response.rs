@@ -13,15 +13,15 @@ pub struct SingleSimResponse {
 
 #[derive(Debug, Serialize)]
 pub struct ChainSimResponse {
-    results: Vec<SimResult>,
-    delta_tau: LogNum,
-    average_rate: f64,
-    total_time: f64
+    pub results: Vec<SimResult>,
+    pub delta_tau: LogNum,
+    pub average_rate: f64,
+    pub total_time: f64
 }
 
 #[derive(Debug, Serialize)]
 pub struct StepSimResponse {
-    results: Vec<SimResult>
+    pub results: Vec<SimResult>
 }
 
 #[derive(Debug, Serialize)]

@@ -143,13 +143,13 @@ function writeChainSimResponse(response: ChainSimResponse) {
     fillTableRow(labelRow, 4);
     fillTableRow(resRow, 4);
     addTableCell(labelRow, "ΔTau Total");
-    addTableCell(resRow, logToExp(response.deltaTau, 2));
+    addTableCell(resRow, logToExp(response.delta_tau, 2));
     fillTableRow(labelRow, 2);
     fillTableRow(resRow, 2);
     addTableCell(labelRow, `Average ${tau}/h`);
-    addTableCell(resRow, formatNumber(response.averageRate, 5));
+    addTableCell(resRow, formatNumber(response.average_rate, 5));
     addTableCell(labelRow, `Total Time`);
-    addTableCell(resRow, convertTime(response.totalTime));
+    addTableCell(resRow, convertTime(response.total_time));
 
     tbody.append(labelRow);
     tbody.append(resRow);

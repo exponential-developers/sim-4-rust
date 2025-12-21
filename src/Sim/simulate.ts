@@ -113,9 +113,9 @@ async function chainSim(query: ChainSimQuery): Promise<ChainSimResponse> {
     return {
         responseType: "chain",
         results: results,
-        deltaTau: deltaTau,
-        averageRate: deltaTau / (time / 3600),
-        totalTime: time
+        delta_tau: deltaTau,
+        average_rate: deltaTau / (time / 3600),
+        total_time: time
     }
 }
 

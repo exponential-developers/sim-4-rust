@@ -72,9 +72,9 @@ declare global {
   type ChainSimResponse = {
     responseType: "chain";
     results: simResult[];
-    deltaTau: number;
-    averageRate: number;
-    totalTime: number;
+    delta_tau: number;
+    average_rate: number;
+    total_time: number;
   }
 
   type StepSimResponse = {
