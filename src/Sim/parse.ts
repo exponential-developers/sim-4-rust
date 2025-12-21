@@ -181,6 +181,11 @@ export function parseQuery(): SimQuery {
     }
 }
 
+/**
+ * Formats a sim query to a JSON string the wasm module can parse
+ * @param query SimQuery
+ * @returns JSON string
+ */
 export function formatSimQuery(query: SimQuery): string {
     return JSON.stringify({
         "type": query.queryType,

@@ -22,3 +22,4 @@ The site is written in [Rust](https://rust-lang.org/) and [TypeScript](https://w
 - Install `npm` on your computer
 - Run `npm install` to install the modules
 - Run `npm run build` to build the website
+- Run `npm run webpack-dev` to build the TypeScript part only, without rebuilding the wasm module
