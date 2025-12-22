@@ -22,7 +22,6 @@ pub struct SimSettings {
     ddt: f64,
     mf_reset_depth: i32,
     bought_vars_delta: i32,
-    theme: String,
     sim_all_strats: SimAllStrats,
     completed_cts: CompletedCTs,
     show_a23: bool,
