@@ -42,7 +42,7 @@ fn create_error(msg: &str) -> String {
 pub fn main(input: &str) -> String {
     let query = match serde_json::from_str::<SimQuery>(input) {
         Ok(query) => query,
-        Err(err) => return create_error(&format!("Error parsing query: {}", err.to_string()))
+        Err(err) => return create_error(&format!("Error parsing query: {err}"))
     };
 
     let res = match simulate(query) {

@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use num_enum::TryFromPrimitive;
 
+#[allow(clippy::upper_case_acronyms)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Deserialize, Serialize, TryFromPrimitive)]
 #[repr(usize)]
 //#[serde(rename_all = "lowercase")]

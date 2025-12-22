@@ -24,9 +24,9 @@ fn chain_sim(query: ChainSimQuery) -> Result<ChainSimResponse, String> {
 
     while rho < query.cap {
         let res = single_sim(SingleSimQuery {
-            theory: query.theory.clone(),
+            theory: query.theory,
             strat: query.strat.clone(),
-            rho: rho,
+            rho,
             sigma: query.sigma,
             settings: query.settings.clone(),
             cap: if query.hard_cap { Some(query.cap) } else { None },
@@ -74,9 +74,9 @@ fn step_sim(query: StepSimQuery) -> Result<StepSimResponse, String> {
 
     while rho < query.cap * LogNum::from(1.001) {
         let res = single_sim(SingleSimQuery {
-            theory: query.theory.clone(),
+            theory: query.theory,
             strat: query.strat.clone(),
-            rho: rho,
+            rho,
             sigma: query.sigma,
             settings: query.settings.clone(),
             cap: None,
