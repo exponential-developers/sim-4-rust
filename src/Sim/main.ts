@@ -4,7 +4,7 @@ import { writeSimResponse } from "./write";
 import { setSimState } from "../UI/simState";
 import { qs, event } from "../Utils/DOMhelpers";
 
-import init, { test, main } from "../../wasm/pkg/wasm";
+import init, { main } from "../../wasm/pkg/wasm";
 
 const output = qs(".output");
 
