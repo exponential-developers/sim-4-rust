@@ -16,7 +16,7 @@ pub struct Variable<C: Cost, V: Value> {
     pub cost: LogNum,
     pub value: LogNum,
 
-    // Also implement hotab cost stuff if needed
+    // Also implement hotab coast stuff if needed
 }
 
 impl<C: Cost, V: Value> Variable<C, V> {
