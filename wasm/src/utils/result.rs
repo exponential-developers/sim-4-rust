@@ -30,7 +30,7 @@ impl Default for SimResult {
             delta_tau: lognum::ONE,
             pub_multi: 1.,
             strat: "Result undefined".to_owned(),
-            tau_h: 0.,
+            tau_h: 1.,
             time: 1.,
             bought_vars: Vec::new()
         }

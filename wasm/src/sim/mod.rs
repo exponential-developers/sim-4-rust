@@ -1,10 +1,15 @@
+use crate::CONFIG;
 use crate::api::{
-    query::*, response::*
+    config::TheoryType,
+    query::*, 
+    response::*
+};
+use crate::utils::{
+    lognum::{self,LogNum},
+    result::*,
+    settings::*
 };
 
-use crate::CONFIG;
-use crate::utils::lognum::LogNum;
-use crate::utils::result::*;
 
 fn single_sim(query: SingleSimQuery) -> Result<SingleSimResponse, String> {
     Ok(SingleSimResponse { result: SimResult::default() })
@@ -88,7 +93,57 @@ fn step_sim(query: StepSimQuery) -> Result<StepSimResponse, String> {
 }
 
 fn sim_all(query: SimAllQuery) -> Result<SimAllResponse, String> {
-    Err("Not implemented".to_owned())
+    let mut results: Vec<SimAllResult> = Vec::new();
+
+    for (i, rho) in query.values.iter().enumerate() {
+        let theory = 
+            if let Ok(theory) = TheoryType::try_from(i) { theory } 
+            else { continue; };
+        if *rho <= lognum::ONE { continue; };
+
+        let active_res = if query.settings.sim_all_strats != SimAllStrats::Idle {
+            single_sim(SingleSimQuery {
+                theory,
+                strat: if query.very_active { "Best Overall".to_owned() } 
+                        else { "Best Active".to_owned() },
+                sigma: query.sigma,
+                rho: *rho,
+                cap: None,
+                last_strat: None,
+                settings: query.settings.clone()
+            })?.result
+        } else { SimResult::default() };
+
+        let idle_res = if query.settings.sim_all_strats != SimAllStrats::Active {
+            single_sim(SingleSimQuery {
+                theory,
+                strat: if query.semi_idle { "Best Semi-Idle".to_owned() } 
+                        else { "Best Idle".to_owned() },
+                sigma: query.sigma,
+                rho: *rho,
+                cap: None,
+                last_strat: None,
+                settings: query.settings.clone()
+            })?.result
+        } else { SimResult::default() };
+
+        results.push(SimAllResult {
+            theory,
+            ratio: if query.settings.sim_all_strats == SimAllStrats::All {
+                active_res.tau_h / idle_res.tau_h
+            } else { 1. },
+            last_pub: *rho,
+            active: active_res,
+            idle: idle_res
+        })
+    }
+
+    Ok(SimAllResponse {
+        sigma: query.sigma,
+        strat_type: query.settings.sim_all_strats,
+        completed_cts: query.settings.completed_cts,
+        results
+    })
 }
 
 pub fn simulate(query: SimQuery) -> Result<SimResponse, String> {

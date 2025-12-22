@@ -1,7 +1,9 @@
 use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
+use num_enum::TryFromPrimitive;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Deserialize, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Deserialize, Serialize, TryFromPrimitive)]
+#[repr(usize)]
 //#[serde(rename_all = "lowercase")]
 pub enum TheoryType {
     T1,

@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum SimAllStrats {
     All,
@@ -18,12 +18,12 @@ pub enum CompletedCTs {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct SimSettings {
-    dt: f64,
-    ddt: f64,
-    mf_reset_depth: i32,
-    bought_vars_delta: i32,
-    sim_all_strats: SimAllStrats,
-    completed_cts: CompletedCTs,
-    show_a23: bool,
-    show_unofficials: bool
+    pub dt: f64,
+    pub ddt: f64,
+    pub mf_reset_depth: i32,
+    pub bought_vars_delta: i32,
+    pub sim_all_strats: SimAllStrats,
+    pub completed_cts: CompletedCTs,
+    pub show_a23: bool,
+    pub show_unofficials: bool
 }

@@ -49,8 +49,8 @@ async function simCall() {
 
   try {
     const query = parseQuery();
-    //console.log(test(formatSimQuery(query)));
     const APIresponse = main(formatSimQuery(query));
+    console.log(APIresponse);
     const parsed_response: API_response = JSON.parse(APIresponse)
     if (parsed_response.response_type == "failure") {
       throw parsed_response.data
