@@ -9,9 +9,11 @@ use std::sync::OnceLock;
 use serde::Serialize;
 use wasm_bindgen::prelude::*;
 
-use api::query::SimQuery;
-use api::response::SimResponse;
-use api::config::Config;
+use api::{
+    query::SimQuery,
+    response::SimResponse,
+    config::Config
+};
 use sim::simulate;
 
 static CONFIG: OnceLock<Config> = OnceLock::new();

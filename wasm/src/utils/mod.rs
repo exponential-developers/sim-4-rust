@@ -1,9 +1,11 @@
 pub mod lognum;
-pub mod cost;
-pub mod value;
 pub mod complex_lognum;
 
+pub mod cost;
+pub mod value;
+pub mod variable;
 pub mod currency;
+
 pub mod var_buy;
 pub mod settings;
 pub mod result;

@@ -199,6 +199,10 @@ impl LogNum {
     pub fn powf64(self, rhs: f64) -> Self {
         LogNum::new(self.value * rhs, (self.sign as f64).powf(rhs) as i8)
     }
+
+    pub fn log10_f64(self) -> f64 {
+        self.value
+    }
 }
 
 impl Zero for LogNum {

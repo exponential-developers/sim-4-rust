@@ -61,7 +61,7 @@ fn chain_sim(query: ChainSimQuery) -> Result<ChainSimResponse, String> {
     Ok(ChainSimResponse {
         results,
         delta_tau,
-        average_rate: delta_tau.value / (time / 3600.),
+        average_rate: delta_tau.log10_f64() / (time / 3600.),
         total_time: time
     })
 }

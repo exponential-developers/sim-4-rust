@@ -3,7 +3,7 @@ use num::Float;
 use crate::utils::lognum::LogNum;
 
 pub trait Cost {
-    fn get_cost(self, level: i32) -> LogNum;
+    fn get_cost(&self, level: i32) -> LogNum;
 }
 
 
@@ -27,7 +27,7 @@ impl<T: Cost, U: Cost> CompositeCost<T, U> {
 }
 
 impl<T: Cost, U: Cost> Cost for CompositeCost<T, U> {
-    fn get_cost(self, level: i32) -> LogNum {
+    fn get_cost(&self, level: i32) -> LogNum {
         if level < self.cutoff {
             self.model1.get_cost(level)
         } else {
@@ -53,7 +53,7 @@ impl ExponentialCost {
 }
 
 impl Cost for ExponentialCost {
-    fn get_cost(self, level: i32) -> LogNum {
+    fn get_cost(&self, level: i32) -> LogNum {
         self.base * self.increase.powi(level)
     }
 }
@@ -74,7 +74,7 @@ impl<T: Cost> StepwiseCost<T> {
 }
 
 impl<T: Cost> Cost for StepwiseCost<T> {
-    fn get_cost(self, level: i32) -> LogNum {
+    fn get_cost(&self, level: i32) -> LogNum {
         self.model.get_cost(level / self.step)
     }
 }
@@ -94,7 +94,7 @@ impl ConstantCost {
 }
 
 impl Cost for ConstantCost {
-    fn get_cost(self, _level: i32) -> LogNum {
+    fn get_cost(&self, _level: i32) -> LogNum {
         self.cost
     }
 }
@@ -111,7 +111,7 @@ impl<T: Cost> FirstFreeCost<T> {
 }
 
 impl<T: Cost> Cost for FirstFreeCost<T> {
-    fn get_cost(self, level: i32) -> LogNum {
+    fn get_cost(&self, level: i32) -> LogNum {
         if level <= 0 {
             -LogNum::min_positive_value()
         }

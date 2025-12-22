@@ -3,9 +3,9 @@ use num::Float;
 use crate::utils::lognum::{self, LogNum};
 
 pub trait Value {
-    fn recompute(self, level: i32) -> LogNum;
+    fn recompute(&self, level: i32) -> LogNum;
 
-    fn compute_new(self, _old_value: LogNum, current_level: i32) -> LogNum;
+    fn compute_new(&self, old_value: LogNum, current_level: i32) -> LogNum;
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -26,7 +26,7 @@ impl StepwisePowerSumValue {
 }
 
 impl Value for StepwisePowerSumValue {
-    fn recompute(self, level: i32) -> LogNum {
+    fn recompute(&self, level: i32) -> LogNum {
         let int_part = level / self.length;
         let mod_part = level % self.length;
         let d = LogNum::from(self.length) / (self.base - lognum::ONE);
@@ -34,7 +34,7 @@ impl Value for StepwisePowerSumValue {
         (d + LogNum::from(mod_part)) * self.base.powi(int_part) - d + self.offset
     }
 
-    fn compute_new(self, old_value: LogNum, current_level: i32) -> LogNum {
+    fn compute_new(&self, old_value: LogNum, current_level: i32) -> LogNum {
         old_value + self.base.powi(current_level / self.length)
     }
 }
@@ -53,11 +53,11 @@ impl ExponentialValue {
 }
 
 impl Value for ExponentialValue {
-    fn recompute(self, level: i32) -> LogNum {
+    fn recompute(&self, level: i32) -> LogNum {
         self.power.powi(level)
     }
 
-    fn compute_new(self, old_value: LogNum, _current_level: i32) -> LogNum {
+    fn compute_new(&self, old_value: LogNum, _current_level: i32) -> LogNum {
         old_value * self.power
     }
 }
@@ -78,11 +78,11 @@ impl LinearValue {
 }
 
 impl Value for LinearValue {
-    fn recompute(self, level: i32) -> LogNum {
+    fn recompute(&self, level: i32) -> LogNum {
         self.offset + LogNum::from(level) * self.power
     }
 
-    fn compute_new(self, old_value: LogNum, _current_level: i32) -> LogNum {
+    fn compute_new(&self, old_value: LogNum, _current_level: i32) -> LogNum {
         old_value + self.power
     }
 }
