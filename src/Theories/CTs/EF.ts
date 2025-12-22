@@ -110,7 +110,7 @@ class efSim extends theoryClass<theory> {
     return conditions;
   }
   getTotMult(val: number) {
-    return Math.max(0, val * this.tauFactor * 0.09675);
+    return Math.max(0, val * this.tau_factor * 0.09675);
   }
   getMilestonePriority(): number[] {
     return [0, 1, 2, 3, 4];

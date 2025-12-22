@@ -10,7 +10,7 @@ declare global {
 
   type TheoryDataStructure = {
     [key: string]: {
-      tauFactor: number;
+      tau_factor: number;
       UI_visible?: boolean;
       strats: {
         [key: string]: {

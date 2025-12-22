@@ -1,13 +1,14 @@
 use serde::Serialize;
 
 use crate::utils::{
-    lognum::LogNum,
+    lognum::{self, LogNum},
     var_buy::VarBuy
 };
+use crate::api::config::TheoryType;
 
 #[derive(Debug, Clone, Serialize)]
 pub struct SimResult {
-    pub theory: String, // Maybe change to enum later
+    pub theory: TheoryType,
     pub sigma: i64, // Type could change
     pub last_pub: LogNum,
     pub pub_rho: LogNum,
@@ -19,9 +20,26 @@ pub struct SimResult {
     pub bought_vars: Vec<VarBuy>
 }
 
+impl Default for SimResult {
+    fn default() -> Self {
+        SimResult {
+            theory: TheoryType::T1,
+            sigma: 0,
+            last_pub: lognum::ONE,
+            pub_rho: lognum::ONE,
+            delta_tau: lognum::ONE,
+            pub_multi: 1.,
+            strat: "Result undefined".to_owned(),
+            tau_h: 0.,
+            time: 1.,
+            bought_vars: Vec::new()
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize)]
 pub struct SimAllResult {
-    pub theory: String,
+    pub theory: TheoryType,
     pub ratio: f64,
     pub last_pub: LogNum,
     pub active: SimResult,

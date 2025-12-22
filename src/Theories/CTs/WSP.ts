@@ -104,7 +104,7 @@ class wspSim extends theoryClass<theory> {
     return [2, 1, 0];
   }
   getTotMult(val: number): number {
-    return Math.max(0, val * this.tauFactor * 0.375);
+    return Math.max(0, val * this.tau_factor * 0.375);
   }
   srK_helper(x: number): number {
     const x2 = x * x;

@@ -48,7 +48,7 @@ const simFunction: { [key in theoryType]: ((data: theoryData) => Promise<simResu
 }
 
 async function singleSim(query: SingleSimQuery): Promise<SingleSimResponse> {
-    const strats = jsonData.stratCategories.includes(query.strat) 
+    const strats = jsonData.strat_categories.includes(query.strat) 
         ? getStrats(query.theory, query.rho, query.strat, query.last_strat ?? "")
         : [query.strat];
 
@@ -108,7 +108,7 @@ async function chainSim(query: ChainSimQuery): Promise<ChainSimResponse> {
         time += res.time;
     }
 
-    const deltaTau = (rho - query.rho) * jsonData.theories[query.theory].tauFactor;
+    const deltaTau = (rho - query.rho) * jsonData.theories[query.theory].tau_factor;
 
     return {
         responseType: "chain",

@@ -202,7 +202,7 @@ class mfSim extends theoryClass<theory> {
   }
 
   getTotMult(val: number): number {
-    return val < this.pubUnlock ? 0 : Math.max(0, val * this.tauFactor * 0.17);
+    return val < this.pubUnlock ? 0 : Math.max(0, val * this.tau_factor * 0.17);
   }
 
   getMilestonePriority(): number[] {

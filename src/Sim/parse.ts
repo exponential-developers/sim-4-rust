@@ -66,7 +66,7 @@ function parseCurrency(str: string, theory: theoryType, sigma: number, defaultTy
     let value = parseExponentialValue(str);
 
     if (type == 't') {
-        return value / jsonData.theories[theory].tauFactor;
+        return value / jsonData.theories[theory].tau_factor;
     }
     else if (type == 'm') {
         return reverseMulti(theory, value, sigma);
@@ -153,7 +153,7 @@ function parseSimAll(): SimAllQuery {
 
     values = values.map((val, i) => {
         const theory = getTheoryFromIndex(i);
-        if (settings.completed_cts === "no" && i > 8 && val * jsonData.theories[theory].tauFactor >= 600) return 0;
+        if (settings.completed_cts === "no" && i > 8 && val * jsonData.theories[theory].tau_factor >= 600) return 0;
         if (!settings.show_unofficials && (jsonData.theories as TheoryDataStructure)[theory].UI_visible === false) return 0;
         return val;
     })

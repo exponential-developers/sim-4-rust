@@ -108,7 +108,7 @@ class fiSim extends theoryClass<theory> {
   }
 
   getTotMult(val: number): number {
-    return Math.max(0, val * this.tauFactor * 0.1625);
+    return Math.max(0, val * this.tau_factor * 0.1625);
   }
   getMilestonePriority(): number[] {
     const rho = Math.max(this.maxRho, this.lastPub);

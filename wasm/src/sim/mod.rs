@@ -1,11 +1,13 @@
 use crate::api::{
     query::*, response::*
 };
+
+use crate::CONFIG;
 use crate::utils::lognum::LogNum;
 use crate::utils::result::*;
 
 fn single_sim(query: SingleSimQuery) -> Result<SingleSimResponse, String> {
-    Err("Not implemented".to_owned())
+    Ok(SingleSimResponse { result: SimResult::default() })
 }
 
 fn chain_sim(query: ChainSimQuery) -> Result<ChainSimResponse, String> {
@@ -26,6 +28,20 @@ fn chain_sim(query: ChainSimQuery) -> Result<ChainSimResponse, String> {
             last_strat: Some(last_strat.clone())
         })?.result;
 
+        // Test result to test functionnality
+        let res = SimResult {
+            theory: query.theory,
+            sigma: query.sigma,
+            last_pub: rho,
+            pub_rho: rho * LogNum::from(10.),
+            delta_tau: LogNum::from(10.),
+            pub_multi: 2.718,
+            strat: "TEST".to_owned(),
+            tau_h: 3.1415,
+            time: 3600.,
+            bought_vars: Vec::new()
+        };
+
         rho = res.pub_rho;
         time += res.time;
         last_strat.clear();
@@ -33,9 +49,16 @@ fn chain_sim(query: ChainSimQuery) -> Result<ChainSimResponse, String> {
         results.push(res);
     }
 
-    //...
+    let delta_tau = (rho / query.rho).powf64(
+        CONFIG.get().unwrap().theories.get(&query.theory).unwrap().tau_factor
+    );
 
-    Err("Not Implemented".to_owned())
+    Ok(ChainSimResponse {
+        results,
+        delta_tau,
+        average_rate: delta_tau.value / (time / 3600.),
+        total_time: time
+    })
 }
 
 fn step_sim(query: StepSimQuery) -> Result<StepSimResponse, String> {

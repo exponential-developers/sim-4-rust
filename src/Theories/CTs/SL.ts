@@ -143,7 +143,7 @@ class slSim extends theoryClass<theory> {
     return conditions;
   }
   getTotMult(val: number): number {
-    return Math.max(0, val * this.tauFactor * 0.375);
+    return Math.max(0, val * this.tau_factor * 0.375);
   }
   getMilestonePriority(): number[] {
     const maxVal = Math.max(this.lastPub, this.maxRho);

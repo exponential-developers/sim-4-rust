@@ -1,5 +1,6 @@
 use serde::Deserialize;
 
+use crate::api::config::TheoryType;
 use crate::utils::{
     lognum::LogNum,
     settings::SimSettings
@@ -7,7 +8,7 @@ use crate::utils::{
 
 #[derive(Debug, Deserialize)]
 pub struct SingleSimQuery {
-    pub theory: String, // Maybe change to an enum later
+    pub theory: TheoryType, // Maybe change to an enum later
     pub strat: String,
     pub sigma: i64, // Type could change
     pub rho: LogNum,
@@ -18,7 +19,7 @@ pub struct SingleSimQuery {
 
 #[derive(Debug, Deserialize)]
 pub struct ChainSimQuery {
-    pub theory: String, // Maybe change to an enum later
+    pub theory: TheoryType, // Maybe change to an enum later
     pub strat: String,
     pub sigma: i64, // Type could change
     pub rho: LogNum,
@@ -29,7 +30,7 @@ pub struct ChainSimQuery {
 
 #[derive(Debug, Deserialize)]
 pub struct StepSimQuery {
-    pub theory: String, // Maybe change to an enum later
+    pub theory: TheoryType, // Maybe change to an enum later
     pub strat: String,
     pub sigma: i64, // Type could change
     pub rho: LogNum,

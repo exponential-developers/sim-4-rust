@@ -17,7 +17,7 @@ export default abstract class theoryClass<theory extends theoryType> {
   /** Current strategy */
   readonly strat: stratType[theory];
   /** tau/rho conversion rate */
-  readonly tauFactor: number;
+  readonly tau_factor: number;
   /** Sim settings used in the simulation */
   readonly settings: Settings;
 
@@ -138,7 +138,7 @@ export default abstract class theoryClass<theory extends theoryType> {
     this.bestForkRes = defaultResult();
     this.theory = data.theory;
     this.strat = data.strat as stratType[theory];
-    this.tauFactor = jsonData.theories[data.theory].tauFactor;
+    this.tau_factor = jsonData.theories[data.theory].tau_factor;
     this.settings = data.settings;
     this.prevMilestoneCount = -1;
 
@@ -308,7 +308,7 @@ export default abstract class theoryClass<theory extends theoryType> {
     this.updateT();
     if (this.maxRho < this.recovery.value) this.recovery.time = this.t;
 
-    this.tauH = this.tauFactor * (this.maxRho - this.lastPub) / (this.t / 3600);
+    this.tauH = this.tau_factor * (this.maxRho - this.lastPub) / (this.t / 3600);
     if (this.maxTauH < this.tauH || !this.evaluateForcedPubConditions() || this.evaluatePubConditions()) {
       this.maxTauH = this.tauH;
       this.pubT = this.t;
@@ -460,7 +460,7 @@ export default abstract class theoryClass<theory extends theoryType> {
       sigma: this.sigma,
       last_pub: this.lastPub,
       pub_rho: this.pubRho,
-      delta_tau: (this.pubRho - this.lastPub) * this.tauFactor,
+      delta_tau: (this.pubRho - this.lastPub) * this.tau_factor,
       pub_multi: 10 ** (this.getTotMult(this.pubRho) - this.totMult),
       strat: this.strat as String + stratExtra,
       tau_h: this.maxTauH,

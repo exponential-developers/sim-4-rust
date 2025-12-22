@@ -179,7 +179,7 @@ function writeSimAllResponse(response: SimAllResponse) {
             sets[0].push(res);
         }
         else {
-            if (response.completed_cts === "end" && res.last_pub * jsonData.theories[res.theory].tauFactor >= 600) {
+            if (response.completed_cts === "end" && res.last_pub * jsonData.theories[res.theory].tau_factor >= 600) {
                 sets[2].push(res);
             }
             else sets[1].push(res);

@@ -4,7 +4,8 @@ import { writeSimResponse } from "./write";
 import { setSimState } from "../UI/simState";
 import { qs, event } from "../Utils/DOMhelpers";
 
-import init, { main } from "../../wasm/pkg/wasm";
+import jsonData from "../Data/data.json" assert { type: "json" };
+import init, { main, set_config } from "../../wasm/pkg/wasm";
 
 const output = qs(".output");
 
@@ -69,3 +70,5 @@ async function simCall() {
 }
 
 event(simulateButton, "click", simCall);
+
+console.log(set_config(JSON.stringify(jsonData)));

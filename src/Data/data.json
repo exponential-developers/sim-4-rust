@@ -1,7 +1,7 @@
 {
   "theories": {
     "T1": {
-      "tauFactor": 1,
+      "tau_factor": 1,
       "strats": {
         "T1": {
           "stratFilterCondition": "(Idle || Semi-Idle) && rho < 25 || rho < 25"
@@ -40,7 +40,7 @@
       }
     },
     "T2": {
-      "tauFactor": 1,
+      "tau_factor": 1,
       "strats": {
         "T2": {
           "stratFilterCondition": "Idle || rho < 25"
@@ -66,7 +66,7 @@
       }
     },
     "T3": {
-      "tauFactor": 1,
+      "tau_factor": 1,
       "strats": {
         "T3Play2": {
           "stratFilterCondition": "Very-Active && rho > 250 ",
@@ -142,7 +142,7 @@
       }
     },
     "T4": {
-      "tauFactor": 1,
+      "tau_factor": 1,
       "strats": {
         "T4C3dcoast2": {
           "stratFilterCondition": "(Active || Very-Active) && rho >= 240"
@@ -198,7 +198,7 @@
       }
     },
     "T5": {
-      "tauFactor": 1,
+      "tau_factor": 1,
       "strats": {
         "T5": {
           "stratFilterCondition": "Idle || rho < 25"
@@ -218,7 +218,7 @@
       }
     },
     "T6": {
-      "tauFactor": 1,
+      "tau_factor": 1,
       "strats": {
         "T6": {
           "stratFilterCondition": "rho < 25"
@@ -294,7 +294,7 @@
       }
     },
     "T7": {
-      "tauFactor": 1,
+      "tau_factor": 1,
       "strats": {
         "T7": {
           "stratFilterCondition": "false"
@@ -365,7 +365,7 @@
       }
     },
     "T8": {
-      "tauFactor": 1,
+      "tau_factor": 1,
       "strats": {
         "T8": {
           "stratFilterCondition": "Idle || (Semi-Idle && rho < 100)"
@@ -412,7 +412,7 @@
       }
     },
     "WSP": {
-      "tauFactor": 0.4,
+      "tau_factor": 0.4,
       "strats": {
         "WSP": {
           "stratFilterCondition": "(Idle || Semi-Idle) && rho < 525"
@@ -435,7 +435,7 @@
       }
     },
     "SL": {
-      "tauFactor": 0.4,
+      "tau_factor": 0.4,
       "strats": {
         "SL": {
           "stratFilterCondition": "Idle || rho < 25"
@@ -461,7 +461,7 @@
       }
     },
     "EF": {
-      "tauFactor": 1.6,
+      "tau_factor": 1.6,
       "strats": {
         "EF": {
           "stratFilterCondition": "Idle || rho < 10"
@@ -478,7 +478,7 @@
       }
     },
     "CSR2": {
-      "tauFactor": 0.4,
+      "tau_factor": 0.4,
       "strats": {
         "CSR2": {
           "stratFilterCondition": "rho < 10 || Idle || (Semi-Idle && (rho < 500 || rho >= 1499))"
@@ -498,7 +498,7 @@
       }
     },
     "FI":{
-      "tauFactor":0.4,
+      "tau_factor":0.4,
       "strats":{
         "FI":{
           "stratFilterCondition":"Idle || Semi-Idle || rho <= 30"
@@ -551,7 +551,7 @@
       }}
     ,
     "FP": {
-      "tauFactor": 0.3,
+      "tau_factor": 0.3,
       "strats": {
         "FP": {
           "stratFilterCondition": "Idle || (Semi-Idle && (rho < 1200 || rho >= 1990)) || rho <= 20"
@@ -574,7 +574,7 @@
       }
     },
     "RZ": {
-      "tauFactor": 0.4,
+      "tau_factor": 0.4,
       "strats": {
         "RZ": {
           "stratFilterCondition": "Idle || Semi-Idle"
@@ -609,7 +609,7 @@
       }
     },
     "MF": {
-      "tauFactor": 1,
+      "tau_factor": 1,
       "strats": {
         "MF": {
           "stratFilterCondition": "false"
@@ -683,7 +683,7 @@
       }
     },
     "BaP": {
-      "tauFactor": 0.4,
+      "tau_factor": 0.4,
       "strats": {
         "BaP": {
           "stratFilterCondition": "Idle || Semi-Idle"
@@ -710,7 +710,7 @@
       }
     },
     "BT": {
-      "tauFactor": 0.4,
+      "tau_factor": 0.4,
       "UI_visible":false,
       "strats": {
         "BT": {
@@ -722,7 +722,7 @@
       }
     },
     "TC": {
-      "tauFactor": 0.45,
+      "tau_factor": 0.45,
       "UI_visible":false,
       "strats": {
         "TC": {
@@ -734,7 +734,7 @@
       }
     }
   },
-  "stratCategories": ["Best Overall", "Best Active", "Best Semi-Idle", "Best Idle"],
+  "strat_categories": ["Best Overall", "Best Active", "Best Semi-Idle", "Best Idle"],
   "modes": ["All", "Single sim", "Chain", "Steps", "Amount", "Time", "Time diff."],
   "modeInputDescriptions": ["", "", "", "Step length: ", "Amount of pubs (Chain): ", "Total Time: "],
   "modeInputPlaceholder": [
