@@ -7,44 +7,44 @@ use crate::utils::{
 
 #[derive(Debug, Deserialize)]
 pub struct SingleSimQuery {
-    theory: String, // Maybe change to an enum later
-    strat: String,
-    sigma: i64, // Type could change
-    rho: LogNum,
-    cap: Option<LogNum>,
-    last_strat: Option<String>,
-    settings: SimSettings
+    pub theory: String, // Maybe change to an enum later
+    pub strat: String,
+    pub sigma: i64, // Type could change
+    pub rho: LogNum,
+    pub cap: Option<LogNum>,
+    pub last_strat: Option<String>,
+    pub settings: SimSettings
 }
 
 #[derive(Debug, Deserialize)]
 pub struct ChainSimQuery {
-    theory: String, // Maybe change to an enum later
-    strat: String,
-    sigma: i64, // Type could change
-    rho: LogNum,
-    cap: LogNum,
-    hard_cap: bool,
-    settings: SimSettings
+    pub theory: String, // Maybe change to an enum later
+    pub strat: String,
+    pub sigma: i64, // Type could change
+    pub rho: LogNum,
+    pub cap: LogNum,
+    pub hard_cap: bool,
+    pub settings: SimSettings
 }
 
 #[derive(Debug, Deserialize)]
 pub struct StepSimQuery {
-    theory: String, // Maybe change to an enum later
-    strat: String,
-    sigma: i64, // Type could change
-    rho: LogNum,
-    cap: LogNum,
-    step: LogNum,
-    settings: SimSettings
+    pub theory: String, // Maybe change to an enum later
+    pub strat: String,
+    pub sigma: i64, // Type could change
+    pub rho: LogNum,
+    pub cap: LogNum,
+    pub step: LogNum,
+    pub settings: SimSettings
 }
 
 #[derive(Debug, Deserialize)]
 pub struct SimAllQuery {
-    values: Vec<LogNum>,
-    sigma: i64, // Type could change
-    very_active: bool,
-    semi_idle: bool,
-    settings: SimSettings
+    pub values: Vec<LogNum>,
+    pub sigma: i64, // Type could change
+    pub very_active: bool,
+    pub semi_idle: bool,
+    pub settings: SimSettings
 }
 
 #[derive(Debug, Deserialize)]
