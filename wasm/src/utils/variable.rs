@@ -23,30 +23,30 @@ impl<C: Cost, V: Value> Variable<C, V> {
     pub fn new(name: &str, cost_model: C, value_model: V) -> Self {
         let mut var = Variable {
             name: name.to_owned(),
-            cost_model: cost_model,
-            value_model: value_model,
+            cost_model,
+            value_model,
             level: 0,
             cost: lognum::ZERO,
             value: lognum::ZERO
         };
-        var.recompute();
+        var.compute_from_zero();
 
         var
     }
 
-    pub fn recompute(&mut self) {
+    pub fn compute_from_zero(&mut self) {
         self.cost = self.cost_model.get_cost(self.level);
-        self.value = self.value_model.recompute(self.level);
+        self.value = self.value_model.compute_from_zero(self.level);
     }
 
     pub fn buy(&mut self) {
-        self.value = self.value_model.compute_new(self.value, self.level);
+        self.value = self.value_model.compute_next(self.value, self.level);
         self.level += 1;
         self.cost = self.cost_model.get_cost(self.level);
     }
 
     pub fn set(&mut self, level: i32) {
         self.level = level;
-        self.recompute();
+        self.compute_from_zero();
     }
 }

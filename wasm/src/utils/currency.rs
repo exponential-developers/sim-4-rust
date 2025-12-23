@@ -14,10 +14,10 @@ impl Currency {
         }
     }
 
-    pub fn new(symb: &str) -> Self {
+    pub fn new(symbol: &str) -> Self {
         Currency {
             value: lognum::ZERO,
-            symbol: symb.to_owned()
+            symbol: symbol.to_owned()
         }
     }
 

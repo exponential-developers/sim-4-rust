@@ -33,7 +33,7 @@ fn chain_sim(query: ChainSimQuery) -> Result<ChainSimResponse, String> {
             last_strat: Some(last_strat.clone())
         })?.result;
 
-        // Test result to test functionnality
+        // Test result to test functionality
         let res = SimResult {
             theory: query.theory,
             sigma: query.sigma,
