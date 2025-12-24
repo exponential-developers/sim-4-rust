@@ -6,10 +6,10 @@ use crate::utils::{
 };
 
 #[derive(Debug, Clone)]
-pub struct Variable<C: Cost, V: Value> {
+pub struct Variable {
     pub name: String,
-    pub cost_model: C,
-    pub value_model: V,
+    pub cost_model: Cost,
+    pub value_model: Value,
     // may or may not be implemented
     //pub currency: &'a Currency,
     pub level: i32,
@@ -19,8 +19,8 @@ pub struct Variable<C: Cost, V: Value> {
     // Also implement hotab coast stuff if needed
 }
 
-impl<C: Cost, V: Value> Variable<C, V> {
-    pub fn new(name: &str, cost_model: C, value_model: V) -> Self {
+impl Variable {
+    pub fn new(name: &str, cost_model: Cost, value_model: Value) -> Self {
         let mut var = Variable {
             name: name.to_owned(),
             cost_model,
