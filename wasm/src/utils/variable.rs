@@ -5,6 +5,7 @@ use crate::utils::{
     //currency::Currency
 };
 
+/** Holds a representation of a upgradable variable */
 #[derive(Debug, Clone)]
 pub struct Variable {
     pub name: String,
@@ -20,6 +21,7 @@ pub struct Variable {
 }
 
 impl Variable {
+    /** Creates a new variable */
     pub fn new(name: &str, cost_model: Cost, value_model: Value) -> Self {
         let mut var = Variable {
             name: name.to_owned(),
@@ -34,17 +36,20 @@ impl Variable {
         var
     }
 
+    /** Updates the cost and the value */
     pub fn compute_from_zero(&mut self) {
         self.cost = self.cost_model.get_cost(self.level);
         self.value = self.value_model.compute_from_zero(self.level);
     }
 
+    /** Performs a purchase of the variable, updating its cost and value */
     pub fn buy(&mut self) {
         self.value = self.value_model.compute_next(self.value, self.level);
         self.level += 1;
         self.cost = self.cost_model.get_cost(self.level);
     }
 
+    /** Sets the variable to the given level, updating its cost and value */
     pub fn set(&mut self, level: i32) {
         self.level = level;
         self.compute_from_zero();

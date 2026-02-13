@@ -16,6 +16,7 @@ use api::{
 };
 use sim::simulate;
 
+/** Holds the configuration on the sim (data.json) */
 static CONFIG: OnceLock<Config> = OnceLock::new();
 const DEFAULT_ERR: &str = "{\"response_type\": \"failure\", \"data\":\"API Error\"}";
 
@@ -26,6 +27,9 @@ enum ApiResponse {
     Failure(String)
 }
 
+/**
+ * Sets the config (data.json) for the wasm module
+ */
 #[wasm_bindgen] 
 pub fn set_config(config: &str) -> String { 
     let cfg: Config = serde_json::from_str(config).unwrap(); 
@@ -39,6 +43,9 @@ fn create_error(msg: &str) -> String {
         .unwrap_or(DEFAULT_ERR.to_owned())
 }
 
+/**
+ * Main API function of the wasm module
+ */
 #[wasm_bindgen]
 #[allow(unused_variables)]
 pub fn main(input: &str) -> String {

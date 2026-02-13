@@ -1,5 +1,10 @@
+/**
+ * Currency structure
+ */
+
 use crate::utils::lognum::{self,LogNum};
 
+/** Struct representing a currency with a value and a symbol */
 #[derive(Debug, Clone)]
 pub struct Currency {
     value: LogNum,

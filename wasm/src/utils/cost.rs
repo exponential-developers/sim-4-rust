@@ -1,9 +1,14 @@
+/**
+ * Cost models
+ */
+
 use std::fmt::Debug;
 use num::Float;
 use dyn_clone::DynClone;
 
 use crate::utils::lognum::{self, LogNum};
 
+/** Trait for cost models */
 pub trait CostTrait: DynClone + Debug {
     /**
      * Cost to get from (level-1) to (level)
@@ -182,6 +187,7 @@ impl<T: CostTrait + Clone> CostTrait for FirstFreeCost<T> {
     }
 }
 
+/** enum holding different cost models */
 #[derive(Debug, Clone)]
 pub enum Cost {
     Exponential(ExponentialCost),

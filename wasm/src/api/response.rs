@@ -1,3 +1,8 @@
+/**
+ * Contains structures for the different types of responses that can be replied by the wasm module
+ */
+
+
 use serde::Serialize;
 
 use crate::utils::{

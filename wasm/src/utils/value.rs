@@ -1,12 +1,19 @@
+/**
+ * Value models
+ */
+
 use std::fmt::Debug;
 use num::Float;
 use dyn_clone::DynClone;
 
 use crate::utils::lognum::{self, LogNum};
 
+/** Trait for cost models */
 pub trait ValueTrait: DynClone + Debug {
+    /** Computes the value for the given level */
     fn compute_from_zero(&self, level: i32) -> LogNum;
 
+    /** Computes the value for the next level from the previous value*/
     fn compute_next(&self, old_value: LogNum, current_level: i32) -> LogNum;
 }
 dyn_clone::clone_trait_object!(ValueTrait);
@@ -98,6 +105,7 @@ pub enum Value {
     Other(Box<dyn ValueTrait>)
 }
 
+/** enum holding different value models */
 impl Value {
     pub fn new_stepwise(base: impl Into<LogNum>, length: i32, offset: impl Into<LogNum>) -> Self {
         Self::Stepwise(StepwisePowerSumValue::new(base, length, offset))

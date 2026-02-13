@@ -8,9 +8,11 @@ use serde::{Deserialize, Serialize, de};
 
 use num::{Float, Num, NumCast, One, ToPrimitive, Zero};
 
+/** struct representing a number in logarithmic form */
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct LogNum {
     pub value: f64,
+    /** +1 for positive, -1 for negative */
     pub sign: i8,
 }
 
@@ -21,6 +23,7 @@ pub const ZERO: LogNum = LogNum {
 pub const ONE: LogNum = LogNum { value: 0., sign: 1 };
 
 impl LogNum {
+    /** converts a f64 into a LogNum */
     pub fn from_f64(value: f64) -> Self {
         LogNum {
             value: value.abs().log10(),
@@ -86,6 +89,7 @@ impl Display for LogNum {
 }
 
 impl LogNum {
+    /** creates a new LogNum from a log10 value and a sign */
     fn new(value: f64, sign: i8) -> Self {
         LogNum { value, sign }
     }
