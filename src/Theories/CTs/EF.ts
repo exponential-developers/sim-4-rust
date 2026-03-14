@@ -153,7 +153,7 @@ class efSim extends theoryClass<theory> {
     return conditions;
   }
   getTotMult(val: number) {
-    return Math.max(0, val * this.tauFactor * 0.09675);
+    return Math.max(0, val * this.tau_factor * 0.09675);
   }
   getMilestonePriority(): number[] {
     return [0, 1, 2, 3, 4];
@@ -269,7 +269,7 @@ class efSim extends theoryClass<theory> {
     const result = this.createResult(
       this.strat !== "EF"
         ? ` q1: ${lastLevels[1]} q2: ${lastLevels[2]} a1: ${lastLevels[7]}` +
-            (this.settings.showA23 ? ` a2: ${lastLevels[8]} a3: ${lastLevels[9]}` : "")
+            (this.settings.show_a23 ? ` a2: ${lastLevels[8]} a3: ${lastLevels[9]}` : "")
         : ""
     );
     return getBestResult(result, this.bestRes);

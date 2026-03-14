@@ -48,8 +48,8 @@ const simFunction: { [key in theoryType]: ((data: theoryData) => Promise<simResu
 }
 
 async function singleSim(query: SingleSimQuery): Promise<SingleSimResponse> {
-    const strats = jsonData.stratCategories.includes(query.strat) 
-        ? getStrats(query.theory, query.rho, query.strat, query.lastStrat ?? "")
+    const strats = jsonData.strat_categories.includes(query.strat) 
+        ? getStrats(query.theory, query.rho, query.strat, query.last_strat ?? "")
         : [query.strat];
 
     let bestRes = defaultResult();
@@ -97,25 +97,25 @@ async function chainSim(query: ChainSimQuery, doLog = true): Promise<ChainSimRes
             rho: rho,
             sigma: query.sigma,
             settings: query.settings,
-            cap: query.hardCap ? query.cap : undefined,
-            lastStrat: lastStrat
+            cap: query.hard_cap ? query.cap : undefined,
+            last_strat: lastStrat
         })).result;
         if (!global.simulating) break;
 
         results.push(res);
-        rho = res.pubRho;
+        rho = res.pub_rho;
         lastStrat = res.strat.split(" ")[0];
         time += res.time;
     }
 
-    const deltaTau = (rho - query.rho) * jsonData.theories[query.theory].tauFactor;
+    const deltaTau = (rho - query.rho) * jsonData.theories[query.theory].tau_factor;
 
     return {
         responseType: "chain",
         results: results,
-        deltaTau: deltaTau,
-        averageRate: deltaTau / (time / 3600),
-        totalTime: time
+        delta_tau: deltaTau,
+        average_rate: deltaTau / (time / 3600),
+        total_time: time
     }
 }
 
@@ -141,7 +141,7 @@ async function stepSim(query: StepSimQuery): Promise<StepSimResponse> {
             rho: rho,
             sigma: query.sigma,
             settings: query.settings,
-            lastStrat: lastStrat
+            last_strat: lastStrat
         })).result;
         if (!global.simulating) break;
 
@@ -176,23 +176,23 @@ async function simAll(query: SimAllQuery): Promise<SimAllResponse> {
             sigma: query.sigma,
             settings: query.settings
         }
-        const activeRes = query.stratType != "idle"
+        const activeRes = query.strat_type != "idle"
             ? (await singleSim({
-                strat: query.veryActive ? "Best Overall" : "Best Active",
+                strat: query.very_active ? "Best Overall" : "Best Active",
                 ...queryData
             })).result
             : defaultResult();
-        const idleRes = query.stratType != "active"
+        const idleRes = query.strat_type != "active"
             ? (await singleSim({
-                strat: query.semiIdle ? "Best Semi-Idle" : "Best Idle",
+                strat: query.semi_idle ? "Best Semi-Idle" : "Best Idle",
                 ...queryData
             })).result
             : defaultResult();
 
         results.push({
             theory: theory,
-            ratio: query.stratType == "all" ? activeRes.tauH / idleRes.tauH : 1,
-            lastPub: rho,
+            ratio: query.strat_type == "all" ? activeRes.tau_h / idleRes.tau_h : 1,
+            last_pub: rho,
             active: activeRes,
             idle: idleRes
         })
@@ -201,8 +201,8 @@ async function simAll(query: SimAllQuery): Promise<SimAllResponse> {
     return {
         responseType: "all",
         sigma: query.sigma,
-        stratType: query.stratType,
-        completedCTs: query.settings.completedCTs,
+        strat_type: query.strat_type,
+        completed_cts: query.settings.completed_cts,
         results: results
     }
 }

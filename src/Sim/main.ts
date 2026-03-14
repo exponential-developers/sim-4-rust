@@ -4,6 +4,9 @@ import { writeSimResponse } from "./write";
 import { setSimState } from "../UI/simState";
 import { qs, event } from "../Utils/DOMhelpers";
 
+import jsonData from "../Data/data.json" assert { type: "json" };
+import init, { main, set_config } from "../../wasm/pkg/wasm";
+
 const output = qs(".output");
 
 //Buttons
@@ -13,6 +16,25 @@ export const global = {
   stratFilter: true,
   simulating: false,
 };
+
+/**
+ * Formats a sim query to a JSON string the wasm module can parse
+ * @param query SimQuery
+ * @returns JSON string
+ */
+function formatSimQuery(query: SimQuery): string {
+    return JSON.stringify({
+        "type": query.queryType,
+        "data": query
+    })
+}
+// Removing this any is a bit annoying, will do it later -Mathis
+function formatSimResponse(response: any): SimResponse {
+    return {
+      "responseType": response.type,
+      ...response.data
+    }
+}
 
 async function simCall() {
   if (global.simulating) {
@@ -27,9 +49,16 @@ async function simCall() {
 
   try {
     const query = parseQuery();
-    const response = await simulate(query);
-    writeSimResponse(response);
-    output.textContent = "";
+    const APIresponse = main(formatSimQuery(query));
+    console.log(APIresponse);
+    const parsed_response: API_response = JSON.parse(APIresponse)
+    if (parsed_response.response_type == "failure") {
+      throw parsed_response.data
+    }
+    else {
+      writeSimResponse(formatSimResponse(parsed_response.data));
+      output.textContent = "";
+    }
   }
   catch (err) {
     output.textContent = global.simulating ? String(err) : "Sim stopped.";
@@ -41,3 +70,5 @@ async function simCall() {
 }
 
 event(simulateButton, "click", simCall);
+
+console.log(set_config(JSON.stringify(jsonData)));

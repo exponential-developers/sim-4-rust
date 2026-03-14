@@ -24,9 +24,9 @@ export default async function t4(data: theoryData): Promise<simResult> {
     data2.strat = data2.strat.replace("coast2", "");
     const sim1 = new t4Sim(data2);
     const res1 = await sim1.simulate();
-    const lastQ1 = getLastLevel("q1", res1.boughtVars);
-    const lastQ2 = getLastLevel("q2", res1.boughtVars);
-    const lastC3 = getLastLevel("c3", res1.boughtVars);
+    const lastQ1 = getLastLevel("q1", res1.bought_vars);
+    const lastQ2 = getLastLevel("q2", res1.bought_vars);
+    const lastC3 = getLastLevel("c3", res1.bought_vars);
     const sim2 = new t4Sim(data);
     sim2.variables[2].setOriginalCap(lastC3);
     sim2.variables[2].configureCap(3);

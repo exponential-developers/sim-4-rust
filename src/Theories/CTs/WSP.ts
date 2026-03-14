@@ -14,7 +14,7 @@ export default async function wsp(data: theoryData): Promise<simResult> {
     };
     const sim1 = new wspSim(data2);
     const res1 = await sim1.simulate();
-    const lastQ1 = getLastLevel("q1", res1.boughtVars);
+    const lastQ1 = getLastLevel("q1", res1.bought_vars);
     let sim = new wspSim(data);
     sim.variables[0].setOriginalCap(lastQ1);
     if(data.strat.includes("WSPd")) {
@@ -106,7 +106,7 @@ class wspSim extends theoryClass<theory> {
     return [2, 1, 0];
   }
   getTotMult(val: number): number {
-    return Math.max(0, val * this.tauFactor * 0.375);
+    return Math.max(0, val * this.tau_factor * 0.375);
   }
   srK_helper(x: number): number {
     const x2 = x * x;

@@ -31,13 +31,13 @@ function parseSettings(): Settings {
     return {
         dt: parseFloat(dtOtp.textContent ?? "1.5"),
         ddt: parseFloat(ddtOtp.textContent ?? "1.0001"),
-        mfResetDepth: parseInt(mfDepthOtp.textContent ?? "0"),
-        boughtVarsDelta: parseInt(boughtVarsDeltaSlider.value),
+        mf_reset_depth: parseInt(mfDepthOtp.textContent ?? "0"),
+        bought_vars_delta: parseInt(boughtVarsDeltaSlider.value),
         theme: themeSelector.value,
-        simAllStrats: simAllStrats.value as SettingsSimAllStratsMode,
-        completedCTs: completedCTs.value as SettingsCompletedCTsMode,
-        showA23: showA23.checked,
-        showUnofficials: showUnofficials.checked,
+        sim_all_strats: simAllStrats.value as SettingsSimAllStratsMode,
+        completed_cts: completedCTs.value as SettingsCompletedCTsMode,
+        show_a23: showA23.checked,
+        show_unofficials: showUnofficials.checked
         totalPurchaseList: generateTotalPurchaseList.checked
     }
 }
@@ -68,7 +68,7 @@ function parseCurrency(str: string, theory: theoryType, sigma: number, defaultTy
     let value = parseExponentialValue(str);
 
     if (type == 't') {
-        return value / jsonData.theories[theory].tauFactor;
+        return value / jsonData.theories[theory].tau_factor;
     }
     else if (type == 'm') {
         return reverseMulti(theory, value, sigma);
@@ -115,7 +115,7 @@ function parseChainSim(): ChainSimQuery {
         sigma: sigma,
         rho: parseCurrency(currencyInput.value, theory, sigma),
         cap: parseCurrency(capInput.value, theory, sigma),
-        hardCap: hardCap.checked,
+        hard_cap: hardCap.checked,
         settings: parseSettings()
     }
 }
@@ -172,8 +172,8 @@ function parseSimAll(): SimAllQuery {
 
     values = values.map((val, i) => {
         const theory = getTheoryFromIndex(i);
-        if (settings.completedCTs === "no" && i >= 8 && val * jsonData.theories[theory].tauFactor >= 600) return 0;
-        if (!settings.showUnofficials && (jsonData.theories as TheoryDataStructure)[theory].UI_visible === false) return 0;
+        if (settings.completed_cts === "no" && i >= 8 && val * jsonData.theories[theory].tau_factor >= 600) return 0;
+        if (!settings.show_unofficials && (jsonData.theories as TheoryDataStructure)[theory].UI_visible === false) return 0;
         return val;
     })
 
@@ -183,9 +183,9 @@ function parseSimAll(): SimAllQuery {
         queryType: "all",
         sigma: sigma,
         values: values,
-        veryActive: hard_active.checked,
-        semiIdle: semi_idle.checked,
-        stratType: settings.simAllStrats,
+        very_active: hard_active.checked,
+        semi_idle: semi_idle.checked,
+        strat_type: settings.sim_all_strats,
         settings: settings
     }
 }

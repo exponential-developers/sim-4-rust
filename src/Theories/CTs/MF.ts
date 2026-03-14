@@ -422,7 +422,7 @@ class mfSim extends theoryClass<theory> {
   }
 
   getTotMult(val: number): number {
-    return val < this.pubUnlock ? 0 : Math.max(0, val * this.tauFactor * 0.17);
+    return val < this.pubUnlock ? 0 : Math.max(0, val * this.tau_factor * 0.17);
   }
 
   getMilestonePriority(): number[] {
@@ -474,10 +474,10 @@ class mfSim extends theoryClass<theory> {
     this.resets++;
     if (this.resets>1) {
       this.boughtVars.push({
-        variable: 'Reset at V='+this.variables[5].level+","+this.variables[6].level+","+this.variables[7].level+","+this.variables[8].level,
+        var_name: 'Reset at V='+this.variables[5].level+","+this.variables[6].level+","+this.variables[7].level+","+this.variables[8].level,
         level: this.resets-1,
         cost: this.maxRho,
-        timeStamp: this.t
+        timestamp: this.t
       });
     }
     this.goalBundle = this.getGoalBundle();
@@ -494,7 +494,7 @@ class mfSim extends theoryClass<theory> {
 
   constructor(data: theoryData, resetBundle: resetBundle) {
     super(data);
-    this.mfResetDepth = this.settings.mfResetDepth;
+    this.mfResetDepth = this.settings.mf_reset_depth;
     this.c = 0;
     this.x = 0;
     this.i = 0;
@@ -717,17 +717,17 @@ class mfSim extends theoryClass<theory> {
   // This method also removes reliance on this.extraBuyingCondition.
   buyNormalVariables() {
     // let bought = false;
-    let boughtVarsDelta = this.settings.boughtVarsDelta;
+    let boughtVarsDelta = this.settings.bought_vars_delta;
     for (let i = this.normalVariables.length - 1; i >= 0; i--) {
       let currency = this.normalVariables[i].currency ?? this.rho;
       while (true) {
         if (currency.value > this.normalVariables[i].cost && this.buyingConditions[i]() && this.variableAvailability[i]()) {
           if (this.maxRho + boughtVarsDelta > this.lastPub) {
             this.boughtVars.push({
-              variable: this.normalVariables[i].name,
+              var_name: this.normalVariables[i].name,
               level: this.normalVariables[i].level + 1,
               cost: this.normalVariables[i].cost,
-              timeStamp: this.t,
+              timestamp: this.t,
               symbol: currency.symbol
             });
           }
@@ -748,17 +748,17 @@ class mfSim extends theoryClass<theory> {
   // we will always buy as many as we can.
   buyVVariables() {
     // let bought = false;
-    let boughtVarsDelta = this.settings.boughtVarsDelta;
+    let boughtVarsDelta = this.settings.bought_vars_delta;
     for (let i = 8; i >= 5; i--) {
       let currency = this.variables[i].currency ?? this.rho;
       while (true) {
         if (currency.value > this.variables[i].cost && this.variableAvailability[i]()) {
           if (this.maxRho + boughtVarsDelta > this.lastPub) {
             this.boughtVars.push({
-              variable: this.variables[i].name,
+              var_name: this.variables[i].name,
               level: this.variables[i].level + 1,
               cost: this.variables[i].cost,
-              timeStamp: this.t,
+              timestamp: this.t,
               symbol: currency.symbol
             });
           }

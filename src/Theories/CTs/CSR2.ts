@@ -80,7 +80,7 @@ class csr2Sim extends theoryClass<theory> {
     return conditions;
   }
   getTotMult(val: number): number {
-    return Math.max(0, val * this.tauFactor * 0.55075 - l10(200));
+    return Math.max(0, val * this.tau_factor * 0.55075 - l10(200));
   }
   getMilestonePriority(): number[] {
     const c2priority = [1, 2, 0];

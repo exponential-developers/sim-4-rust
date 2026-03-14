@@ -34,7 +34,7 @@ class btSim extends theoryClass<theory> {
     return conditions;
   }
   getTotMult(val: number): number {
-    return Math.max(0, val * this.tauFactor * 1.25);
+    return Math.max(0, val * this.tau_factor * 1.25);
   }
   getMilestonePriority(): number[] {
     return [1, 0, 2, 3];
@@ -71,7 +71,7 @@ class btSim extends theoryClass<theory> {
     const rhodot = this.totMult + vtai + vrao + vtay;
 
     this.rho.add(rhodot + l10(this.dt));
-    if (this.milestones[3] == 1 && Math.max(this.maxRho, this.lastPub) * this.tauFactor < parseLog10String("9e599")) {
+    if (this.milestones[3] == 1 && Math.max(this.maxRho, this.lastPub) * this.tau_factor < parseLog10String("9e599")) {
       this.rho.value = parseLog10String("1.05e1500");
     }
   }

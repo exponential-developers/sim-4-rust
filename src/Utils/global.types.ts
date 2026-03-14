@@ -10,7 +10,7 @@ declare global {
 
   type TheoryDataStructure = {
     [key: string]: {
-      tauFactor: number;
+      tau_factor: number;
       UI_visible?: boolean;
       strats: {
         [key: string]: {
@@ -33,7 +33,7 @@ declare global {
     strat: string;
     rho: number;
     cap?: number;
-    lastStrat?: string;
+    last_strat?: string;
   }
 
   type ChainSimQuery = BaseSimQuery & {
@@ -42,7 +42,7 @@ declare global {
     strat: string;
     rho: number;
     cap: number;
-    hardCap: boolean;
+    hard_cap: boolean;
   }
 
   type StepSimQuery = BaseSimQuery & {
@@ -57,9 +57,9 @@ declare global {
   type SimAllQuery = BaseSimQuery & {
     queryType: "all";
     values: number[];
-    veryActive: boolean;
-    semiIdle: boolean;
-    stratType: SettingsSimAllStratsMode;
+    very_active: boolean;
+    semi_idle: boolean;
+    strat_type: SettingsSimAllStratsMode;
   }
 
   type StepChainQuery = BaseSimQuery & {
@@ -82,9 +82,9 @@ declare global {
   type ChainSimResponse = {
     responseType: "chain";
     results: simResult[];
-    deltaTau: number;
-    averageRate: number;
-    totalTime: number;
+    delta_tau: number;
+    average_rate: number;
+    total_time: number;
   }
 
   type StepSimResponse = {
@@ -95,19 +95,19 @@ declare global {
   type SimAllResponse = {
     responseType: "all";
     sigma: number;
-    stratType: SettingsSimAllStratsMode;
-    completedCTs: SettingsCompletedCTsMode;
+    strat_type: SettingsSimAllStratsMode;
+    completed_cts: SettingsCompletedCTsMode;
     results: simAllResult[];
   }
 
   type SimResponse = SingleSimResponse | ChainSimResponse | StepSimResponse | SimAllResponse;
 
   interface varBuy {
-    variable: string;
+    var_name: string;
     level: number;
     cost: number;
     symbol?: string;
-    timeStamp: number;
+    timestamp: number;
   }
 
   interface theoryData {
@@ -126,34 +126,42 @@ declare global {
   type Settings = {
     dt: number;
     ddt: number;
-    mfResetDepth: number;
-    boughtVarsDelta: number;
+    mf_reset_depth: number;
+    bought_vars_delta: number;
     theme: string;
-    simAllStrats: SettingsSimAllStratsMode;
-    completedCTs: SettingsCompletedCTsMode;
-    showA23: boolean;
-    showUnofficials: boolean;
+    sim_all_strats: SettingsSimAllStratsMode;
+    completed_cts: SettingsCompletedCTsMode;
+    show_a23: boolean;
+    show_unofficials: boolean;
     totalPurchaseList: boolean;
   }
 
+  // Deprecated in TS
   interface simResult {
     theory: theoryType;
     sigma: number;
-    lastPub: number;
-    pubRho: number;
-    deltaTau: number;
-    pubMulti: number;
+    last_pub: number;
+    pub_rho: number;
+    delta_tau: number;
+    pub_multi: number;
     strat: string;
-    tauH: number;
+    tau_h: number;
     time: number;
-    boughtVars: varBuy[];
+    bought_vars: varBuy[];
   }
 
+  // Deprecated in TS
   interface simAllResult {
     theory: theoryType;
     ratio: number;
-    lastPub: number;
+    last_pub: number;
     active: simResult;
     idle: simResult;
   }
+
+  type API_response = {
+    response_type: "success" | "failure",
+    // Removing this any is a bit annoying, will do it later -Mathis
+    data: any
+  };
 }

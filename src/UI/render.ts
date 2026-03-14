@@ -132,7 +132,7 @@ function theoryUpdate() {
   const currentTheoryStrats = Object.keys(data.theories[currentTheory].strats).filter(
     (strat) => (data.theories as TheoryDataStructure)[currentTheory].strats[strat].UI_visible !== false
   );
-  populateSelectElement(stratSelector, data.stratCategories.concat(currentTheoryStrats));
+  populateSelectElement(stratSelector, data.strat_categories.concat(currentTheoryStrats));
   populateSingleSimFields(true);
 }
 

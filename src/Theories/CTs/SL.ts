@@ -21,10 +21,10 @@ export default async function sl(data: theoryData): Promise<simResult> {
     }
     const sim1 = new slSim(data2);
     const res1 = await sim1.simulate();
-    const lastA1 = getLastLevel("a1", res1.boughtVars);
-    const lastA2 = getLastLevel("a2", res1.boughtVars);
-    const lastB1 = getLastLevel("b1", res1.boughtVars);
-    const lastB2 = getLastLevel("b2", res1.boughtVars);
+    const lastA1 = getLastLevel("a1", res1.bought_vars);
+    const lastA2 = getLastLevel("a2", res1.bought_vars);
+    const lastB1 = getLastLevel("b1", res1.bought_vars);
+    const lastB2 = getLastLevel("b2", res1.bought_vars);
     const sim2 = new slSim(data);
 
     sim2.variables[0].setOriginalCap(lastA1);
@@ -143,7 +143,7 @@ class slSim extends theoryClass<theory> {
     return conditions;
   }
   getTotMult(val: number): number {
-    return Math.max(0, val * this.tauFactor * 0.375);
+    return Math.max(0, val * this.tau_factor * 0.375);
   }
   getMilestonePriority(): number[] {
     const maxVal = Math.max(this.lastPub, this.maxRho);

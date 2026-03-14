@@ -53,7 +53,7 @@ function parseExpression(expression: string) {
 
 export function getStrats(theory: theoryType, rho: number, type: string, lastStrat: string): string[] {
   const strats = [];
-  const args = [...jsonData.stratCategories.map((v) => v === type), rho, lastStrat] as [boolean, boolean, boolean, boolean, number, string];
+  const args = [...jsonData.strat_categories.map((v) => v === type), rho, lastStrat] as [boolean, boolean, boolean, boolean, number, string];
   for (const strat of Object.keys(stratData[theory].strats)) {
     if (
       (stratData[theory].strats[strat].stratFilterCondition(...args) || !global.stratFilter) 

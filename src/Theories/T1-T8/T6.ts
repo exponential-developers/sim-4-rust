@@ -21,8 +21,8 @@ export default async function t6(data: theoryData): Promise<simResult> {
         data2.strat = data2.strat.replace("Coast", "");
         const sim1 = new t6Sim(data2);
         const res1 = await sim1.simulate();
-        const lastQ1 = getLastLevel("q1", res1.boughtVars);
-        const lastR1 = getLastLevel("r1", res1.boughtVars);
+        const lastQ1 = getLastLevel("q1", res1.bought_vars);
+        const lastR1 = getLastLevel("r1", res1.bought_vars);
         const sim2 = new t6Sim(data);
         sim2.variables[0].setOriginalCap(lastQ1);
         if (data.strat.includes("T6C5d") || data2.strat.includes("IdleRecovery") || data2.strat.includes("T6AI")) {

@@ -71,7 +71,7 @@ class bapSim extends theoryClass<theory> {
   }
 
   getTotMult(val: number): number {
-    return val < this.pubUnlock ? 0 : Math.max(0, val * this.tauFactor * 0.132075 + l10(5));
+    return val < this.pubUnlock ? 0 : Math.max(0, val * this.tau_factor * 0.132075 + l10(5));
   }
   getMilestonePriority(): number[] {
     const rho = Math.max(this.lastPub, this.maxRho);

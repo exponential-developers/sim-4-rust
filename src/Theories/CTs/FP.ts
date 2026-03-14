@@ -131,7 +131,7 @@ class fpSim extends theoryClass<theory> {
     return conditions;
   }
   getTotMult(val: number): number {
-    return val < this.pubUnlock ? 0 : Math.max(0, val * this.tauFactor * 0.331 + l10(5));
+    return val < this.pubUnlock ? 0 : Math.max(0, val * this.tau_factor * 0.331 + l10(5));
   }
   getMilestonePriority(): number[] {
     return [0, 1, 2, 3, 4, 5];
