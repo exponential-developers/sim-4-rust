@@ -25,7 +25,7 @@ const simAllStrats = qs<HTMLSelectElement>(".simallstrats");
 const completedCTs = qs<HTMLSelectElement>(".completedcts");
 const showA23 = qs<HTMLInputElement>(".a23");
 const showUnofficials = qs<HTMLInputElement>(".unofficials");
-const generateTotalPurchaseList = qs<HTMLInputElement>(".totalPurchaseList");
+const generateTotalPurchaseList = qs<HTMLInputElement>(".total_purchase_list");
 
 function parseSettings(): Settings {
     return {
@@ -38,7 +38,6 @@ function parseSettings(): Settings {
         completed_cts: completedCTs.value as SettingsCompletedCTsMode,
         show_a23: showA23.checked,
         show_unofficials: showUnofficials.checked
-        totalPurchaseList: generateTotalPurchaseList.checked
     }
 }
 

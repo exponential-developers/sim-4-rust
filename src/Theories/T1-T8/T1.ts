@@ -15,9 +15,9 @@ export default async function t1(data: theoryData): Promise<simResult> {
     const initialSim = new t1Sim(initialData);
     initialSim.doCoasting = false;
     const initialRes = await initialSim.simulate();
-    const lastQ1 = getLastLevel("q1", initialRes.boughtVars);
-    const lastQ2 = getLastLevel("q2", initialRes.boughtVars);
-    const lastC3 = getLastLevel("c3", initialRes.boughtVars);
+    const lastQ1 = getLastLevel("q1", initialRes.bought_vars);
+    const lastQ2 = getLastLevel("q2", initialRes.bought_vars);
+    const lastC3 = getLastLevel("c3", initialRes.bought_vars);
 
     const sim = new t1Sim(data);
     sim.doCoasting = true;

@@ -229,7 +229,7 @@ async function stepChainSim(query: StepChainQuery): Promise<StepSimResponse> {
             theory: query.theory,
             strat: query.strat,
             cap: query.cap,
-            hardCap: query.hardCap
+            hard_cap: query.hardCap
         }, false);
         if (!global.simulating) break;
 
@@ -238,21 +238,21 @@ async function stepChainSim(query: StepChainQuery): Promise<StepSimResponse> {
         let pub_count = 0;
         let bestRes = defaultResult();
         for (let result of chain_res.results) {
-            tau_acc += result.deltaTau;
+            tau_acc += result.delta_tau;
             time_acc += result.time;
             pub_count++;
             const tauH = tau_acc / (time_acc / 3600);
             let cur_res: simResult = {
                 theory: query.theory,
                 sigma: query.sigma,
-                lastPub: rho,
-                pubRho: result.pubRho,
-                deltaTau: tau_acc,
-                pubMulti: 1,
+                last_pub: rho,
+                pub_rho: result.pub_rho,
+                delta_tau: tau_acc,
+                pub_multi: 1,
                 strat: pub_count + " pub" + (pub_count > 1 ? "s": ""),
-                tauH: tauH,
+                tau_h: tauH,
                 time: time_acc,
-                boughtVars: []
+                bought_vars: []
             }
             bestRes = getBestResult(bestRes, cur_res);
         }

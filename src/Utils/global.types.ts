@@ -133,7 +133,6 @@ declare global {
     completed_cts: SettingsCompletedCTsMode;
     show_a23: boolean;
     show_unofficials: boolean;
-    totalPurchaseList: boolean;
   }
 
   // Deprecated in TS

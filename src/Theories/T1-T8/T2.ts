@@ -37,7 +37,7 @@ export default async function t2(data: theoryData): Promise<simResult> {
             sim.stop3 = stopPoints[2]
             sim.stop2 = stopPoints[1]
             sim.stop1 = stopPoints[0]
-            sim.targetRho = t2mcRes.pubRho;
+            sim.targetRho = t2mcRes.pub_rho;
             bestRes = getBestResult(await sim.simulate(), bestRes);
           }
         }

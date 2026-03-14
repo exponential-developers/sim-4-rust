@@ -19,9 +19,9 @@ export default async function ef(data: theoryData): Promise<simResult> {
   });
   const initialRes = await initialSim.simulate();
   const sim = new efSim(data);
-  sim.lastStronga2 = 10 * Math.floor((getLastLevel("a2", initialRes.boughtVars) - 1) / 10) + 1;
+  sim.lastStronga2 = 10 * Math.floor((getLastLevel("a2", initialRes.bought_vars) - 1) / 10) + 1;
   sim.lastStronga2Cost = l10(500) + 2.2 * (sim.lastStronga2 - 1) * l10(2);
-  sim.lasta23 = [getLastLevel("a2", initialRes.boughtVars), getLastLevel("a3", initialRes.boughtVars)];
+  sim.lasta23 = [getLastLevel("a2", initialRes.bought_vars), getLastLevel("a3", initialRes.bought_vars)];
   sim.lasta23costs = [l10(500) + 2.2 * (sim.lasta23[0] - 1) * l10(2), l10(500) + 2.2 * (sim.lasta23[1] - 1) * l10(2)];
   const res = await sim.simulate();
   return res;
@@ -259,7 +259,7 @@ class efSim extends theoryClass<theory> {
         const fork = this.copy();
         fork.forcedPubRho = Infinity;
         const res = await fork.simulate();
-        if (res.pubRho > 375) {
+        if (res.pub_rho > 375) {
           this.bestRes = getBestResult(this.bestRes, res);
         }
       }

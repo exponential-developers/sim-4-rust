@@ -3,7 +3,7 @@ import { convertTime, formatNumber, isMainTheory, logToExp } from "../Utils/help
 import { qs, qsa, ce, event, removeAllChilds, downloadString, getTableHeaders, tau } from "../Utils/DOMhelpers";
 
 // Settings
-const generateTotalPurchaseList = qs<HTMLInputElement>(".totalPurchaseList");
+const generateTotalPurchaseList = qs<HTMLInputElement>(".total_purchase_list");
 
 // Outputs
 const table = qs(".simTable");
@@ -78,7 +78,7 @@ function fillTableRow(row: HTMLTableRowElement, count: number) {
 function makeVarBuyCsv(arr: varBuy[]): string {
     let csvTotal = "variable,level,cost,timeStamp\n";
     for(let item of arr) {
-        csvTotal += `"${item.variable}",${item.level},${logToExp(item.cost, 2)}${getCurrencySymbol(item.symbol)},${convertTime(item.timeStamp)}\n`;
+        csvTotal += `"${item.var_name}",${item.level},${logToExp(item.cost, 2)}${getCurrencySymbol(item.symbol)},${convertTime(item.timestamp)}\n`;
     }
     return csvTotal;
 }
@@ -86,7 +86,7 @@ function makeVarBuyCsv(arr: varBuy[]): string {
 function addVarBuyCell(row: HTMLTableRowElement, buys: varBuy[], addToTotal = true, rowspan = 1) {
     if (addToTotal && generateTotalPurchaseList.checked) {
         totalBuys.push(...buys);
-        totalBuys.push({variable: "---", level: 0, cost: 0, timeStamp: 0});
+        totalBuys.push({var_name: "---", level: 0, cost: 0, timestamp: 0});
     }
 
     const cell = ce("td");
@@ -229,7 +229,7 @@ function writeSimAllResponse(response: SimAllResponse) {
         addTableCell(row, convertTime(res.time));
         addTableCell(row, logToExp(res.delta_tau, 2));
         addTableCell(row, logToExp(res.pub_rho, 2));
-        addVarBuyCell(row, res.boughtVars);
+        addVarBuyCell(row, res.bought_vars);
     }
 
     let sets: simAllResult[][] = [[], [], []];
