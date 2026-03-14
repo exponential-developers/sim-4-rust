@@ -7,14 +7,14 @@
           "stratFilterCondition": "(Idle || Semi-Idle) && rho < 25 || rho < 25"
         },
         "T1Coast": {
-          "stratFilterCondition": "(Idle || Semi-Idle) && rho < 25 || rho < 25"
+          "stratFilterCondition": "Semi-Idle && rho < 25 || rho < 25"
         },
         "T1C34": {
           "stratFilterCondition": "(Idle || Semi-Idle) && rho < 850",
           "forcedCondition": "rho >= 25"
         },
         "T1C34Coast": {
-          "stratFilterCondition": "(Idle || Semi-Idle)",
+          "stratFilterCondition": "Semi-Idle",
           "forcedCondition": "rho >= 25"
         },
         "T1C4": {
@@ -22,8 +22,8 @@
           "forcedCondition": "rho >= 50"
         },
         "T1C4Coast": {
-          "stratFilterCondition": "(Idle || Semi-Idle) && rho > 625",
-          "forcedCondition": "rho >= 50"
+          "stratFilterCondition": "Semi-Idle && rho > 625",
+          "forcedCondition": "rho >= 950"
         },
         "T1Ratio": {
           "stratFilterCondition": "(Very-Active && rho < 250) || Active"
@@ -34,8 +34,11 @@
         "T1SolarXLII": {
           "stratFilterCondition": "Very-Active"
         },
-        "T1SolarXLIICoast": {
-          "stratFilterCondition": "Very-Active"
+        "T1SolarXLIIOld": {
+          "stratFilterCondition": "false"
+        },
+        "T1SolarXLIIOldCoast": {
+          "stratFilterCondition": "false"
         }
       }
     },
@@ -62,6 +65,9 @@
         },
         "T2QS": {
           "stratFilterCondition": "Semi-Idle && rho < 250"
+        },
+        "T2Haxolotl":  {
+          "stratFilterCondition": "false"
         }
       }
     },
@@ -103,7 +109,7 @@
           "stratFilterCondition": "(Idle || Semi-Idle) && rho > 400"
         },
         "T3P2C23C33Coast": {
-          "stratFilterCondition": "(Idle || Semi-Idle) && rho > 400"
+          "stratFilterCondition": "Semi-Idle && rho > 400"
         },
         "T3noC11C13C21C33d": {
           "stratFilterCondition": "(Active || Very-Active) && rho >= 150 && rho < 350",
@@ -209,6 +215,9 @@
         "T5IdleCoast": {
           "stratFilterCondition": "Semi-Idle"
         },
+        "T5Idle2Coast": {
+          "stratFilterCondition": "false"
+        },
         "T5AI2": {
           "stratFilterCondition": "Active || Very-Active"
         },
@@ -254,6 +263,36 @@
           "stratFilterCondition": "false"
         },
         "T6SnaxIdleRecoveryCoast": {
+          "stratFilterCondition": "false"
+        },
+        "T6SnaxIdleRecoveryM1": {
+          "stratFilterCondition": "false"
+        },
+        "T6SnaxIdleRecoveryM1Coast": {
+          "stratFilterCondition": "false"
+        },
+        "T6SnaxIdleRecoveryM2": {
+          "stratFilterCondition": "false"
+        },
+        "T6SnaxIdleRecoveryM2Coast": {
+          "stratFilterCondition": "false"
+        },
+        "T6SnaxIdleRecoveryM3": {
+          "stratFilterCondition": "false"
+        },
+        "T6SnaxIdleRecoveryM3Coast": {
+          "stratFilterCondition": "false"
+        },
+        "T6SnaxIdleRecoveryM4": {
+          "stratFilterCondition": "false"
+        },
+        "T6SnaxIdleRecoveryM4Coast": {
+          "stratFilterCondition": "false"
+        },
+        "T6SnaxIdleRecoveryM5": {
+          "stratFilterCondition": "false"
+        },
+        "T6SnaxIdleRecoveryM5Coast": {
           "stratFilterCondition": "false"
         },
         "T6C3d": {
@@ -306,14 +345,14 @@
           "stratFilterCondition": "(Idle || Semi-Idle) && (rho < 25 || (rho >= 75 && rho < 100))"
         },
         "T7C12Coast": {
-          "stratFilterCondition": "(Idle || Semi-Idle) && (rho < 25 || (rho >= 75 && rho < 100))"
+          "stratFilterCondition": "Semi-Idle && (rho < 25 || (rho >= 75 && rho < 100))"
         },
         "T7C3": {
           "stratFilterCondition": "(Idle || Semi-Idle) && rho >= 25 && rho < 75",
           "forcedCondition": "rho >= 25"
         },
         "T7C3Coast": {
-          "stratFilterCondition": "(Idle || Semi-Idle) && rho >= 25 && rho < 75",
+          "stratFilterCondition": "Semi-Idle && rho >= 25 && rho < 75",
           "forcedCondition": "rho >= 25"
         },
         "T7noC12": {
@@ -321,7 +360,7 @@
           "forcedCondition": "rho >= 25"
         },
         "T7noC12Coast": {
-          "stratFilterCondition": "(Idle || Semi-Idle) && rho >= 100 && rho < 550",
+          "stratFilterCondition": "Semi-Idle && rho >= 100 && rho < 550",
           "forcedCondition": "rho >= 25"
         },
         "T7noC123": {
@@ -329,7 +368,7 @@
           "forcedCondition": "rho >= 75"
         },
         "T7noC123Coast": {
-          "stratFilterCondition": "(Idle || Semi-Idle) && rho > 500 && rho < 625",
+          "stratFilterCondition": "Semi-Idle && rho > 500 && rho < 625",
           "forcedCondition": "rho >= 75"
         },
         "T7noC1234": {
@@ -337,7 +376,7 @@
           "forcedCondition": "rho >= 75"
         },
         "T7noC1234Coast": {
-          "stratFilterCondition": "(Idle || Semi-Idle) && rho > 525",
+          "stratFilterCondition": "Semi-Idle && rho > 525",
           "forcedCondition": "rho >= 75"
         },
         "T7C12d": {
@@ -421,7 +460,7 @@
           "stratFilterCondition": "(Idle || Semi-Idle)"
         },
         "WSPStopC1Coast": {
-          "stratFilterCondition": "(Idle || Semi-Idle)"
+          "stratFilterCondition": "Semi-Idle"
         },
         "WSPdStopC1": {
           "stratFilterCondition": "Active || Very-Active"
@@ -474,6 +513,9 @@
         },
         "EFAI": {
           "stratFilterCondition": "Active || Very-Active"
+        },
+        "EFPlay": {
+          "stratFilterCondition": "false && Very-Active && rho > 50"
         }
       }
     },
@@ -504,7 +546,7 @@
           "stratFilterCondition":"Idle || Semi-Idle || rho <= 30"
         },
         "FICoast":{
-          "stratFilterCondition":"Idle || Semi-Idle || rho <= 30"
+          "stratFilterCondition":"Semi-Idle || (!Idle && rho <= 30)"
         },
         "FId": {
           "stratFilterCondition":"Active || Very-Active"
@@ -516,7 +558,7 @@
           "stratFilterCondition":"(Idle || Semi-Idle) && rho >= 1000 && rho <= 1300"
         },
         "FIPermaSwapCoast":{
-          "stratFilterCondition":"(Idle || Semi-Idle) && rho >= 1000 && rho <= 1300"
+          "stratFilterCondition":"Semi-Idle && rho >= 1000 && rho <= 1300"
         },
         "FIdPermaSwap":{
           "stratFilterCondition":"(Active || Very-Active) && rho >= 1000 && rho <= 1300"
@@ -604,7 +646,7 @@
           "stratFilterCondition": "(Active || Very-Active) && rho >= 50 && rho < 400"
         },
         "RZdBHRewind" : {
-          "stratFilterCondition": "Very-Active && rho >= 860"
+          "stratFilterCondition": "Very-Active && rho >= 860 && rho <= 2000"
         }
       }
     },
@@ -650,34 +692,58 @@
         "MFd3RCCoast": {
           "stratFilterCondition": "false"
         },
-        "MFdPostRecovery0": {
+        "MFVariantd1d1d2Coast": {
+          "stratFilterCondition": "Active || Very-Active"
+        },
+        "MFVariantd1d1d3Coast": {
+          "stratFilterCondition": "Active || Very-Active"
+        },
+        "MFVariantd1d2d1Coast": {
+          "stratFilterCondition": "Active || Very-Active"
+        },
+        "MFVariantd1d2d2Coast": {
+          "stratFilterCondition": "Active || Very-Active"
+        },
+        "MFVariantd2d1d1Coast": {
           "stratFilterCondition": "false"
         },
-        "MFdPostRecovery1": {
+        "MFVariantd2d1d2Coast": {
           "stratFilterCondition": "false"
         },
-        "MFdPostRecovery2": {
+        "MFVariantd2d1d3Coast": {
           "stratFilterCondition": "false"
         },
-        "MFdPostRecovery3": {
+        "MFVariantd2d2d1Coast": {
+          "stratFilterCondition": "Active || Very-Active"
+        },
+        "MFVariantd2d2d3Coast": {
+          "stratFilterCondition": "Active || Very-Active"
+        },
+        "MFVariantd1d1d2RCCoast": {
           "stratFilterCondition": "false"
         },
-        "MFdPostRecovery4": {
+        "MFVariantd1d1d3RCCoast": {
           "stratFilterCondition": "false"
         },
-        "MFdPostRecovery5": {
+        "MFVariantd1d2d1RCCoast": {
           "stratFilterCondition": "false"
         },
-        "MFdPostRecovery6": {
+        "MFVariantd1d2d2RCCoast": {
           "stratFilterCondition": "false"
         },
-        "MFdPostRecovery7": {
+        "MFVariantd2d1d1RCCoast": {
           "stratFilterCondition": "false"
         },
-        "MFdPostRecovery8": {
+        "MFVariantd2d1d2RCCoast": {
           "stratFilterCondition": "false"
         },
-        "MFdPostRecovery9": {
+        "MFVariantd2d1d3RCCoast": {
+          "stratFilterCondition": "false"
+        },
+        "MFVariantd2d2d1RCCoast": {
+          "stratFilterCondition": "false"
+        },
+        "MFVariantd2d2d3RCCoast": {
           "stratFilterCondition": "false"
         }
       }
@@ -735,13 +801,14 @@
     }
   },
   "strat_categories": ["Best Overall", "Best Active", "Best Semi-Idle", "Best Idle"],
-  "modes": ["All", "Single sim", "Chain", "Steps", "Amount", "Time", "Time diff."],
-  "modeInputDescriptions": ["", "", "", "Step length: ", "Amount of pubs (Chain): ", "Total Time: "],
+  "modes": ["All", "Single sim", "Chain", "Steps", "StepChain", "Amount", "Time", "Time diff."],
+  "modeInputDescriptions": ["", "", "", "Step length: ", "Step length: ", "Amount of pubs (Chain): ", "Total Time: "],
   "modeInputPlaceholder": [
     "<sigma> <t1>* [t2]* ... [wsp]* ... [bap]* \n\n*[r/t/m] = rho/tau/total multiplier | default tau\n\nOr: input your save here and click \"Load save\"",
     "",
     "",
     "",
+    "<Number>",
     "<Number>",
     "<Hours>",
     "<t1> [t1], ... , <t8> [t8] or <wsp> [wsp], ... , <bap> [bap]",
