@@ -41,6 +41,18 @@ impl From<i32> for LogNum {
     }
 }
 
+impl From<i64> for LogNum {
+    fn from(value:i64) -> Self {
+        LogNum::from_f64(value as f64)
+    }
+}
+
+impl From<u64> for LogNum {
+    fn from(value:u64) -> Self {
+        LogNum::from_f64(value as f64)
+    }
+}
+
 #[derive(Debug)]
 pub struct LogNumParseError {}
 
@@ -234,16 +246,16 @@ impl Num for LogNum {
 }
 
 impl ToPrimitive for LogNum {
-    fn to_f64(&self) -> Option<f64> {
-        Some(10f64.powf(self.value) * self.sign as f64)
-    }
-
     fn to_i64(&self) -> Option<i64> {
         self.to_f64()?.to_i64()
     }
 
     fn to_u64(&self) -> Option<u64> {
         self.to_f64()?.to_u64()
+    }
+
+    fn to_f64(&self) -> Option<f64> {
+        Some(10f64.powf(self.value) * self.sign as f64)
     }
 }
 
@@ -254,68 +266,57 @@ impl NumCast for LogNum {
 }
 
 impl Float for LogNum {
-    fn abs(self) -> Self {
-        LogNum::new(self.value, 1)
+    fn nan() -> Self {
+        LogNum::new(f64::NAN, 1)
     }
 
-    fn abs_sub(self, other: Self) -> Self {
-        (self - other).abs()
+    fn infinity() -> Self {
+        LogNum::new(f64::INFINITY, 1)
     }
 
-    fn acos(self) -> Self {
-        LogNum::from_f64(self.to_f64().unwrap().acos())
+    fn neg_infinity() -> Self {
+        LogNum::new(f64::INFINITY, -1)
     }
 
-    fn acosh(self) -> Self {
-        LogNum::from_f64(self.to_f64().unwrap().acosh())
+    fn neg_zero() -> Self {
+        LogNum::new(f64::NEG_INFINITY, -1)
     }
 
-    fn asin(self) -> Self {
-        LogNum::from_f64(self.to_f64().unwrap().asin())
+    fn min_value() -> Self {
+        LogNum::new(f64::MAX, -1)
     }
 
-    fn asinh(self) -> Self {
-        LogNum::from_f64(self.to_f64().unwrap().asinh())
+    fn min_positive_value() -> Self {
+        LogNum::new(f64::MIN, 1)
     }
 
-    fn atan(self) -> Self {
-        LogNum::from_f64(self.to_f64().unwrap().atan())
+    fn epsilon() -> Self {
+        LogNum::from_f64(f64::EPSILON)
     }
 
-    fn atan2(self, other: Self) -> Self {
-        LogNum::from_f64(self.to_f64().unwrap().atan2(other.to_f64().unwrap()))
+    fn max_value() -> Self {
+        LogNum::new(f64::MAX, 1)
     }
 
-    fn atanh(self) -> Self {
-        LogNum::from_f64(self.to_f64().unwrap().atanh())
+    fn is_nan(self) -> bool {
+        self.value.is_nan()
     }
 
-    fn powf(self, n: Self) -> Self {
-        self.powf64(n.to_f64().unwrap())
+    fn is_infinite(self) -> bool {
+        self.value == f64::INFINITY
     }
 
-    fn powi(self, n: i32) -> Self {
-        LogNum::new(self.value * n as f64, self.sign.pow(n.unsigned_abs()))
+    fn is_finite(self) -> bool {
+        self.classify() == std::num::FpCategory::Normal
+            || self.classify() == std::num::FpCategory::Zero
     }
 
-    fn cbrt(self) -> Self {
-        self.powf64(1. / 3.)
+    fn is_normal(self) -> bool {
+        self.classify() == std::num::FpCategory::Normal
     }
 
-    fn ceil(self) -> Self {
-        LogNum::from_f64(self.to_f64().unwrap().ceil())
-    }
-
-    fn min(self, other: Self) -> Self {
-        if self <= other { self } else { other }
-    }
-
-    fn max(self, other: Self) -> Self {
-        if self >= other { self } else { other }
-    }
-
-    fn clamp(self, min: Self, max: Self) -> Self {
-        self.max(min).min(max)
+    fn is_subnormal(self) -> bool {
+        false
     }
 
     fn classify(self) -> std::num::FpCategory {
@@ -330,20 +331,64 @@ impl Float for LogNum {
         }
     }
 
-    fn copysign(self, sign: Self) -> Self {
-        LogNum::new(self.value, sign.sign)
+    fn floor(self) -> Self {
+        LogNum::from_f64(self.to_f64().unwrap().floor())
     }
 
-    fn cos(self) -> Self {
-        LogNum::from_f64(self.to_f64().unwrap().cos())
+    fn ceil(self) -> Self {
+        LogNum::from_f64(self.to_f64().unwrap().ceil())
     }
 
-    fn cosh(self) -> Self {
-        LogNum::from_f64(self.to_f64().unwrap().cosh())
+    fn round(self) -> Self {
+        LogNum::from_f64(self.to_f64().unwrap().round())
     }
 
-    fn epsilon() -> Self {
-        LogNum::from_f64(f64::EPSILON)
+    fn trunc(self) -> Self {
+        LogNum::from_f64(self.to_f64().unwrap().trunc())
+    }
+
+    fn fract(self) -> Self {
+        LogNum::from_f64(self.to_f64().unwrap().fract())
+    }
+
+    fn abs(self) -> Self {
+        LogNum::new(self.value, 1)
+    }
+
+    fn signum(self) -> Self {
+        if self.is_nan() {
+            LogNum::new(f64::NAN, 1)
+        } else {
+            LogNum::from_f64(self.sign as f64)
+        }
+    }
+
+    fn is_sign_positive(self) -> bool {
+        self.sign == 1
+    }
+
+    fn is_sign_negative(self) -> bool {
+        self.sign == -1
+    }
+
+    fn mul_add(self, a: Self, b: Self) -> Self {
+        (self * a) + b
+    }
+
+    fn recip(self) -> Self {
+        LogNum::new(-self.value, self.sign)
+    }
+
+    fn powi(self, n: i32) -> Self {
+        LogNum::new(self.value * n as f64, self.sign.pow(n.unsigned_abs()))
+    }
+
+    fn powf(self, n: Self) -> Self {
+        self.powf64(n.to_f64().unwrap())
+    }
+
+    fn sqrt(self) -> Self {
+        self.powf64(1. / 2.)
     }
 
     fn exp(self) -> Self {
@@ -360,69 +405,8 @@ impl Float for LogNum {
         )
     }
 
-    fn exp_m1(self) -> Self {
-        self.exp() - ONE
-    }
-
-    fn floor(self) -> Self {
-        LogNum::from_f64(self.to_f64().unwrap().floor())
-    }
-
-    fn fract(self) -> Self {
-        LogNum::from_f64(self.to_f64().unwrap().fract())
-    }
-
-    fn sqrt(self) -> Self {
-        self.powf64(1. / 2.)
-    }
-
-    fn hypot(self, other: Self) -> Self {
-        (self.powi(2) + other.powi(2)).sqrt()
-    }
-
-    fn infinity() -> Self {
-        LogNum::new(f64::INFINITY, 1)
-    }
-
-    fn integer_decode(self) -> (u64, i16, i8) {
-        self.to_f64().unwrap().integer_decode()
-    }
-
-    fn is_finite(self) -> bool {
-        self.classify() == std::num::FpCategory::Normal
-            || self.classify() == std::num::FpCategory::Zero
-    }
-
-    fn is_infinite(self) -> bool {
-        self.value == f64::INFINITY
-    }
-
-    fn is_nan(self) -> bool {
-        self.value.is_nan()
-    }
-
-    fn is_normal(self) -> bool {
-        self.classify() == std::num::FpCategory::Normal
-    }
-
-    fn is_sign_negative(self) -> bool {
-        self.sign == -1
-    }
-
-    fn is_sign_positive(self) -> bool {
-        self.sign == 1
-    }
-
-    fn is_subnormal(self) -> bool {
-        false
-    }
-
     fn ln(self) -> Self {
         LogNum::new(self.value.log10() + std::f64::consts::LN_10.log10(), 1)
-    }
-
-    fn ln_1p(self) -> Self {
-        (self + ONE).ln()
     }
 
     fn log(self, base: Self) -> Self {
@@ -432,84 +416,112 @@ impl Float for LogNum {
         )
     }
 
-    fn log10(self) -> Self {
-        LogNum::from_f64(self.value)
-    }
-
     fn log2(self) -> Self {
         LogNum::new(self.value.log10() + std::f64::consts::LOG2_10.log10(), 1)
     }
 
-    fn max_value() -> Self {
-        LogNum::new(f64::MAX, 1)
-    }
-
-    fn min_positive_value() -> Self {
-        LogNum::new(f64::MIN, 1)
-    }
-
-    fn min_value() -> Self {
-        LogNum::new(f64::MAX, -1)
-    }
-
-    fn mul_add(self, a: Self, b: Self) -> Self {
-        (self * a) + b
-    }
-
-    fn nan() -> Self {
-        LogNum::new(f64::NAN, 1)
-    }
-
-    fn neg_infinity() -> Self {
-        LogNum::new(f64::INFINITY, -1)
-    }
-
-    fn neg_zero() -> Self {
-        LogNum::new(f64::NEG_INFINITY, -1)
-    }
-
-    fn recip(self) -> Self {
-        LogNum::new(-self.value, self.sign)
-    }
-
-    fn round(self) -> Self {
-        LogNum::from_f64(self.to_f64().unwrap().round())
-    }
-
-    fn signum(self) -> Self {
-        if self.is_nan() {
-            LogNum::new(f64::NAN, 1)
-        } else {
-            LogNum::from_f64(self.sign as f64)
-        }
-    }
-
-    fn sin(self) -> Self {
-        LogNum::from_f64(self.to_f64().unwrap().sin())
-    }
-
-    fn sin_cos(self) -> (Self, Self) {
-        (self.sin(), self.cos())
-    }
-
-    fn sinh(self) -> Self {
-        LogNum::from_f64(self.to_f64().unwrap().sinh())
-    }
-
-    fn tan(self) -> Self {
-        LogNum::from_f64(self.to_f64().unwrap().tan())
-    }
-
-    fn tanh(self) -> Self {
-        LogNum::from_f64(self.to_f64().unwrap().tanh())
+    fn log10(self) -> Self {
+        LogNum::from_f64(self.value)
     }
 
     fn to_degrees(self) -> Self {
         LogNum::from_f64(self.to_f64().unwrap().to_degrees())
     }
 
-    fn trunc(self) -> Self {
-        LogNum::from_f64(self.to_f64().unwrap().trunc())
+    fn max(self, other: Self) -> Self {
+        if self >= other { self } else { other }
+    }
+
+    fn min(self, other: Self) -> Self {
+        if self <= other { self } else { other }
+    }
+
+    fn clamp(self, min: Self, max: Self) -> Self {
+        self.max(min).min(max)
+    }
+
+    fn abs_sub(self, other: Self) -> Self {
+        (self - other).abs()
+    }
+
+    fn cbrt(self) -> Self {
+        self.powf64(1. / 3.)
+    }
+
+    fn hypot(self, other: Self) -> Self {
+        (self.powi(2) + other.powi(2)).sqrt()
+    }
+
+    fn sin(self) -> Self {
+        LogNum::from_f64(self.to_f64().unwrap().sin())
+    }
+
+    fn cos(self) -> Self {
+        LogNum::from_f64(self.to_f64().unwrap().cos())
+    }
+
+    fn tan(self) -> Self {
+        LogNum::from_f64(self.to_f64().unwrap().tan())
+    }
+
+    fn asin(self) -> Self {
+        LogNum::from_f64(self.to_f64().unwrap().asin())
+    }
+
+    fn acos(self) -> Self {
+        LogNum::from_f64(self.to_f64().unwrap().acos())
+    }
+
+    fn atan(self) -> Self {
+        LogNum::from_f64(self.to_f64().unwrap().atan())
+    }
+
+    fn atan2(self, other: Self) -> Self {
+        LogNum::from_f64(self.to_f64().unwrap().atan2(other.to_f64().unwrap()))
+    }
+
+    fn sin_cos(self) -> (Self, Self) {
+        (self.sin(), self.cos())
+    }
+
+    fn exp_m1(self) -> Self {
+        self.exp() - ONE
+    }
+
+    fn ln_1p(self) -> Self {
+        (self + ONE).ln()
+    }
+
+    fn sinh(self) -> Self {
+        LogNum::from_f64(self.to_f64().unwrap().sinh())
+    }
+
+    fn cosh(self) -> Self {
+        LogNum::from_f64(self.to_f64().unwrap().cosh())
+    }
+
+    fn tanh(self) -> Self {
+        LogNum::from_f64(self.to_f64().unwrap().tanh())
+    }
+
+    fn asinh(self) -> Self {
+        LogNum::from_f64(self.to_f64().unwrap().asinh())
+    }
+
+    fn acosh(self) -> Self {
+        LogNum::from_f64(self.to_f64().unwrap().acosh())
+    }
+
+    fn atanh(self) -> Self {
+        LogNum::from_f64(self.to_f64().unwrap().atanh())
+    }
+
+    fn integer_decode(self) -> (u64, i16, i8) {
+        self.to_f64().unwrap().integer_decode()
+    }
+
+    fn copysign(self, sign: Self) -> Self {
+        LogNum::new(self.value, sign.sign)
     }
 }
 
@@ -532,13 +544,6 @@ impl<'de> Deserialize<'de> for LogNum {
                 formatter.write_str("a number")
             }
 
-            fn visit_f64<E>(self, v: f64) -> Result<Self::Value, E>
-            where
-                E: de::Error,
-            {
-                Ok(LogNum::new(v, 1))
-            }
-
             fn visit_i64<E>(self, v: i64) -> Result<Self::Value, E>
             where
                 E: de::Error,
@@ -551,6 +556,13 @@ impl<'de> Deserialize<'de> for LogNum {
                 E: de::Error,
             {
                 Ok(LogNum::new(v as f64, 1))
+            }
+
+            fn visit_f64<E>(self, v: f64) -> Result<Self::Value, E>
+            where
+                E: de::Error,
+            {
+                Ok(LogNum::new(v, 1))
             }
         }
 
