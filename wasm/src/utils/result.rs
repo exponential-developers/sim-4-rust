@@ -6,6 +6,7 @@ use crate::utils::{
 };
 use crate::api::config::TheoryType;
 
+/** Holds a result of a single simulation */
 #[derive(Debug, Clone, Serialize)]
 pub struct SimResult {
     pub theory: TheoryType,
@@ -37,6 +38,7 @@ impl Default for SimResult {
     }
 }
 
+/** Holds a result for a SimAll simulation for one theory */
 #[derive(Debug, Clone, Serialize)]
 pub struct SimAllResult {
     pub theory: TheoryType,

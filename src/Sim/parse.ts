@@ -25,6 +25,7 @@ const simAllStrats = qs<HTMLSelectElement>(".simallstrats");
 const completedCTs = qs<HTMLSelectElement>(".completedcts");
 const showA23 = qs<HTMLInputElement>(".a23");
 const showUnofficials = qs<HTMLInputElement>(".unofficials");
+const generateTotalPurchaseList = qs<HTMLInputElement>(".total_purchase_list");
 
 function parseSettings(): Settings {
     return {
@@ -134,6 +135,23 @@ function parseStepSim(): StepSimQuery {
     }
 }
 
+function parseStepChainSim(): StepChainQuery {
+    const theory = theorySelector.value as theoryType;
+    const sigma = parseSigma(isMainTheory(theory));
+
+    return {
+        queryType: "step_chain",
+        theory: theory,
+        strat: stratSelector.value,
+        sigma: sigma,
+        rho: parseCurrency(currencyInput.value, theory, sigma),
+        cap: parseCurrency(capInput.value, theory, sigma),
+        step: parseExponentialValue(modeInput.value),
+        hardCap: hardCap.checked,
+        settings: parseSettings()
+    }
+}
+
 function parseSimAll(): SimAllQuery {
     const settings = parseSettings();
     const str = simAllInputArea.value;
@@ -153,7 +171,7 @@ function parseSimAll(): SimAllQuery {
 
     values = values.map((val, i) => {
         const theory = getTheoryFromIndex(i);
-        if (settings.completed_cts === "no" && i > 8 && val * jsonData.theories[theory].tau_factor >= 600) return 0;
+        if (settings.completed_cts === "no" && i >= 8 && val * jsonData.theories[theory].tau_factor >= 600) return 0;
         if (!settings.show_unofficials && (jsonData.theories as TheoryDataStructure)[theory].UI_visible === false) return 0;
         return val;
     })
@@ -177,6 +195,7 @@ export function parseQuery(): SimQuery {
         case "Single sim": return parseSingleSim();
         case "Chain": return parseChainSim();
         case "Steps": return parseStepSim();
+        case "StepChain": return parseStepChainSim();
         default: throw "This mode is not supported.";
     }
 }

@@ -1,5 +1,10 @@
+/**
+ * Sim settings 
+ */
+
 use serde::{Deserialize, Serialize};
 
+/** Possible user configurations for which strategies to simulate in "All" mode */
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum SimAllStrats {
@@ -8,6 +13,7 @@ pub enum SimAllStrats {
     Idle
 }
 
+/** Possible user configurations for how to sim completed CTs */
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum CompletedCTs {
@@ -16,6 +22,7 @@ pub enum CompletedCTs {
     No
 }
 
+/** Holds sim settings */
 #[derive(Debug, Clone, Deserialize)]
 pub struct SimSettings {
     pub dt: f64,

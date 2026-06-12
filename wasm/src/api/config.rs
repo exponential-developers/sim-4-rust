@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use num_enum::TryFromPrimitive;
 
+/** enum of all available theory types */
 #[allow(clippy::upper_case_acronyms)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Deserialize, Serialize, TryFromPrimitive)]
 #[repr(usize)]
@@ -28,11 +29,15 @@ pub enum TheoryType {
     BT
 }
 
+/** configuration for a theory */
 #[derive(Debug, Deserialize)]
 pub struct ConfigTheories {
     pub tau_factor: f64
 }
 
+/** structure for the given theory configuration as written in data.json needed
+ by the wasm module
+ */
 #[derive(Debug, Deserialize)]
 pub struct Config {
     pub theories: HashMap<TheoryType, ConfigTheories>,

@@ -1,10 +1,11 @@
 import html2canvas from "html2canvas";
-import { qs, ce, event, removeAllChilds } from "../Utils/DOMhelpers";
+import { qs, qsa, ce, event, removeAllChilds, downloadString, tau, rho, sigma_t, getTableHeaders } from "../Utils/DOMhelpers";
 
 //Buttons
 const clear = qs(".clear");
 const copyImage = qs<HTMLButtonElement>(".imageC");
 const downloadImage = qs(".imageD");
+const downloadCsv = qs(".csvD");
 const clearInput = qs(".clearInput");
 
 const saveDist = qs<HTMLButtonElement>(".saveDist");
@@ -18,8 +19,8 @@ const modeInput = qs<HTMLTextAreaElement>(".modeInput");
 
 
 const output = qs(".output");
-const table = qs(".simTable")
-const tbody = qs("tbody");
+const table = qs(".simTable");
+const tbody = qs(".simTable tbody");
 
 event(clear, "pointerdown", () => {
   removeAllChilds(tbody);
@@ -37,11 +38,24 @@ event(clearInput, "pointerdown", () => {
 
 event(copyImage, "pointerdown", () => createImage(""));
 event(downloadImage, "pointerdown", () => createImage("download"));
+event(downloadCsv, "pointerdown", () => {
+  if (table.children[0].children[0].childElementCount == 0) {
+    return;
+  }
+  downloadString(makeTableCsv(), "sim_results.csv");
+})
 
 function createImage(mode: string) {
   if (table.children[0].children[0].childElementCount == 0) {
     return;
   }
+
+  const lastHeader = qs(".simTable thead tr th:last-child");
+  const varBuyCells = qsa(".varBuyCell");
+
+  const initialLastHeaderDisplay = lastHeader.style.display;
+  lastHeader.style.display = "none";
+  varBuyCells.forEach((elem) => elem.style.display = "none");
 
   html2canvas(table).then((canvas) =>
     canvas.toBlob((blob) => {
@@ -70,6 +84,74 @@ function createImage(mode: string) {
     })
   )
   .catch(() => console.log("Failed creating image."));
+
+  lastHeader.style.display = initialLastHeaderDisplay;
+  varBuyCells.forEach((elem) => elem.style.display = "flex");
+}
+
+function makeTableCsv(): string {
+    const theadRow = qs(".simTable thead tr");
+
+    let csvTotal = "";
+
+    if (table.classList.contains("big")) {
+      let headers = getTableHeaders(
+        theadRow.children.length == 10 ? "all" : "all_one",
+        "text",
+        Number(theadRow.children[0].innerHTML.match(/^\d+/))
+      )
+      csvTotal += headers.join(",") + ",\n";
+      let rowIndex = 0;
+      while (rowIndex < tbody.children.length) {
+        let row = tbody.children[rowIndex];
+        if (row.children.length >= 2) {
+          if ((row.children[0] as HTMLTableCellElement).rowSpan == 2) {
+            rowIndex++;
+            let nextRow = tbody.children[rowIndex];
+            let row1Content = [];
+            let row2Content = [];
+            let j = 0;
+            for (let i = 0; i < theadRow.children.length - 1; i++) {
+              if ((row.children[i] as HTMLTableCellElement).rowSpan == 2) {
+                row1Content.push(row.children[i].innerHTML);
+                row2Content.push(row.children[i].innerHTML);
+              }
+              else {
+                row1Content.push(row.children[i].innerHTML);
+                row2Content.push(nextRow.children[j].innerHTML);
+                j += 1;
+              }
+            }
+            csvTotal += row1Content.join(",") + ",\n";
+            csvTotal += row2Content.join(",") + ",\n";
+          }
+          else {
+            for (let i = 0; i < theadRow.children.length - 1; i++) {
+              csvTotal += row.children[i].innerHTML + ",";
+            }
+            csvTotal += "\n";
+          }
+        }
+        rowIndex++;
+      }
+    }
+    else {
+      let headers = getTableHeaders("single", "text");
+      let h0match = headers[0].match(/<span[^>]*>(.*)<\/span>/);
+      headers[0] = h0match == undefined ? headers[0] : (h0match.groups == undefined ? headers[0] : h0match.groups[0]);
+      csvTotal += headers.join(",") + ",\n";
+      for (let row of tbody.children) {
+          if (row.children[0].innerHTML.trim().length == 0) {
+            continue;
+          }
+          for (let i = 0; i < 9; i++) {
+              csvTotal += row.children[i].innerHTML + ",";
+          }
+          csvTotal += "\n";
+      }
+    }
+
+    return csvTotal;
 }
 
 event(saveDist, "pointerdown", () => {

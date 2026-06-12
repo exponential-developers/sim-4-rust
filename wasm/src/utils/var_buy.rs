@@ -1,6 +1,7 @@
 use serde::Serialize;
 use crate::utils::lognum::LogNum;
 
+/** Holds a record of a variable purchase */
 #[derive(Debug, Clone, Serialize)]
 pub struct VarBuy {
     pub var_name: String,

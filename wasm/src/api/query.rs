@@ -1,3 +1,7 @@
+/**
+ * Contains structures for the different types of queries that can be sent to the wasm module
+ */
+
 use serde::Deserialize;
 
 use crate::api::config::TheoryType;
