@@ -9,6 +9,7 @@ pub mod currency;
 pub mod var_buy;
 pub mod settings;
 pub mod result;
+mod lognumpoly;
 
 use var_buy::VarBuy;
 
