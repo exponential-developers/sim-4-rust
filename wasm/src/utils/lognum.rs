@@ -8,11 +8,9 @@ use serde::{Deserialize, Serialize, de};
 
 use num::{Float, Num, NumCast, One, ToPrimitive, Zero};
 
-/** struct representing a number in logarithmic form */
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct LogNum {
     pub value: f64,
-    /** +1 for positive, -1 for negative */
     pub sign: i8,
 }
 
@@ -23,7 +21,6 @@ pub const ZERO: LogNum = LogNum {
 pub const ONE: LogNum = LogNum { value: 0., sign: 1 };
 
 impl LogNum {
-    /** converts a f64 into a LogNum */
     pub fn from_f64(value: f64) -> Self {
         LogNum {
             value: value.abs().log10(),
@@ -101,7 +98,6 @@ impl Display for LogNum {
 }
 
 impl LogNum {
-    /** creates a new LogNum from a log10 value and a sign */
     fn new(value: f64, sign: i8) -> Self {
         LogNum { value, sign }
     }
@@ -122,8 +118,12 @@ impl Add for LogNum {
         let max = if self.value >= rhs.value { &self } else { &rhs };
         let min = if self.value < rhs.value { &self } else { &rhs };
         if max.value == f64::INFINITY {
-            LogNum::new(max.value, max.sign)
-        } else if self.sign == rhs.sign {
+            return LogNum::new(max.value, max.sign);
+        }
+        if max.value == min.value && max.value == f64::NEG_INFINITY {
+            return ZERO;
+        }
+        if self.sign == rhs.sign {
             LogNum::new(
                 max.value + (1. + 10f64.powf(min.value - max.value)).log10(),
                 max.sign,
@@ -159,8 +159,8 @@ impl SubAssign for LogNum {
 
 impl Mul for LogNum {
     type Output = LogNum;
-
     fn mul(self, rhs: Self) -> LogNum {
+        if self.is_zero() || rhs.is_zero() { return LogNum::zero(); }
         LogNum::new(self.value + rhs.value, self.sign * rhs.sign)
     }
 }

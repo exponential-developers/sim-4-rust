@@ -322,6 +322,12 @@ mod tests {
 
         let roots = p.solve().unwrap();
         assert_eq!(roots.len(), 4);
+        
+        for i in 0..4{
+            for j in i+1..4{
+                assert_ne!(roots[i], roots[j]);
+            }
+        }
 
         for r in roots{
             assert!(acceptable(p.eval_complex(r),Complex::zero()));
