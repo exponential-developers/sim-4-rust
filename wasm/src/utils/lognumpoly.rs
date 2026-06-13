@@ -1,12 +1,12 @@
 use std::cmp::{max, PartialEq};
-use num::{Float, Zero};
-use crate::utils::lognum::{LogNum, ZERO};
-use std::ops::{
-    Add, AddAssign, Mul, MulAssign, Neg, Sub, SubAssign,
-};
+use std::f32::consts::PI;
+use num::{Complex, Zero};
+use crate::utils::lognum::{LogNum, ONE, ZERO};
+use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct LogNumPoly{
-    pub coefficients: Vec<LogNum>,
+    coefficients: Vec<LogNum>,
 }
 
 impl Zero for LogNumPoly {
@@ -19,10 +19,6 @@ impl Zero for LogNumPoly {
 }
 
 impl LogNumPoly {
-    pub fn new(coefficients: Vec<LogNum>) -> Self {
-        Self::from_coeffs(coefficients)
-    }
-
     pub fn order(&self) -> i32 {
         if self.is_zero() { return 0; }
         self.coefficients.len() as i32 - 1
@@ -41,20 +37,28 @@ impl LogNumPoly {
     }
 
     pub fn eval(&self, x: LogNum) -> LogNum {
-        if self.is_zero() { return ZERO; }
-        let mut rtn = ZERO;
-        for i in 0..self.coefficients.len() {
-            rtn += self.get_coefficient(i)*x.powi(i as i32);
+        let mut result = ZERO;
+        for coeff in self.coefficients.iter().rev() {
+            result = result * x + *coeff;
         }
-        rtn
+        result
     }
-    
+
+    pub fn eval_complex(&self, x: Complex<LogNum>) -> Complex<LogNum> {
+        let mut result = Complex::new(ZERO, ZERO);
+
+        for coeff in self.coefficients.iter().rev() {
+            result = result * x + Complex::new(*coeff, ZERO);
+        }
+        result
+    }
+
     pub fn differentiate(&self) -> LogNumPoly {
         let mut coefficients: Vec<LogNum> = vec![];
         for i in 1..self.coefficients.len() {
             coefficients.push(self.get_coefficient(i) * LogNum::from(i as i32));
         }
-        LogNumPoly{coefficients}
+        Self::from_coeffs(coefficients)
     }
 
     pub fn integrate_definite(&self, lower_bound : LogNum, upper_bound : LogNum) -> LogNum {
@@ -62,14 +66,74 @@ impl LogNumPoly {
         for i in 0..self.coefficients.len() {
             coefficients.push(self.get_coefficient(i) / LogNum::from(i as i32 + 1));
         }
-        let indefinite = LogNumPoly{coefficients};
+        let indefinite = Self::from_coeffs(coefficients);
         indefinite.eval(upper_bound) - indefinite.eval(lower_bound)
     }
 
-    fn from_coeffs(coefficients: Vec<LogNum>) -> Self {
+    pub fn from_coeffs(coefficients: Vec<LogNum>) -> Self {
         let mut p = LogNumPoly { coefficients };
         p.cleanup();
         p
+    }
+
+    pub fn normalize(&mut self) {
+        if self.is_zero() { return; }
+        *self /= *self.coefficients.last().unwrap();
+    }
+
+    pub fn solve(&mut self) -> Option<Vec<Complex<LogNum>>> {
+        self.normalize();
+        match self.order(){
+            0 => None,
+            1 => Some(vec!(Complex::from(-self.coefficients[0]))),
+            2 => {
+                let b = Complex::from(self.coefficients[1]);
+                let c = Complex::from(self.coefficients[0]);
+                let delta = b * b - c * LogNum::from(4);
+                Some(vec!((-b + delta.sqrt()) / LogNum::from(2),(-b - delta.sqrt()) / LogNum::from(2)))
+            },
+            n => {
+                //Durand–Kerner
+                //Initial Guess
+                let mut roots = Vec::new();
+                for k in 0..n {
+                    roots.push(Complex::from_polar(LogNum::from(1.3), LogNum::from(k as f64 / n as f64 * 2. * PI as f64)));
+                }
+                // Iteration
+                const MAX_ITER: usize = 100;
+                let eps = LogNum::from(1e-6);
+
+                for _ in 0..MAX_ITER {
+                    let mut converged = true;
+
+                    let old = roots.clone();
+
+                    for i in 0..n {
+                        let mut denom = Complex::new(ONE, ZERO);
+
+                        for j in 0..n {
+                            if i != j {
+                                denom *= old[i as usize] - old[j as usize];
+                            }
+                        }
+
+                        let correction =
+                            self.eval_complex(old[i as usize]) / denom;
+
+                        roots[i as usize] -= correction;
+
+                        if correction.norm() > eps {
+                            converged = false;
+                        }
+                    }
+
+                    if converged {
+                        return Some(roots);
+                    }
+                }
+                Some(roots)
+            }
+        }
     }
 }
 
@@ -146,7 +210,7 @@ impl Mul<LogNumPoly> for LogNumPoly {
         let mut coefficients: Vec<LogNum> = vec![ZERO; self.coefficients.len() + rhs.coefficients.len() - 1usize];
         for i in 0..self.coefficients.len(){
             for j in 0..rhs.coefficients.len(){
-                coefficients[i+j] += self.coefficients[i] * rhs.coefficients[j];
+                coefficients[i + j] += self.coefficients[i] * rhs.coefficients[j];
             }
         }
         Self::from_coeffs(coefficients)
@@ -186,5 +250,81 @@ impl MulAssign<LogNum> for LogNumPoly {
             *coeff *= rhs;
         }
         self.cleanup();
+    }
+}
+
+impl Div<LogNum> for LogNumPoly {
+    type Output = LogNumPoly;
+    fn div(mut self, rhs: LogNum) -> LogNumPoly {
+        if rhs.is_zero() {
+            panic!("division by zero");
+        }
+        for coeff in &mut self.coefficients {
+            *coeff = *coeff / rhs;
+        }
+        self.cleanup();
+        self
+    }
+}
+
+impl DivAssign<LogNum> for LogNumPoly {
+    fn div_assign(&mut self, rhs: LogNum) {
+        if rhs.is_zero() {
+            panic!("division by zero");
+        }
+        for coeff in &mut self.coefficients {
+            *coeff /= rhs;
+        }
+        self.cleanup();
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    fn acceptable(estimation : Complex<LogNum>, value : Complex<LogNum>) -> bool{
+        (value-estimation).norm() < LogNum::from(1e-6)
+    }
+    #[test]
+    fn poly_solve_order_1() {
+        let mut p = LogNumPoly::from_coeffs(vec![LogNum::from(1.0), LogNum::from(2.0)]);
+        let roots = p.solve().unwrap();
+        assert!(acceptable(roots[0], Complex::from(LogNum::from(-1./2.))));
+        assert_eq!(roots.len(), 1);
+    }
+    #[test]
+    fn poly_solve_order_2() {
+        let mut p = LogNumPoly::from_coeffs(vec![LogNum::from(-1.0), LogNum::from(0.0), LogNum::from(1.0)]);
+        let roots = p.solve().unwrap();
+        assert!(acceptable(roots[0], Complex::from(ONE)));
+        assert!(acceptable(roots[1], Complex::from(-ONE)));
+        assert_eq!(roots.len(), 2);
+    }
+
+    #[test]
+    fn poly_solve_order_2_im() {
+        let mut p = LogNumPoly::from_coeffs(vec![LogNum::from(1.0), LogNum::from(0.0), LogNum::from(1.0)]);
+        let roots = p.solve().unwrap();
+        assert!(acceptable(roots[0], Complex::i()));
+        assert!(acceptable(roots[1], -Complex::i()));
+        assert_eq!(roots.len(), 2);
+    }
+
+    #[test]
+    fn poly_solve_order_4_mixed() {
+        let mut p = LogNumPoly::from_coeffs(vec![
+            LogNum::from(-2.0), // constant
+            LogNum::from(1.0),  // x
+            LogNum::from(0.0),  // x^2
+            LogNum::from(1.0),  // x^3
+            LogNum::from(1.0),  // x^4
+        ]);
+
+        let roots = p.solve().unwrap();
+        assert_eq!(roots.len(), 4);
+
+        for r in roots{
+            assert!(acceptable(p.eval_complex(r),Complex::zero()));
+        }
     }
 }
