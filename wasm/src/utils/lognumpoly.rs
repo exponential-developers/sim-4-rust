@@ -81,7 +81,7 @@ impl LogNumPoly {
         *self /= *self.coefficients.last().unwrap();
     }
 
-    pub fn solve(&mut self) -> Vec<Complex<LogNum>> {
+    pub fn solve(&self) -> Vec<Complex<LogNum>> {
         let mut local = self.clone();
         local.normalize();
         match local.order(){
@@ -285,14 +285,14 @@ mod tests {
     }
     #[test]
     fn poly_solve_order_1() {
-        let mut p = LogNumPoly::from_coeffs(vec![LogNum::from(1.0), LogNum::from(2.0)]);
+        let p = LogNumPoly::from_coeffs(vec![LogNum::from(1.0), LogNum::from(2.0)]);
         let roots = p.solve();
         assert!(acceptable(roots[0], Complex::from(LogNum::from(-1./2.))));
         assert_eq!(roots.len(), 1);
     }
     #[test]
     fn poly_solve_order_2() {
-        let mut p = LogNumPoly::from_coeffs(vec![LogNum::from(-1.0), LogNum::from(0.0), LogNum::from(1.0)]);
+        let p = LogNumPoly::from_coeffs(vec![LogNum::from(-1.0), LogNum::from(0.0), LogNum::from(1.0)]);
         let roots = p.solve();
         assert!(acceptable(roots[0], Complex::from(ONE)));
         assert!(acceptable(roots[1], Complex::from(-ONE)));
@@ -301,7 +301,7 @@ mod tests {
 
     #[test]
     fn poly_solve_order_2_im() {
-        let mut p = LogNumPoly::from_coeffs(vec![LogNum::from(1.0), LogNum::from(0.0), LogNum::from(1.0)]);
+        let p = LogNumPoly::from_coeffs(vec![LogNum::from(1.0), LogNum::from(0.0), LogNum::from(1.0)]);
         let roots = p.solve();
         assert!(acceptable(roots[0], Complex::i()));
         assert!(acceptable(roots[1], -Complex::i()));
@@ -315,14 +315,13 @@ mod tests {
                 for c in -2..=2{
                     for d in -2..=2{
                         for e in -2..=2{
-                            let mut p = LogNumPoly::from_coeffs(vec![
+                            let p = LogNumPoly::from_coeffs(vec![
                                 LogNum::from(a), // constant
                                 LogNum::from(b),  // x
                                 LogNum::from(c),  // x^2
                                 LogNum::from(d),  // x^3
                                 LogNum::from(e),  // x^4
                             ]);
-                            p.cleanup();
 
                             let roots = p.solve();
                             assert_eq!(roots.len() as i32, p.order());
@@ -344,7 +343,7 @@ mod tests {
         v[10] = ONE;
         v[0] = -ONE;
 
-        let mut p = LogNumPoly::from_coeffs(v);
+        let p = LogNumPoly::from_coeffs(v);
 
         let roots = p.solve();
         assert_eq!(roots.len() as i32, p.order());
