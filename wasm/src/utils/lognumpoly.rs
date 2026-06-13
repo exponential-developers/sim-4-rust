@@ -94,7 +94,7 @@ impl LogNumPoly {
                 vec!((-b + delta.sqrt()) / LogNum::from(2),(-b - delta.sqrt()) / LogNum::from(2))
             },
             n => {
-                //Durand–Kerner
+                //https://en.wikipedia.org/wiki/Durand%E2%80%93Kerner_method
                 //Initial Guess
                 let mut roots = Vec::new();
                 for k in 0..n {
@@ -107,19 +107,17 @@ impl LogNumPoly {
                 for _ in 0..MAX_ITER {
                     let mut converged = true;
 
-                    let old = roots.clone();
-
                     for i in 0..n {
                         let mut denom = Complex::new(ONE, ZERO);
 
                         for j in 0..n {
                             if i != j {
-                                denom *= old[i as usize] - old[j as usize];
+                                denom *= roots[i as usize] - roots[j as usize];
                             }
                         }
 
                         let correction =
-                            local.eval_complex(old[i as usize]) / denom;
+                            local.eval_complex(roots[i as usize]) / denom;
 
                         roots[i as usize] -= correction;
 
@@ -353,7 +351,6 @@ mod tests {
         assert_eq!(roots.len() as i32, p.order());
 
         for r in roots{
-            println!("{}",r);
             assert!(acceptable(p.eval_complex(r),Complex::zero()));
         }
     }
