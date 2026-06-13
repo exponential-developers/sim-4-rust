@@ -116,8 +116,7 @@ impl LogNumPoly {
                             }
                         }
 
-                        let correction =
-                            local.eval_complex(roots[i as usize]) / denom;
+                        let correction = local.eval_complex(roots[i as usize]) / denom;
 
                         roots[i as usize] -= correction;
 
