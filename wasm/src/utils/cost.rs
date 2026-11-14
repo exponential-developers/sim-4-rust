@@ -257,5 +257,85 @@ mod tests {
         let c = Cost::new_constant(1e6);
         assert!(close(c.get_cost(0).value, 6.));
         assert!(close(c.get_cost(500).value, 6.));
+        // buying 5 levels costs 5 times the price; nothing for 0 levels
+        assert!(close(c.get_total_cost_to(5).value, 5e6f64.log10()));
+        assert_eq!(c.get_total_cost_to(0).value, f64::NEG_INFINITY);
+    }
+
+    /** Linear value of a cost, to compare with sums worked out by hand */
+    fn lin(x: LogNum) -> f64 {
+        10f64.powf(x.value)
+    }
+
+    fn rel_close(a: f64, b: f64) -> bool {
+        ((a - b) / b).abs() < 1e-12
+    }
+
+    #[test]
+    fn exponential_total_cost_is_a_geometric_sum() {
+        // levels cost 100, 1000, 10000, ... : the first 3 levels cost 11100
+        let c = Cost::new_exponential(100., 10.);
+        assert!(rel_close(lin(c.get_total_cost_to(3)), 11_100.));
+        assert!(rel_close(lin(c.get_total_cost_to(1)), 100.));
+        assert_eq!(c.get_total_cost_to(0).value, f64::NEG_INFINITY);
+        assert_eq!(c.get_cost_to(0).value, f64::NEG_INFINITY);
+        // through the generic (boxed) model too
+        let boxed = Cost::new(ExponentialCost::new(100., 10.));
+        assert!(rel_close(lin(boxed.get_total_cost_to(3)), 11_100.));
+        assert!(rel_close(lin(boxed.get_cost_to(2)), 1000.));
+    }
+
+    #[test]
+    fn log2_exponential_cost_uses_a_power_of_two_base() {
+        // base 2^(log2 10) = 10: same costs as base 10
+        let c = ExponentialCost::new_log2(100., 10f64.log2());
+        assert!(rel_close(lin(c.get_cost_to(1)), 100.));
+        assert!(rel_close(lin(c.get_cost_to(3)), 10_000.));
+    }
+
+    #[test]
+    fn first_free_cost_totals_skip_the_free_level() {
+        // levels cost 0 (free), 5, 10, 20, ...
+        let c = Cost::new(FirstFreeCost::new(ExponentialCost::new(5., 2.)));
+        assert!(rel_close(lin(c.get_total_cost_to(4)), 5. + 10. + 20.));
+    }
+
+    #[test]
+    fn stepwise_cost_keeps_the_price_for_step_levels() {
+        // price goes 100, 100, 100, 1000, 1000, 1000, 10000, ... (step of 3 levels)
+        let c = Cost::new(StepwiseCost::new(ExponentialCost::new(100., 10.), 3));
+        let prices: Vec<f64> = (1..=7).map(|l| lin(c.get_cost_to(l))).collect();
+        for (price, expected) in prices
+            .iter()
+            .zip([100., 100., 100., 1000., 1000., 1000., 10_000.])
+        {
+            assert!(rel_close(*price, expected), "{prices:?}");
+        }
+        assert_eq!(c.get_cost_to(0).value, f64::NEG_INFINITY);
+        // totals: 4 levels = 3*100 + 1000; 7 levels = 3*100 + 3*1000 + 10000
+        assert!(rel_close(lin(c.get_total_cost_to(4)), 1300.));
+        assert!(rel_close(lin(c.get_total_cost_to(7)), 13_300.));
+        assert_eq!(c.get_total_cost_to(0).value, f64::NEG_INFINITY);
+    }
+
+    #[test]
+    fn composite_cost_switches_model_after_the_cutoff() {
+        // 3 levels at a constant 50, then 1000, 10000, ...
+        let c = Cost::new(CompositeCost::new(
+            ConstantCost::new(50.),
+            ExponentialCost::new(1000., 10.),
+            3,
+        ));
+        let prices: Vec<f64> = (1..=5).map(|l| lin(c.get_cost_to(l))).collect();
+        for (price, expected) in prices.iter().zip([50., 50., 50., 1000., 10_000.]) {
+            assert!(rel_close(*price, expected), "{prices:?}");
+        }
+        assert_eq!(c.get_cost_to(0).value, f64::NEG_INFINITY);
+        assert!(rel_close(lin(c.get_total_cost_to(2)), 100.));
+        assert!(rel_close(
+            lin(c.get_total_cost_to(5)),
+            150. + 1000. + 10_000.
+        ));
+        assert_eq!(c.get_total_cost_to(-1).value, f64::NEG_INFINITY);
     }
 }

@@ -25,6 +25,18 @@
 
 /* Phones */
 @media screen and (max-width: 500px) {
+  /* Results: tighter cells; the table scrolls sideways inside its card */
+  .simTable th,
+  .simTable td {
+    padding: 0.35rem 0.5rem;
+  }
+  /* Shadow on the right edge while there's more table to scroll to */
+  .table-wrapper {
+    background:
+      linear-gradient(to left, var(--table-bg) 30%, transparent) right / 2rem 100% no-repeat local,
+      linear-gradient(to left, rgba(0, 0, 0, 0.25), transparent) right / 0.75rem 100% no-repeat scroll,
+      var(--table-bg);
+  }
   .nav {
     padding-block: 0.6rem;
   }
@@ -68,16 +80,6 @@
   }
   .settings-row select {
     max-width: 100%;
-  }
-  .saveDist::before {
-    content: "Saved!";
-    position: absolute;
-    inset: 0;
-    transition: opacity 500ms;
-    color: var(--text);
-    font-size: 0.7rem;
-    opacity: 0;
-    top: -90%;
   }
   .boughtVars table,
   .boughtVars tr,

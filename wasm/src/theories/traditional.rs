@@ -207,11 +207,7 @@ pub fn log_to_exp(num: f64, dec: i32) -> String {
 
 /** Returns the last bought level of `name` in a purchase list, 0 if none (sim-3 `getLastLevel`) */
 pub fn get_last_level(name: &str, bought: &[VarBuy]) -> i32 {
-    bought
-        .iter()
-        .rev()
-        .find(|b| b.var_name == name)
-        .map_or(0, |b| b.level)
+    crate::utils::get_last_purchase(name, bought).unwrap_or(0)
 }
 
 /**

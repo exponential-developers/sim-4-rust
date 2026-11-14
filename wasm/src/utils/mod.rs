@@ -16,13 +16,47 @@ pub mod var_buy;
 
 use var_buy::VarBuy;
 
-/** Returns the last purchase for a given variable in a varbuy list */
+/**
+ * Returns the level reached by the most recent purchase of `var_name` in a purchase list
+ * (purchases are in chronological order), or None if it was never bought.
+ */
 pub fn get_last_purchase(var_name: &str, var_buy_list: &[VarBuy]) -> Option<i32> {
-    for buy in var_buy_list {
-        if buy.symbol == var_name {
-            return Some(buy.level);
+    var_buy_list
+        .iter()
+        .rev()
+        .find(|buy| buy.var_name == var_name)
+        .map(|buy| buy.level)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::utils::lognum::LogNum;
+
+    fn buy(var_name: &str, level: i32) -> VarBuy {
+        VarBuy {
+            var_name: var_name.to_owned(),
+            level,
+            cost: LogNum::from(10.),
+            symbol: "rho".to_owned(),
+            timestamp: 0.,
         }
     }
 
-    None
+    #[test]
+    fn last_purchase_is_the_most_recent_one_of_that_variable() {
+        let list = [
+            buy("q1", 1),
+            buy("c1", 1),
+            buy("q1", 2),
+            buy("q1", 3),
+            buy("c1", 2),
+        ];
+        assert_eq!(get_last_purchase("q1", &list), Some(3));
+        assert_eq!(get_last_purchase("c1", &list), Some(2));
+        assert_eq!(get_last_purchase("c3", &list), None);
+        // matches on the variable name, not the currency symbol
+        assert_eq!(get_last_purchase("rho", &list), None);
+        assert_eq!(get_last_purchase("q1", &[]), None);
+    }
 }

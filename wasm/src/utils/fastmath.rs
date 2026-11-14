@@ -1,4 +1,4 @@
-/**
+/*!
  * log10 / pow used in the simulation hot loop.
  *
  * WebAssembly has no built-in log10 or pow, so Rust's versions are compiled into the module

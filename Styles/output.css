@@ -1,8 +1,37 @@
-/* Status / error line (next to the Simulate button) */
+/* Status / error line (next to the Simulate button); main.ts sets data-state */
 .output {
   font-size: 0.85rem;
   color: var(--text-muted);
   margin-left: 0.4rem;
+}
+.output[data-state="running"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text);
+}
+.output[data-state="running"]::before {
+  content: "";
+  width: 0.9em;
+  height: 0.9em;
+  border-radius: 50%;
+  border: 2px solid var(--accent-soft);
+  border-top-color: var(--accent);
+  animation: spin 0.8s linear infinite;
+}
+.output[data-state="error"] {
+  color: var(--danger);
+  font-weight: 500;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .output[data-state="running"]::before {
+    animation-duration: 3s;
+  }
 }
 
 /* Results section */

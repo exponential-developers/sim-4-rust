@@ -71,10 +71,54 @@ fn diff(label: &str, expected: &Value, actual: &Value) -> Option<String> {
 fn assert_no_failures(failures: Vec<String>, total: usize) {
     assert!(
         failures.is_empty(),
-        "{} of {total} cases differ from sim-3:\n{}",
+        "{} of {total} cases differ from sim-3:
+{}{}",
         failures.len(),
-        failures.join("\n")
+        failures.join(
+            "
+"
+        ),
+        node_version_hint()
     );
+}
+
+/** Node.js version running the tests, e.g. "v26.12.1" (read from `process.versions.node`) */
+fn running_node_version() -> Option<String> {
+    let get = |obj: &wasm_bindgen::JsValue, key: &str| js_sys::Reflect::get(obj, &key.into()).ok();
+    let version = get(&get(&js_sys::global().into(), "process")?, "versions")
+        .and_then(|versions| get(&versions, "node"))?
+        .as_string()?;
+    Some(format!("v{version}"))
+}
+
+/** Node.js version the fixtures were generated with, from their `source` field */
+fn fixture_node_version() -> Option<String> {
+    let source = fixtures()["source"].as_str()?.to_owned();
+    Some(source.split("Node ").nth(1)?.trim().to_owned())
+}
+
+fn major(version: &str) -> &str {
+    version.split('.').next().unwrap_or(version)
+}
+
+/** Explains failures caused by running a different Node major version than the fixtures used */
+fn node_version_hint() -> String {
+    match (fixture_node_version(), running_node_version()) {
+        (Some(f), Some(r)) if major(&f) != major(&r) => format!(
+            "
+
+The fixtures were generated with Node {f} but the tests run on Node {r}. JavaScript engines              differ in the last digit of Math.log10/Math.pow, so results are only bit-identical on the same              Node major version: run the tests with Node {} or regenerate the fixtures (bench/make-fixtures.js).",
+            major(&f)
+        ),
+        _ => String::new(),
+    }
+}
+
+#[wasm_bindgen_test]
+fn fixtures_match_the_running_node_version() {
+    let fixture = fixture_node_version().expect("fixture source should record the Node version");
+    let running = running_node_version().expect("tests should run in Node");
+    assert_eq!(major(&fixture), major(&running), "{}", node_version_hint());
 }
 
 #[wasm_bindgen_test]

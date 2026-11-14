@@ -30,19 +30,17 @@ export const removeAllChilds = (element: HTMLElement) => {
 export function downloadString(str: string, filename: string) {
     const blob = new Blob([str], { type: 'text/csv;charset=utf-8;' });
 
-    // Create a URL for the blob
-    if ((navigator as any).msSaveBlob) { // IE 10+
-        (navigator as any).msSaveBlob(blob, filename);
-    } else {
-        const link = ce('a');
-        const url = URL.createObjectURL(blob);
-        link.setAttribute('href', url);
-        link.setAttribute('download', filename);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link); // Clean up the DOM element
-    }
+    // Download through a temporary link. (The old IE 10 msSaveBlob fallback was removed: the site
+    // needs modules, WebAssembly and workers, which IE never supported.)
+    const link = ce('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
 }
 
 export function getTableHeaders(tableType: "single" | "all" | "all_one", headerType: "html" | "text", sigma?: number): string[] {

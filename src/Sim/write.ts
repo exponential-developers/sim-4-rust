@@ -311,9 +311,8 @@ export function writeSimResponse(response: SimResponse) {
         lastPubTable = response;
         downloadPubTableButton.style.display = "";
         const total = response.pub_table[response.pub_table.length - 1][0];
-        const output = qs(".output");
-        // Shown after main.ts clears the status line
-        setTimeout(() => output.textContent = `Pub table ready (${response.pub_table.length} rows, ${convertTime(total)} from start to cap). Use "Download Pub Table".`);
+        // main.ts clears the status line before writing results
+        qs(".output").textContent = `Pub table ready (${response.pub_table.length} rows, ${convertTime(total)} from start to cap). Use "Download Pub Table".`;
         return;
     }
     downloadPubTableButton.style.display = "none";

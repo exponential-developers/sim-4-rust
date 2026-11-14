@@ -13,9 +13,11 @@ These apply to every change, and are checked in CI (`.github/workflows/tests.yml
 ```sh
 cargo fmt --manifest-path wasm/Cargo.toml --check
 cargo clippy --release --all-targets --manifest-path wasm/Cargo.toml -- -D warnings
+cargo clippy --release --all-targets --target wasm32-unknown-unknown --manifest-path wasm/Cargo.toml -- -D warnings
 cargo test --release --manifest-path wasm/Cargo.toml
 wasm-pack test --node --release wasm --test sim3_parity
 npm run lint
+npm test
 npm run build
 ```
 
@@ -63,6 +65,7 @@ npm run build
 | `bench/` | Node scripts that compare the Rust sim with sim-3 and time both, and generate the parity fixtures. |
 | `Styles/` | CSS. Every color is a token defined per theme in `themes.css`. |
 | `eslint.config.mjs`, `eslint-suppressions.json` | ESLint setup, and the list of errors that predate it (see "Rules for every change"). |
+| `src/**/*.test.ts`, `src/test/setup.ts`, `vitest.config.mjs` | Website tests (Vitest + jsdom). The setup loads `index.html` into the test DOM, so page modules can be imported as-is. |
 
 ## Build and run
 
@@ -90,6 +93,7 @@ wasm-pack test --node --release wasm --test sim3_parity       # parity with sim-
 cargo clippy --release --all-targets --manifest-path wasm/Cargo.toml -- -D warnings
 cargo fmt --manifest-path wasm/Cargo.toml                     # format Rust
 npm run lint                                                  # ESLint (eslint.config.mjs)
+npm test                                                      # website tests (Vitest, src/**/*.test.ts)
 ```
 
 All of these run in CI (`.github/workflows/tests.yml`), along with `npm run build`.

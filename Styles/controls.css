@@ -81,10 +81,6 @@
   color: var(--text-muted);
 }
 
-.saveDist {
-  position: relative;
-}
-
 textarea {
   resize: vertical;
   padding: 0.45rem 0.6rem;

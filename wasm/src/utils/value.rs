@@ -207,4 +207,23 @@ mod tests {
             (1. + expected(12)).log10()
         ));
     }
+
+    #[test]
+    fn linear_value_adds_the_slope_each_level() {
+        // value = 3 + 2 * level
+        let v = Value::new_linear(2., 3.);
+        assert!(close(v.compute_from_zero(0).value, 3f64.log10()));
+        assert!(close(v.compute_from_zero(10).value, 23f64.log10()));
+        assert!(close(
+            v.compute_next(LogNum::from(23.), 10).value,
+            25f64.log10()
+        ));
+    }
+
+    #[test]
+    fn boxed_models_dispatch_to_the_model() {
+        let v = Value::new(ExponentialValue::new(10.));
+        assert!(close(v.compute_from_zero(3).value, 3.));
+        assert!(close(v.compute_next(LogNum::from(1.), 3).value, 4.));
+    }
 }

@@ -228,6 +228,11 @@ impl Mul<LogNumPoly> for LogNumPoly {
 
 impl MulAssign<LogNumPoly> for LogNumPoly {
     fn mul_assign(&mut self, rhs: LogNumPoly) {
+        // Same guard as `mul`: with two zero polynomials, the size below would underflow
+        if self.is_zero() || rhs.is_zero() {
+            *self = LogNumPoly::zero();
+            return;
+        }
         let mut coefficients: Vec<LogNum> =
             vec![ZERO; self.coefficients.len() + rhs.coefficients.len() - 1usize];
 
@@ -354,6 +359,132 @@ mod tests {
                 }
             }
         }
+    }
+
+    /** Polynomial from plain-number coefficients, constant term first */
+    fn poly(coeffs: &[f64]) -> LogNumPoly {
+        LogNumPoly::from_coeffs(coeffs.iter().map(|&c| LogNum::from(c)).collect())
+    }
+
+    /** Plain-number coefficients of a polynomial, constant term first */
+    fn coeffs(p: &LogNumPoly) -> Vec<f64> {
+        use num::ToPrimitive;
+        (0..=p.order() as usize)
+            .take(if p.is_zero() { 0 } else { usize::MAX })
+            .map(|i| p.get_coefficient(i).to_f64().unwrap())
+            .collect()
+    }
+
+    #[track_caller]
+    fn assert_coeffs(p: &LogNumPoly, expected: &[f64]) {
+        let actual = coeffs(p);
+        assert_eq!(actual.len(), expected.len(), "{actual:?} vs {expected:?}");
+        for (a, e) in actual.iter().zip(expected) {
+            assert!((a - e).abs() < 1e-9, "{actual:?} vs {expected:?}");
+        }
+    }
+
+    fn real(x: LogNum) -> f64 {
+        use num::ToPrimitive;
+        x.to_f64().unwrap()
+    }
+
+    #[test]
+    fn order_coefficients_and_trailing_zeros() {
+        let zero = LogNumPoly::zero();
+        assert!(zero.is_zero());
+        assert_eq!(zero.order(), 0);
+        // trailing zero coefficients are dropped: 1 + 2x + 0x^2 + 0x^3 has order 1
+        let p = poly(&[1., 2., 0., 0.]);
+        assert_eq!(p.order(), 1);
+        assert_eq!(p.get_coefficient(5), ZERO);
+        assert!(poly(&[0., 0.]).is_zero());
+    }
+
+    #[test]
+    fn evaluation_derivative_and_integral() {
+        let p = poly(&[1., 2., 3.]); // 1 + 2x + 3x^2
+        assert!((real(p.eval(LogNum::from(2.))) - 17.).abs() < 1e-9);
+        assert!((real(p.eval(LogNum::from(-1.))) - 2.).abs() < 1e-9);
+        // at x = i: 1 + 2i - 3 = -2 + 2i
+        let v = p.eval_complex(Complex::new(ZERO, ONE));
+        assert!((real(v.re) + 2.).abs() < 1e-9 && (real(v.im) - 2.).abs() < 1e-9);
+
+        assert_coeffs(&p.derivative(), &[2., 6.]);
+        assert!(poly(&[5.]).derivative().is_zero());
+
+        // integral of 1 + 2x + 3x^2 from 0 to 2 = [x + x^2 + x^3] = 14
+        assert!((real(p.definite_int(ZERO, LogNum::from(2.))) - 14.).abs() < 1e-9);
+        assert!((real(p.definite_int(LogNum::from(1.), LogNum::from(2.))) - 11.).abs() < 1e-9);
+    }
+
+    #[test]
+    fn normalize_makes_the_leading_coefficient_one() {
+        let mut p = poly(&[4., 2.]); // 2x + 4 -> x + 2
+        p.normalize();
+        assert_coeffs(&p, &[2., 1.]);
+        let mut zero = LogNumPoly::zero();
+        zero.normalize();
+        assert!(zero.is_zero());
+        // a constant has no roots
+        assert!(poly(&[3.]).solve().is_empty());
+    }
+
+    #[test]
+    fn polynomial_arithmetic() {
+        let a = poly(&[1., 1.]); // x + 1
+        let b = poly(&[-1., 1.]); // x - 1
+        assert_coeffs(&(a.clone() + b.clone()), &[0., 2.]);
+        assert_coeffs(&(a.clone() - b.clone()), &[2.]); // x terms cancel: order drops
+        assert_coeffs(&(-a.clone()), &[-1., -1.]);
+        assert_coeffs(&(a.clone() * b.clone()), &[-1., 0., 1.]); // x^2 - 1
+        assert!((a.clone() * LogNumPoly::zero()).is_zero());
+        assert!((LogNumPoly::zero() * a.clone()).is_zero());
+
+        let mut c = a.clone();
+        c += poly(&[0., 0., 3.]);
+        assert_coeffs(&c, &[1., 1., 3.]);
+        c -= poly(&[0., 0., 3.]);
+        assert_coeffs(&c, &[1., 1.]);
+        c -= a.clone();
+        assert!(c.is_zero());
+
+        let mut d = a.clone();
+        d *= b.clone();
+        assert_coeffs(&d, &[-1., 0., 1.]);
+        let mut z = LogNumPoly::zero();
+        z *= LogNumPoly::zero(); // must not underflow
+        assert!(z.is_zero());
+        d *= LogNumPoly::zero();
+        assert!(d.is_zero());
+    }
+
+    #[test]
+    fn scalar_multiplication_and_division() {
+        let p = poly(&[1., 2.]);
+        assert_coeffs(&(p.clone() * LogNum::from(3.)), &[3., 6.]);
+        assert!((p.clone() * ZERO).is_zero());
+        assert_coeffs(&(p.clone() / LogNum::from(2.)), &[0.5, 1.]);
+        let mut q = p.clone();
+        q *= LogNum::from(-2.);
+        assert_coeffs(&q, &[-2., -4.]);
+        q /= LogNum::from(-2.);
+        assert_coeffs(&q, &[1., 2.]);
+        q *= ZERO;
+        assert!(q.is_zero());
+    }
+
+    #[test]
+    #[should_panic(expected = "division by zero")]
+    fn dividing_by_zero_panics() {
+        let _ = poly(&[1., 2.]) / ZERO;
+    }
+
+    #[test]
+    #[should_panic(expected = "division by zero")]
+    fn dividing_in_place_by_zero_panics() {
+        let mut p = poly(&[1., 2.]);
+        p /= ZERO;
     }
 
     #[test]

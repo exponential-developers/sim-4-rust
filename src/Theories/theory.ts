@@ -7,6 +7,15 @@ import {
 } from "../Utils/helpers";
 import jsonData from "../Data/data.json";
 
+/**
+ * What `doForkVariable` needs from a copy of a sim. (CSR2's simulate takes a parameter, so this
+ * accepts any simulate signature.)
+ */
+interface ForkableSim {
+  variables: Variable[];
+  simulate(...args: never[]): Promise<simResult>;
+}
+
 /** Base class for a theory */
 export default abstract class theoryClass<theory extends theoryType> {
   /** Theory */
@@ -466,7 +475,7 @@ export default abstract class theoryClass<theory extends theoryType> {
     }
   }
 
-  copy(): any {
+  copy(): ForkableSim {
     throw new Error("Please implement `copy` method");
   }
 

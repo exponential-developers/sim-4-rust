@@ -219,11 +219,14 @@ export function reverseMulti(theory: string, value: number, sigma: number) {
   const divSigmaMulti = (exp: number, div: number) => (value - R9 + l10(div)) * (1 / exp);
   const multSigmaMulti = (exp: number, mult: number) => (value - R9 - l10(mult)) * (1 / exp);
   const sigmaMulti = (exp: number) => (value - R9) * (1 / exp);
+  // Ported theories use sim-3's exact formula and operation order (traditionalConverter:
+  // (value - multFactor - r9) / multExponent), so results match sim-3 bit for bit.
+  const sim3Multi = (multExponent: number, multFactor: number) => (value - multFactor - R9) / multExponent;
   switch (theory) {
     case "T1":
-      return divSigmaMulti(0.164, 3);
+      return sim3Multi(0.164, -l10(3));
     case "T2":
-      return divSigmaMulti(0.198, 100);
+      return sim3Multi(0.198, -l10(100));
     case "T3":
       return multSigmaMulti(0.147, 3);
     case "T4":

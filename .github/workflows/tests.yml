@@ -40,6 +40,10 @@ jobs:
       - name: Lint (clippy, no warnings allowed)
         run: cargo clippy --release --all-targets --manifest-path wasm/Cargo.toml -- -D warnings
 
+      # Also lint the WebAssembly build: some code (e.g. the Math imports in fastmath.rs) only exists there
+      - name: Lint (clippy, WebAssembly target)
+        run: cargo clippy --release --all-targets --target wasm32-unknown-unknown --manifest-path wasm/Cargo.toml -- -D warnings
+
       - name: Unit tests
         run: cargo test --release --manifest-path wasm/Cargo.toml
 
@@ -52,6 +56,9 @@ jobs:
       # Fails on new ESLint errors; existing ones are listed in eslint-suppressions.json
       - name: Lint (ESLint)
         run: npm run lint
+
+      - name: TypeScript tests (Vitest)
+        run: npm test
 
       # Builds the wasm module and the website (webpack type-checks all TypeScript)
       - name: Build
@@ -69,15 +76,18 @@ jobs:
         with:
           components: llvm-tools-preview
 
+      # Prebuilt binary (compiling it from source adds about a minute)
       - name: Install cargo-llvm-cov
-        run: cargo install cargo-llvm-cov --locked
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-llvm-cov
 
       # Unit tests + the native coverage run (tests/coverage_cases.rs). Fails if line coverage of
       # wasm/src drops below the threshold; raise it as coverage improves (goal: 100%).
       - name: Coverage
         working-directory: wasm
         run: |
-          cargo llvm-cov --release --lcov --output-path lcov.info --fail-under-lines 80 -- --include-ignored
+          cargo llvm-cov --release --lcov --output-path lcov.info --fail-under-lines 97 -- --include-ignored
           cargo llvm-cov report --release --summary-only
 
       - name: Upload coverage report

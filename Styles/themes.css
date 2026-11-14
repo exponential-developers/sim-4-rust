@@ -23,6 +23,7 @@
 
   --success: #3fb67a;
   --success-contrast: #ffffff;
+  --danger: #ff8a80;
 
   --table-bg: #ffffff;
   --table-alt: #f1f0f8;
@@ -59,6 +60,7 @@
 }
 
 :root[theme="light"] {
+  --danger: #c62828;
   color-scheme: light;
   --bg: #f4f5f9;
   --bg-image: none;
@@ -157,6 +159,7 @@
 }
 
 :root[theme="zalut-sky"] {
+  --danger: #c62828;
   color-scheme: light;
   --bg: #a9d9f1;
   --bg-image: linear-gradient(180deg, #87ceeb 0%, #cdeaf8 100%);
@@ -233,6 +236,7 @@
 }
 
 :root[theme="solarized-light"] {
+  --danger: #c62828;
   color-scheme: light;
   --bg: #fdf6e3;
   --bg-image: none;
@@ -332,6 +336,7 @@
 }
 
 :root[theme="high-contrast"] {
+  --danger: #ff6b6b;
   --bg: #000000;
   --bg-image: none;
   --surface: #000000;

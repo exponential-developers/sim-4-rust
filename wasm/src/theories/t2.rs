@@ -126,6 +126,31 @@ pub fn simulate_t2(strat: T2Strat, input: &TheoryInput) -> SimResult {
     }
 }
 
+/**
+ * Cache of the no-purchase ROI integrand parts `(q, r)` by sample time, for one buying round.
+ * The integration evaluates at most a handful of points, so a small list is enough.
+ */
+#[derive(Default)]
+struct RoiBaseline {
+    points: std::cell::RefCell<Vec<(f64, (f64, f64))>>,
+}
+
+impl RoiBaseline {
+    fn get(&self, t: f64, compute: impl FnOnce() -> (f64, f64)) -> (f64, f64) {
+        if let Some(&(_, v)) = self
+            .points
+            .borrow()
+            .iter()
+            .find(|(pt, _)| pt.to_bits() == t.to_bits())
+        {
+            return v;
+        }
+        let v = compute();
+        self.points.borrow_mut().push((t, v));
+        v
+    }
+}
+
 /** log10 constants, computed once per sim */
 #[derive(Debug, Clone)]
 struct T2Consts {
@@ -515,20 +540,56 @@ impl T2Sim {
         result
     }
 
-    /** Integral of the extra rho gained by applying `increase` to the variables (sim-3 `calculateRoi`) */
-    fn calculate_roi(&self, increase: &[f64; 8], t0: f64, t1: f64) -> f64 {
+    /** Q and R parts of the rho integrand without any purchase, at time `t` (log10) */
+    fn baseline_at(&self, t: f64) -> (f64, f64) {
         let v: [f64; 8] = std::array::from_fn(|i| self.val(i));
-        let d: [f64; 8] = std::array::from_fn(|i| add_log(increase[i], v[i]));
         let ms = &self.core.milestones;
         let q1exp = 1. + 0.05 * ms[2] as f64;
         let r1exp = 1. + 0.05 * ms[3] as f64;
-        let (m0, m1) = (ms[0], ms[1]);
+        (
+            self.rho_dot_time_factor(t, q1exp, ms[0], &v[0..4], &self.q),
+            self.rho_dot_time_factor(t, r1exp, ms[1], &v[4..8], &self.r),
+        )
+    }
+
+    /**
+     * Integral of the extra rho gained by increasing variable `candidate`'s value by `increase`
+     * (sim-3 `calculateRoi` with a single non-zero increase).
+     *
+     * sim-3 recomputes four integrand parts for every candidate. Here the parts that don't depend on
+     * the candidate are shared, which gives bit-identical results with far fewer log10/pow calls:
+     * - the no-purchase parts (`baseline`) are the same for every candidate in a buying round, and
+     *   the integration samples the same points each time, so they are cached per point;
+     * - a q candidate doesn't change the R part (and an r candidate the Q part): there, sim-3's
+     *   "new" value equals the no-purchase value exactly, because log10(0 + 10^v) = v.
+     */
+    fn calculate_roi(
+        &self,
+        candidate: usize,
+        increase: f64,
+        t0: f64,
+        t1: f64,
+        baseline: &RoiBaseline,
+    ) -> f64 {
+        let ms = &self.core.milestones;
+        let (is_q, slot) = (candidate < 4, candidate % 4);
+        let (exp, milestone_count, sums) = if is_q {
+            (1. + 0.05 * ms[2] as f64, ms[0], &self.q)
+        } else {
+            (1. + 0.05 * ms[3] as f64, ms[1], &self.r)
+        };
+        let offset = if is_q { 0 } else { 4 };
+        let mut d: [f64; 4] = std::array::from_fn(|i| self.val(offset + i));
+        d[slot] = add_log(increase, d[slot]);
 
         let rho_integral = |t: f64| -> f64 {
-            let new_q = self.rho_dot_time_factor(t, q1exp, m0, &d[0..4], &self.q);
-            let new_r = self.rho_dot_time_factor(t, r1exp, m1, &d[4..8], &self.r);
-            let old_q = self.rho_dot_time_factor(t, q1exp, m0, &v[0..4], &self.q);
-            let old_r = self.rho_dot_time_factor(t, r1exp, m1, &v[4..8], &self.r);
+            let (old_q, old_r) = baseline.get(t, || self.baseline_at(t));
+            let changed = self.rho_dot_time_factor(t, exp, milestone_count, &d, sums);
+            let (new_q, new_r) = if is_q {
+                (changed, old_r)
+            } else {
+                (old_q, changed)
+            };
             self.core.tot_mult + sub_log(new_q + new_r, old_q + old_r)
         };
 
@@ -569,11 +630,9 @@ impl T2Sim {
 
             let ms = &self.core.milestones;
             let (m0, m1) = (ms[0], ms[1]);
-            let roi_for = |i: usize| {
-                let mut inc = [f64::NEG_INFINITY; 8];
-                inc[i] = var_increase[i];
-                self.calculate_roi(&inc, t0, t1)
-            };
+            // No-purchase integrand values, shared by every candidate of this buying round
+            let baseline = RoiBaseline::default();
+            let roi_for = |i: usize| self.calculate_roi(i, var_increase[i], t0, t1, &baseline);
             let roi2: [f64; 8] = [
                 roi_for(0),
                 roi_for(1),
@@ -657,5 +716,215 @@ impl T2Sim {
             extra += &format!(" c1:{c1} c2:{c2} c3: {c3}");
         }
         self.core.create_result(self.strat.name(), &extra)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn input(rho: f64, sigma: i64) -> TheoryInput {
+        TheoryInput {
+            sigma,
+            last_pub_rho: rho,
+            rho_cap: f64::INFINITY,
+            params: SimParams::default(),
+        }
+    }
+
+    fn rel_close(a: f64, b: f64, tol: f64) -> bool {
+        ((a - b) / b).abs() < tol
+    }
+
+    /** Runs the normal sim loop for `ticks` ticks, to get a realistic mid-publication state */
+    fn advance(sim: &mut T2Sim, ticks: usize) {
+        for _ in 0..ticks {
+            sim.tick();
+            sim.core.update_sim_status();
+            let priority = sim.milestone_priority();
+            sim.core.update_milestones(&priority);
+            sim.buy_variables();
+        }
+    }
+
+    /** sim-3's calculateRoi written out without any caching: the reference for `calculate_roi` */
+    fn roi_uncached(sim: &T2Sim, candidate: usize, increase: f64, t0: f64, t1: f64) -> f64 {
+        let v: [f64; 8] = std::array::from_fn(|i| sim.val(i));
+        let mut inc = [f64::NEG_INFINITY; 8];
+        inc[candidate] = increase;
+        let d: [f64; 8] = std::array::from_fn(|i| add_log(inc[i], v[i]));
+        let ms = &sim.core.milestones;
+        let (q1exp, r1exp) = (1. + 0.05 * ms[2] as f64, 1. + 0.05 * ms[3] as f64);
+        let f = |t: f64| {
+            let new_q = sim.rho_dot_time_factor(t, q1exp, ms[0], &d[0..4], &sim.q);
+            let new_r = sim.rho_dot_time_factor(t, r1exp, ms[1], &d[4..8], &sim.r);
+            let old_q = sim.rho_dot_time_factor(t, q1exp, ms[0], &v[0..4], &sim.q);
+            let old_r = sim.rho_dot_time_factor(t, r1exp, ms[1], &v[4..8], &sim.r);
+            sim.core.tot_mult + sub_log(new_q + new_r, old_q + old_r)
+        };
+        let value = sim.integrate(&f, t0, t1, 1e-1, 1);
+        if value.neg {
+            f64::NEG_INFINITY
+        } else {
+            value.value
+        }
+    }
+
+    #[test]
+    fn cached_roi_is_bit_identical_to_sim3_calculation() {
+        // states with 0, 1 and 2 q/r milestones, at several points of the publication
+        for (rho, sigma, ticks) in [
+            (30., 40, 200),
+            (60., 60, 1500),
+            (150., 90, 4000),
+            (240., 140, 6000),
+        ] {
+            let mut sim = T2Sim::new(T2Strat::T2ROIMS, &input(rho, sigma));
+            advance(&mut sim, ticks);
+            let (t0, t1) = (l10(sim.core.t), l10(sim.core.t * 3.));
+            let baseline = RoiBaseline::default();
+            for candidate in 0..8 {
+                if !sim.variable_available(candidate) {
+                    continue;
+                }
+                let next = sim.vars[candidate]
+                    .value_model
+                    .compute_from_zero(sim.vars[candidate].level + 1)
+                    .value;
+                let increase = sub_log(next, sim.val(candidate));
+                let expected = roi_uncached(&sim, candidate, increase, t0, t1);
+                let actual = sim.calculate_roi(candidate, increase, t0, t1, &baseline);
+                assert_eq!(
+                    actual.to_bits(),
+                    expected.to_bits(),
+                    "e{rho} after {ticks} ticks, candidate {candidate}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn roi_baseline_computes_each_point_once() {
+        let cache = RoiBaseline::default();
+        let calls = std::cell::Cell::new(0);
+        let compute = |v: f64| {
+            calls.set(calls.get() + 1);
+            (v, v * 2.)
+        };
+        assert_eq!(cache.get(1.5, || compute(1.)), (1., 2.));
+        assert_eq!(cache.get(1.5, || compute(9.)), (1., 2.)); // cached: not recomputed
+        assert_eq!(cache.get(2.5, || compute(3.)), (3., 6.));
+        assert_eq!(calls.get(), 2);
+    }
+
+    #[test]
+    fn ft_functions_are_the_q1_integrals() {
+        // In linear terms (T = 10^t): ft2 = dq1 (dq2 T^2/2 + q2 T) + q1,
+        // ft3 = dq1 (dq2 (dq3 T^3/6 + q3 T^2/2) + q2 T) + q1 T, and ft4 one order higher.
+        let sim = T2Sim::new(T2Strat::T2, &input(50., 60));
+        let (t, tt) = (1.3, 10f64.powf(1.3));
+        let d = [0.2, -0.1, 0.4, 0.3];
+        let q = [1.0, 0.5, -0.2, 0.1];
+        let [d1, d2, d3, d4] = d.map(|x| 10f64.powf(x));
+        let [q1, q2, q3, q4] = q.map(|x| 10f64.powf(x));
+        let ft2 = d1 * (d2 * tt * tt / 2. + q2 * tt) + q1;
+        let ft3 = d1 * (d2 * (d3 * tt.powi(3) / 6. + q3 * tt * tt / 2.) + q2 * tt) + q1 * tt;
+        let ft4 = d1
+            * (d2 * (d3 * (d4 * tt.powi(4) / 24. + q4 * tt.powi(3) / 6.) + q3 * tt * tt / 2.)
+                + q2 * tt)
+            + q1 * tt;
+        assert!(rel_close(10f64.powf(sim.ft2(t, &d, &q)), ft2, 1e-12));
+        assert!(rel_close(10f64.powf(sim.ft3(t, &d, &q)), ft3, 1e-12));
+        assert!(rel_close(10f64.powf(sim.ft4(t, &d, &q)), ft4, 1e-12));
+
+        // rho_dot_time_factor picks the integral by milestone count and raises it to `exp`
+        assert_eq!(
+            sim.rho_dot_time_factor(t, 1.1, 0, &d, &q),
+            sim.ft2(t, &d, &q) * 1.1
+        );
+        assert_eq!(
+            sim.rho_dot_time_factor(t, 1.1, 2, &d, &q),
+            sim.ft4(t, &d, &q) * 1.1
+        );
+        assert_eq!(
+            sim.rho_dot_time_factor(t, 1.1, 3, &d, &q),
+            f64::NEG_INFINITY
+        );
+    }
+
+    #[test]
+    fn integrate_matches_exact_integrals() {
+        let sim = T2Sim::new(T2Strat::T2, &input(50., 60));
+        // f(x) = log10 of the integrand at T = 10^x; integrating T^2 from 1 to 10 gives 333
+        let square = |x: f64| 2. * x;
+        let r = sim.integrate(&square, 0., 1., 1e-1, 1);
+        assert!(
+            !r.neg && rel_close(10f64.powf(r.value), 333., 1e-9),
+            "{r:?}"
+        );
+        // reversed bounds give the negative integral
+        let r = sim.integrate(&square, 1., 0., 1e-1, 1);
+        assert!(r.neg && rel_close(10f64.powf(r.value), 333., 1e-9), "{r:?}");
+        // constant 5 from 2 to 8 = 30
+        let r = sim.integrate(&|_| 5f64.log10(), 2f64.log10(), 8f64.log10(), 1e-1, 1);
+        assert!(rel_close(10f64.powf(r.value), 30., 1e-9), "{r:?}");
+    }
+
+    #[test]
+    fn milestone_priority_by_strat() {
+        let mut sim = T2Sim::new(T2Strat::T2MS, &input(100., 90));
+        for (t, expected) in [
+            (5., [2, 3, 0, 1]),
+            (30., [0, 1, 2, 3]),
+            (55., [2, 3, 0, 1]),
+            (80., [1, 0, 2, 3]),
+            (130., [0, 1, 2, 3]),
+        ] {
+            sim.core.t = t;
+            assert_eq!(sim.milestone_priority(), expected, "T2MS at t={t}");
+        }
+        // T2QS switches once the multiplier reaches the coasting threshold for this rho (600)
+        let mut sim = T2Sim::new(T2Strat::T2QS, &input(160., 90));
+        sim.core.cur_mult = 599.;
+        assert_eq!(sim.milestone_priority(), [0, 1, 2, 3]);
+        sim.core.cur_mult = 600.;
+        assert_eq!(sim.milestone_priority(), [2, 3, 0, 1]);
+        let sim = T2Sim::new(T2Strat::T2, &input(160., 90));
+        assert_eq!(sim.milestone_priority(), [0, 1, 2, 3]);
+    }
+
+    #[test]
+    fn buying_conditions_by_strat() {
+        let mut sim = T2Sim::new(T2Strat::T2MC, &input(300., 140));
+        sim.core.cur_mult = 2500.;
+        // MC stops q1/r1 at 4650, q2/r2 at 2900, q3/r3 at 2250, q4/r4 at 1150
+        let conds: Vec<bool> = (0..8).map(|i| sim.buying_condition(i)).collect();
+        assert_eq!(conds, [true, true, false, false, true, true, false, false]);
+
+        let mut sim = T2Sim::new(T2Strat::T2Haxolotl, &input(300., 140));
+        sim.haxolotl_l10 = [0., 0., 0.]; // c1 = c2 = c3 = 1
+        sim.core.cur_mult = 0.;
+        // q2 is bought only while cheaper than the most expensive of q1/r1 (times c1)
+        assert_eq!(sim.max_cost(0), sim.cost(0).max(sim.cost(4)));
+        assert_eq!(sim.buying_condition(1), sim.cost(1) < sim.max_cost(0));
+        sim.core.cur_mult = 1e9; // past every stop
+        assert!((0..8).all(|i| !sim.buying_condition(i)));
+
+        let sim = T2Sim::new(T2Strat::T2, &input(300., 140));
+        assert!((0..8).all(|i| sim.buying_condition(i)));
+    }
+
+    #[test]
+    fn variables_unlock_with_milestones() {
+        let mut sim = T2Sim::new(T2Strat::T2, &input(50., 60));
+        sim.core.milestones = vec![0, 0, 0, 0];
+        let available: Vec<bool> = (0..8).map(|i| sim.variable_available(i)).collect();
+        assert_eq!(
+            available,
+            [true, true, false, false, true, true, false, false]
+        );
+        sim.core.milestones = vec![2, 1, 0, 0];
+        let available: Vec<bool> = (0..8).map(|i| sim.variable_available(i)).collect();
+        assert_eq!(available, [true, true, true, true, true, true, true, false]);
     }
 }

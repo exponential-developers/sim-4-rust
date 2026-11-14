@@ -611,6 +611,100 @@ mod tests {
         assert_eq!(convert_time(86400. + 3600. + 60.), "1d01h01m");
         // with years, minutes are left out
         assert_eq!(convert_time(31536000. + 2. * 86400.), "1y2d00h");
+        // a million years and more are written in scientific notation
+        assert_eq!(convert_time(1e6 * 31536000.), "1e6y00h");
+    }
+
+    const DATA_JSON: &str = include_str!("../../../src/Data/data.json");
+
+    fn settings(sim_all_strats: &str) -> serde_json::Value {
+        serde_json::json!({
+            "dt": 1.5, "ddt": 1.0001, "mf_reset_depth": 0, "bought_vars_delta": 5,
+            "sim_all_strats": sim_all_strats, "completed_cts": "no", "show_a23": false, "show_unofficials": false
+        })
+    }
+
+    fn query(query_type: &str, data: serde_json::Value) -> SimQuery {
+        crate::set_config(DATA_JSON);
+        serde_json::from_value(serde_json::json!({ "type": query_type, "data": data })).unwrap()
+    }
+
+    /** Single sim of a strat category at e500, sigma 500 */
+    fn best(theory: &str, strat: &str) -> SimResult {
+        let q = query(
+            "single",
+            serde_json::json!({ "theory": theory, "strat": strat, "sigma": 500, "rho": 500.0, "settings": settings("all") }),
+        );
+        match simulate(q, &|_| {}).unwrap() {
+            SimResponse::Single(r) => r.result,
+            _ => panic!("expected a single sim response"),
+        }
+    }
+
+    fn all(very_active: bool, semi_idle: bool, strats: &str) -> SimAllResponse {
+        // 20 values: more than there are theories (the extra one is ignored); 0 = don't simulate
+        let mut values = vec![0.0; 20];
+        values[0] = 500.;
+        values[1] = 500.;
+        values[19] = 500.;
+        let q = query(
+            "all",
+            serde_json::json!({
+                "values": values, "sigma": 500, "very_active": very_active, "semi_idle": semi_idle,
+                "settings": settings(strats)
+            }),
+        );
+        let progress = std::cell::RefCell::new(Vec::new());
+        let res =
+            match simulate(q, &|msg: &str| progress.borrow_mut().push(msg.to_owned())).unwrap() {
+                SimResponse::All(r) => r,
+                _ => panic!("expected an all response"),
+            };
+        assert_eq!(*progress.borrow(), ["Simulating T1", "Simulating T2"]);
+        res
+    }
+
+    #[test]
+    fn all_mode_uses_the_chosen_strat_categories() {
+        let res = all(true, false, "all");
+        let theories: Vec<TheoryType> = res.results.iter().map(|r| r.theory).collect();
+        assert_eq!(theories, [TheoryType::T1, TheoryType::T2]);
+        let t1 = &res.results[0];
+        // very active -> "Best Overall"; not semi-idle -> "Best Idle"
+        assert_eq!(t1.active.strat, best("T1", "Best Overall").strat);
+        assert_eq!(t1.idle.strat, best("T1", "Best Idle").strat);
+        assert_eq!(t1.ratio, t1.active.tau_h / t1.idle.tau_h);
+
+        let res = all(false, true, "all");
+        assert_eq!(res.results[0].active.strat, best("T1", "Best Active").strat);
+        assert_eq!(
+            res.results[0].idle.strat,
+            best("T1", "Best Semi-Idle").strat
+        );
+    }
+
+    #[test]
+    fn all_mode_can_skip_active_or_idle_strats() {
+        let res = all(false, true, "active");
+        let t1 = &res.results[0];
+        assert_eq!(t1.idle.strat, SimResult::default().strat);
+        assert_eq!(t1.ratio, 1.);
+        let res = all(false, true, "idle");
+        assert_eq!(res.results[0].active.strat, SimResult::default().strat);
+        assert_eq!(res.results[0].ratio, 1.);
+    }
+
+    #[test]
+    fn pub_table_rejects_a_non_positive_step() {
+        let q = query(
+            "pub_table",
+            serde_json::json!({
+                "theory": "T1", "strat": "T1", "sigma": 90, "rho": 150.0, "cap": 160.0, "step": 0.0,
+                "settings": settings("all")
+            }),
+        );
+        let err = simulate(q, &|_| {}).unwrap_err();
+        assert!(err.contains("step length"), "{err}");
     }
 
     #[test]

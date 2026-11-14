@@ -407,6 +407,43 @@ mod tests {
         assert!(Condition::parse("rho <").is_err());
         assert!(Condition::parse("foo > 1").is_err());
         assert!(Condition::parse("(rho > 1").is_err());
+        let err = |src: &str| Condition::parse(src).unwrap_err();
+        assert!(err("lastStrat == \"T1").contains("Unterminated string"));
+        assert!(err("rho > 1.2.3").contains("Invalid number"));
+        assert!(err("rho # 3").contains("Unexpected character '#'"));
+        assert!(err("rho > 1 )").contains("Unexpected"));
+        assert!(err("&& rho").contains("Unexpected '&&'"));
+    }
+
+    #[test]
+    fn javascript_value_conversions() {
+        let a = |rho: f64, last: &'static str| ConditionArgs {
+            very_active: false,
+            active: true,
+            semi_idle: false,
+            idle: false,
+            tau: rho,
+            rho,
+            last_strat: last,
+        };
+        let eval = |src: &str, args: &ConditionArgs| Condition::parse(src).unwrap().eval(args);
+        // a number on its own is true unless it is 0 or NaN
+        assert!(eval("rho", &a(5., "")));
+        assert!(!eval("rho", &a(0., "")));
+        assert!(!eval("rho", &a(f64::NAN, "")));
+        // booleans compare as 0/1, strings as numbers when compared with a number
+        assert!(eval("Active > 0", &a(0., "")));
+        assert!(!eval("Idle > 0", &a(0., "")));
+        assert!(eval("lastStrat < 5", &a(0., "3")));
+        assert!(!eval("lastStrat < 5", &a(0., "abc"))); // NaN
+        // <= and ==, strict: different types are never equal
+        assert!(eval("rho <= 5", &a(5., "")) && !eval("rho <= 5", &a(6., "")));
+        assert!(eval("rho >= 5", &a(5., "")));
+        assert!(eval("rho == 5", &a(5., "")));
+        assert!(!eval("lastStrat == 5", &a(0., "5")));
+        assert!(eval("lastStrat === \"T1\"", &a(0., "T1")));
+        assert!(eval("rho > 1e+2", &a(150., "")));
+        assert!(eval("rho > .5", &a(1., "")));
     }
 
     /** Every condition in both sims' data.json must parse */

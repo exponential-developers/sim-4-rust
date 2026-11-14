@@ -31,12 +31,21 @@ function formatSimQuery(query: SimQuery): string {
         "data": query
     })
 }
-// Removing this any is a bit annoying, will do it later -Mathis
-function formatSimResponse(response: any): SimResponse {
-    return {
-      "responseType": response.type,
-      ...response.data
-    }
+/** Converts the wasm module's `{ type, data }` response to the page's SimResponse */
+function formatSimResponse(response: WasmSimResponse): SimResponse {
+  switch (response.type) {
+    case "single": return { responseType: "single", ...response.data };
+    case "chain": return { responseType: "chain", ...response.data };
+    case "step": return { responseType: "step", ...response.data };
+    case "all": return { responseType: "all", ...response.data };
+    case "pub_table": return { responseType: "pub_table", ...response.data };
+  }
+}
+
+/** Sets the status line next to Simulate; the state drives its styling (spinner, error color) */
+function setStatus(text: string, state: "running" | "error" | "" = "") {
+  output.textContent = text;
+  output.dataset.state = state;
 }
 
 export async function simCall() {
@@ -47,22 +56,22 @@ export async function simCall() {
   }
 
   global.simulating = true;
-  output.textContent = "";
+  setStatus("Simulating...", "running");
   simulateButton.textContent = "Stop simulating";
 
   try {
     // A game save pasted in the "All" input is loaded first (like sim-3)
     if (modeSelector.value === "All" && /^[A-Za-z0-9+/=]{20,}$/.test(simAllInputArea.value.trim())) {
-      output.textContent = "Loading save...";
+      setStatus("Loading save...", "running");
       await loadSaveFile();
     }
     const query = parseQuery();
     // "All" mode: theories unchanged since the last run reuse their previous result
     const { query: filteredQuery, cached } = cacheFilterQuery(query);
     // Runs in a Web Worker so the page stays responsive; progress messages are shown meanwhile
-    const APIresponse = await runQuery(formatSimQuery(filteredQuery), (message) => output.textContent = message);
+    const APIresponse = await runQuery(formatSimQuery(filteredQuery), (message) => setStatus(message, "running"));
     if (APIresponse === null) {
-      output.textContent = "Sim stopped.";
+      setStatus("Sim stopped.");
     }
     else {
       const parsed_response: API_response = JSON.parse(APIresponse)
@@ -71,12 +80,12 @@ export async function simCall() {
       }
       const response = cacheFilterResponse(filteredQuery, cached, formatSimResponse(parsed_response.data));
       setCache(query, response);
+      setStatus("");
       writeSimResponse(response);
-      output.textContent = "";
     }
   }
   catch (err) {
-    output.textContent = String(err);
+    setStatus(String(err), "error");
   }
 
   global.simulating = false;

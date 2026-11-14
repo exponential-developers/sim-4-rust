@@ -201,11 +201,18 @@ declare global {
     idle: simResult;
   }
 
-  type API_response = {
-    response_type: "success" | "failure",
-    // Removing this any is a bit annoying, will do it later -Mathis
-    data: any
-  };
+  /** Response of the wasm module's run_query (Rust `SimResponse`: `{ type, data }`) */
+  type WasmSimResponse =
+    | { type: "single"; data: Omit<SingleSimResponse, "responseType"> }
+    | { type: "chain"; data: Omit<ChainSimResponse, "responseType"> }
+    | { type: "step"; data: Omit<StepSimResponse, "responseType"> }
+    | { type: "all"; data: Omit<SimAllResponse, "responseType"> }
+    | { type: "pub_table"; data: Omit<PubTableResponse, "responseType"> };
+
+  /** JSON returned by run_query (Rust `ApiResponse`) */
+  type API_response =
+    | { response_type: "success"; data: WasmSimResponse }
+    | { response_type: "failure"; data: string };
 
   /** Message sent to the sim worker (src/Sim/worker.ts) */
   type WorkerRequest = { type: "query"; id: number; query: string };
