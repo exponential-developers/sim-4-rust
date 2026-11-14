@@ -13,13 +13,13 @@ export default async function t3(data: theoryData): Promise<simResult> {
     res = await sim.simulate();
   }
   else {
-    let data2: theoryData = JSON.parse(JSON.stringify(data));
+    const data2: theoryData = JSON.parse(JSON.stringify(data));
     data2.strat = data2.strat.replace("Coast", "");
     const sim1 = new t3Sim(data2);
     const res1 = await sim1.simulate();
     const lastB2 = getLastLevel("b2", res1.bought_vars);
     const lastB3 = getLastLevel("b3", res1.bought_vars);
-    let sim2 = new t3Sim(data);
+    const sim2 = new t3Sim(data);
     sim2.variables[1].setOriginalCap(lastB2);
     sim2.variables[1].configureCap(9);
     sim2.variables[2].setOriginalCap(lastB3);
@@ -338,15 +338,15 @@ class t3Sim extends theoryClass<theory> {
     super.copyFrom(other);
     this.rho2 = other.rho2.copy();
     this.rho3 = other.rho3.copy();
-    for(let varIndex of [1, 4, 7, 10]) {
+    for(const varIndex of [1, 4, 7, 10]) {
       this.variables[varIndex].currency = this.rho2;
     }
-    for(let varIndex of [2, 5, 8, 11]) {
+    for(const varIndex of [2, 5, 8, 11]) {
       this.variables[varIndex].currency = this.rho3;
     }
   }
   copy() {
-    let sim = new t3Sim(this.getDataForCopy());
+    const sim = new t3Sim(this.getDataForCopy());
     sim.copyFrom(this);
     return sim;
   }

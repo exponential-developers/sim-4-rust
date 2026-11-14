@@ -1,10 +1,10 @@
 use serde::Serialize;
 
+use crate::api::config::TheoryType;
 use crate::utils::{
     lognum::{self, LogNum},
-    var_buy::VarBuy
+    var_buy::VarBuy,
 };
-use crate::api::config::TheoryType;
 
 /** Holds a result of a single simulation */
 #[derive(Debug, Clone, Serialize)]
@@ -18,7 +18,7 @@ pub struct SimResult {
     pub strat: String,
     pub tau_h: f64,
     pub time: f64,
-    pub bought_vars: Vec<VarBuy>
+    pub bought_vars: Vec<VarBuy>,
 }
 
 impl Default for SimResult {
@@ -33,7 +33,7 @@ impl Default for SimResult {
             strat: "Result undefined".to_owned(),
             tau_h: 1.,
             time: 1.,
-            bought_vars: Vec::new()
+            bought_vars: Vec::new(),
         }
     }
 }
@@ -45,5 +45,5 @@ pub struct SimAllResult {
     pub ratio: f64,
     pub last_pub: LogNum,
     pub active: SimResult,
-    pub idle: SimResult
+    pub idle: SimResult,
 }

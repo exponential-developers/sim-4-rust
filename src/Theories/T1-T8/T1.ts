@@ -4,8 +4,6 @@ import Variable from "../../Utils/variable";
 import { ExponentialValue, StepwisePowerSumValue } from "../../Utils/value";
 import { ExponentialCost, FirstFreeCost } from '../../Utils/cost';
 import { add, l10, logToExp, getR9multiplier, toCallables, getLastLevel, getBestResult } from "../../Utils/helpers";
-import { start } from "repl";
-import { simulate } from "../../Sim/simulate";
 
 
 export default async function t1(data: theoryData): Promise<simResult> {
@@ -36,13 +34,13 @@ export default async function t1(data: theoryData): Promise<simResult> {
     res = await sim.simulate();
   }
   else if (data.strat.includes("Coast")) {
-    let data2: theoryData = JSON.parse(JSON.stringify(data));
+    const data2: theoryData = JSON.parse(JSON.stringify(data));
     data2.strat = data2.strat.replace("Coast", "")
     const sim1 = new t1Sim(data2);
     const res1 = await sim1.simulate();
     const lastQ1 = getLastLevel("q1", res1.bought_vars);
     const lastC3 = getLastLevel("c3", res1.bought_vars);
-    let sim = new t1Sim(data);
+    const sim = new t1Sim(data);
     if(data.strat === "T1Coast") {
       // We actually force-skip 2 levels due to better pub cycle.
       sim.variables[0].setOriginalCap(lastQ1 - 2);
@@ -281,7 +279,7 @@ class t1Sim extends theoryClass<theory> {
     this.coast = other.coast;
   }
   copy() {
-    let sim = new t1Sim(this.getDataForCopy());
+    const sim = new t1Sim(this.getDataForCopy());
     sim.copyFrom(this);
     return sim;
   }

@@ -12,7 +12,7 @@ export default async function t8(data: theoryData): Promise<simResult> {
     res = await sim.simulate();
   }
   else {
-    let data2: theoryData = JSON.parse(JSON.stringify(data));
+    const data2: theoryData = JSON.parse(JSON.stringify(data));
     data2.strat = data2.strat.replace("Coast", "");
     const sim1 = new t8Sim(data2);
     const res1 = await sim1.simulate();
@@ -267,7 +267,7 @@ class t8Sim extends theoryClass<theory> {
     this.msTimer = other.msTimer;
   }
   copy() {
-    let copySim = new t8Sim(this.getDataForCopy());
+    const copySim = new t8Sim(this.getDataForCopy());
     copySim.copyFrom(this);
     return copySim;
   }

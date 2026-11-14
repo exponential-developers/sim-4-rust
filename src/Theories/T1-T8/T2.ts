@@ -11,25 +11,25 @@ export default async function t2(data: theoryData): Promise<simResult> {
   if(data.strat == "T2Haxolotl") {
     const savedStrat = data.strat;
     data.strat = "T2MC";
-    let t2mcRes = await new t2Sim(data).simulate();
+    const t2mcRes = await new t2Sim(data).simulate();
     data.strat = savedStrat;
-    let possibleStopPoints = [
+    const possibleStopPoints = [
         [3700, 2650, 1700, 750],
         [4650, 2900, 2250, 1150],
         [3500, 2700, 2050, 550]
     ]
-    let cToTry = [
+    const cToTry = [
         1.0, 1.05, 1.1, 1.15, 1.2, 1.25, 1.3
     ];
-    let c1ToTry = [
+    const c1ToTry = [
       1.0, 1.05, 1.1, 1.15, 1.2, 1.25, 1.3, 1.35, 1.4, 1.45, 1.5
     ]
     let bestRes = defaultResult();
-    for(let c1 of c1ToTry) {
-      for(let c2 of cToTry) {
-        for(let c3 of cToTry) {
-          for (let stopPoints of possibleStopPoints) {
-            let sim = new t2Sim(data);
+    for(const c1 of c1ToTry) {
+      for(const c2 of cToTry) {
+        for(const c3 of cToTry) {
+          for (const stopPoints of possibleStopPoints) {
+            const sim = new t2Sim(data);
             sim.haxolotlC1 = c1;
             sim.haxolotlC2 = c2;
             sim.haxolotlC3 = c3;
@@ -48,7 +48,7 @@ export default async function t2(data: theoryData): Promise<simResult> {
   else if(data.strat == "T2MCAlt2" || data.strat == "T2MCAlt3") {
     const savedStrat = data.strat;
     data.strat = "T2MC";
-    let res = await new t2Sim(data).simulate();
+    const res = await new t2Sim(data).simulate();
 
     data.strat = savedStrat;
     if(savedStrat == "T2MCAlt2") {

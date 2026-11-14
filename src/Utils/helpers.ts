@@ -11,9 +11,9 @@ export function sleep(time = 0) {
 }
 
 /** Alias of Math.log10 */
-export let l10 = Math.log10;
+export const l10 = Math.log10;
 /** Alias of Math.log2 */
-export let l2 = Math.log2;
+export const l2 = Math.log2;
 
 /** Returns the index matching the theory */
 export function getIndexFromTheory(theory: string): number {

@@ -9,7 +9,7 @@ import { add_old, l10, getR9multiplier, toCallables, getLastLevel, getBestResult
 export default async function t7(data: theoryData): Promise<simResult> {
   let res;
   if(data.strat.includes("Coast")) {
-    let data2: theoryData = JSON.parse(JSON.stringify(data));
+    const data2: theoryData = JSON.parse(JSON.stringify(data));
     data2.strat = data2.strat.replace("Coast", "");
     const sim1 = new t7Sim(data2);
     const res1 = await sim1.simulate();
@@ -175,7 +175,7 @@ class t7Sim extends theoryClass<theory> {
   }
 
   copy() {
-    let copySim = new t7Sim(this.getDataForCopy());
+    const copySim = new t7Sim(this.getDataForCopy());
     copySim.copyFrom(this);
     return copySim;
   }

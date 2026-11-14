@@ -1,4 +1,4 @@
-/**
+/*!
  * Strategy conditions from data.json, e.g. `(Idle || Semi-Idle) && rho < 210 || rho < 25`.
  *
  * Port of the expression handling in sim-3's `strats.ts`, which turns each condition into a
@@ -13,8 +13,8 @@
  * `lastStrat !== "T4C3"` compares against "t4c3" and can never match a real strat name.
  */
 
+use serde::{Deserialize, Deserializer, de};
 use std::cmp::Ordering;
-use serde::{de, Deserialize, Deserializer};
 
 /** Values a condition is evaluated with */
 #[derive(Debug, Clone)]
@@ -29,10 +29,25 @@ pub struct ConditionArgs<'a> {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
-enum Var { VeryActive, Active, SemiIdle, Idle, Tau, Rho, LastStrat }
+enum Var {
+    VeryActive,
+    Active,
+    SemiIdle,
+    Idle,
+    Tau,
+    Rho,
+    LastStrat,
+}
 
 #[derive(Debug, Clone, Copy, PartialEq)]
-enum CmpOp { Lt, Le, Gt, Ge, Eq, Ne }
+enum CmpOp {
+    Lt,
+    Le,
+    Gt,
+    Ge,
+    Eq,
+    Ne,
+}
 
 #[derive(Debug, Clone, PartialEq)]
 enum Expr {
@@ -54,7 +69,9 @@ pub struct Condition {
 
 impl Default for Condition {
     fn default() -> Self {
-        Condition { expr: Expr::Bool(true) }
+        Condition {
+            expr: Expr::Bool(true),
+        }
     }
 }
 
@@ -82,7 +99,13 @@ impl Val<'_> {
     }
     fn to_num(&self) -> f64 {
         match self {
-            Val::Bool(b) => if *b { 1. } else { 0. },
+            Val::Bool(b) => {
+                if *b {
+                    1.
+                } else {
+                    0.
+                }
+            }
             Val::Num(n) => *n,
             Val::Str(s) => s.trim().parse().unwrap_or(f64::NAN),
         }
@@ -95,10 +118,16 @@ impl Condition {
             return Ok(Condition::default());
         }
         let tokens = tokenize(src)?;
-        let mut p = Parser { tokens: &tokens, pos: 0 };
+        let mut p = Parser {
+            tokens: &tokens,
+            pos: 0,
+        };
         let expr = p.or()?;
         if p.pos != tokens.len() {
-            return Err(format!("Unexpected {:?} in condition \"{src}\"", tokens[p.pos]));
+            return Err(format!(
+                "Unexpected {:?} in condition \"{src}\"",
+                tokens[p.pos]
+            ));
         }
         Ok(Condition { expr })
     }
@@ -132,7 +161,12 @@ fn eval<'a>(e: &'a Expr, a: &ConditionArgs<'a>) -> Val<'a> {
                 _ => l.to_num().partial_cmp(&r.to_num()),
             };
             // Equality is strict: values of different types are never equal
-            let same_type = matches!((&l, &r), (Val::Str(_), Val::Str(_)) | (Val::Num(_), Val::Num(_)) | (Val::Bool(_), Val::Bool(_)));
+            let same_type = matches!(
+                (&l, &r),
+                (Val::Str(_), Val::Str(_))
+                    | (Val::Num(_), Val::Num(_))
+                    | (Val::Bool(_), Val::Bool(_))
+            );
             let eq = same_type && ord == Some(Ordering::Equal);
             Val::Bool(match op {
                 CmpOp::Lt => ord == Some(Ordering::Less),
@@ -155,7 +189,9 @@ enum Tok {
 }
 
 fn tokenize(src: &str) -> Result<Vec<Tok>, String> {
-    const OPS: [&str; 13] = ["===", "!==", "&&", "||", "==", "!=", "<=", ">=", "<", ">", "!", "(", ")"];
+    const OPS: [&str; 13] = [
+        "===", "!==", "&&", "||", "==", "!=", "<=", ">=", "<", ">", "!", "(", ")",
+    ];
     let chars: Vec<char> = src.chars().collect();
     let mut out = Vec::new();
     let mut i = 0;
@@ -165,26 +201,38 @@ fn tokenize(src: &str) -> Result<Vec<Tok>, String> {
             i += 1;
         } else if c.is_ascii_alphabetic() || c == '_' {
             let start = i;
-            while i < chars.len() && (chars[i].is_ascii_alphanumeric() || chars[i] == '_' || chars[i] == '-') {
+            while i < chars.len()
+                && (chars[i].is_ascii_alphanumeric() || chars[i] == '_' || chars[i] == '-')
+            {
                 i += 1;
             }
             out.push(Tok::Ident(chars[start..i].iter().collect()));
-        } else if c.is_ascii_digit() || (c == '.' && chars.get(i + 1).is_some_and(|d| d.is_ascii_digit())) {
+        } else if c.is_ascii_digit()
+            || (c == '.' && chars.get(i + 1).is_some_and(|d| d.is_ascii_digit()))
+        {
             let start = i;
             while i < chars.len() && (chars[i].is_ascii_digit() || chars[i] == '.') {
                 i += 1;
             }
             if i < chars.len() && (chars[i] == 'e' || chars[i] == 'E') {
                 i += 1;
-                if i < chars.len() && (chars[i] == '+' || chars[i] == '-') { i += 1; }
-                while i < chars.len() && chars[i].is_ascii_digit() { i += 1; }
+                if i < chars.len() && (chars[i] == '+' || chars[i] == '-') {
+                    i += 1;
+                }
+                while i < chars.len() && chars[i].is_ascii_digit() {
+                    i += 1;
+                }
             }
             let s: String = chars[start..i].iter().collect();
-            out.push(Tok::Num(s.parse().map_err(|_| format!("Invalid number \"{s}\" in condition \"{src}\""))?));
+            out.push(Tok::Num(s.parse().map_err(|_| {
+                format!("Invalid number \"{s}\" in condition \"{src}\"")
+            })?));
         } else if c == '"' || c == '\'' {
             let start = i + 1;
             i += 1;
-            while i < chars.len() && chars[i] != c { i += 1; }
+            while i < chars.len() && chars[i] != c {
+                i += 1;
+            }
             if i >= chars.len() {
                 return Err(format!("Unterminated string in condition \"{src}\""));
             }
@@ -212,7 +260,10 @@ struct Parser<'a> {
 
 impl Parser<'_> {
     fn peek_op(&self) -> Option<&'static str> {
-        match self.tokens.get(self.pos) { Some(Tok::Op(o)) => Some(o), _ => None }
+        match self.tokens.get(self.pos) {
+            Some(Tok::Op(o)) => Some(o),
+            _ => None,
+        }
     }
 
     fn or(&mut self) -> Result<Expr, String> {
@@ -270,7 +321,11 @@ impl Parser<'_> {
     }
 
     fn primary(&mut self) -> Result<Expr, String> {
-        let tok = self.tokens.get(self.pos).cloned().ok_or("Unexpected end of condition")?;
+        let tok = self
+            .tokens
+            .get(self.pos)
+            .cloned()
+            .ok_or("Unexpected end of condition")?;
         self.pos += 1;
         match tok {
             Tok::Num(n) => Ok(Expr::Num(n)),
@@ -340,7 +395,11 @@ mod tests {
         assert!(!c.eval(&args("i", 0., "T4C3")));
         assert!(!Condition::parse("false").unwrap().eval(&args("i", 0., "")));
         assert!(Condition::parse("").unwrap().eval(&args("i", 0., "")));
-        assert!(Condition::parse("tau >= 1e2").unwrap().eval(&args("i", 100., "")));
+        assert!(
+            Condition::parse("tau >= 1e2")
+                .unwrap()
+                .eval(&args("i", 100., ""))
+        );
     }
 
     #[test]
@@ -356,11 +415,14 @@ mod tests {
         for json in [include_str!("../../../src/Data/data.json")] {
             let v: serde_json::Value = serde_json::from_str(json).unwrap();
             for (theory, data) in v["theories"].as_object().unwrap() {
-                let Some(strats) = data["strats"].as_object() else { continue };
+                let Some(strats) = data["strats"].as_object() else {
+                    continue;
+                };
                 for (strat, s) in strats {
                     for key in ["stratFilterCondition", "forcedCondition"] {
                         if let Some(src) = s[key].as_str() {
-                            Condition::parse(src).unwrap_or_else(|e| panic!("{theory} {strat} {key}: {e}"));
+                            Condition::parse(src)
+                                .unwrap_or_else(|e| panic!("{theory} {strat} {key}: {e}"));
                         }
                     }
                 }

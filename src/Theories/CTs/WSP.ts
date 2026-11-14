@@ -8,14 +8,14 @@ import { add, getBestResult, getLastLevel, l10, toCallables } from "../../Utils/
 export default async function wsp(data: theoryData): Promise<simResult> {
   let res;
   if(data.strat.includes("Coast")) {
-    let data2: theoryData = {
+    const data2: theoryData = {
       ...data,
       strat: data.strat.replace("Coast", "").replace("PostRecovery", "")
     };
     const sim1 = new wspSim(data2);
     const res1 = await sim1.simulate();
     const lastQ1 = getLastLevel("q1", res1.bought_vars);
-    let sim = new wspSim(data);
+    const sim = new wspSim(data);
     sim.variables[0].setOriginalCap(lastQ1);
     if(data.strat.includes("WSPd")) {
       // For WSPd, it is always either skip 0, 1 or 2.
@@ -73,7 +73,7 @@ class wspSim extends theoryClass<theory> {
       true,
     ]);
 
-    let conditions: Record<stratType[theory], (boolean | conditionFunction)[]> = {
+    const conditions: Record<stratType[theory], (boolean | conditionFunction)[]> = {
       WSP: [true, true, true, true, true],
       WSPStopC1: [true, true, true, () => this.lastPub < 450 || this.t < 15, true],
       WSPStopC1Coast: WSPStopC1CoastQ1,
@@ -200,7 +200,7 @@ class wspSim extends theoryClass<theory> {
     this.q = other.q;
   }
   copy() {
-    let sim = new wspSim(this.getDataForCopy());
+    const sim = new wspSim(this.getDataForCopy());
     sim.copyFrom(this);
     return sim;
   }

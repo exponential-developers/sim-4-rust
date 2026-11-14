@@ -1,30 +1,39 @@
 use crate::CONFIG;
 use crate::api::{
-    config::TheoryType,
-    query::*, 
-    response::*
-};
-use crate::utils::{
-    lognum::{self,LogNum},
-    result::*,
-    settings::*
-};
-use crate::api::{
     condition::ConditionArgs,
     config::{Config, ConfigTheories},
 };
+use crate::api::{config::TheoryType, query::*, response::*};
 use crate::theories::{
-    t1::{simulate_t1, T1Strat},
-    t2::{simulate_t2, T2Strat},
-    traditional::{default_result, log_to_exp, set_current_collector, PubTableCollector, SimParams, TheoryInput},
+    t1::{T1Strat, simulate_t1},
+    t2::{T2Strat, simulate_t2},
+    traditional::{
+        PubTableCollector, SimParams, TheoryInput, default_result, log_to_exp,
+        set_current_collector,
+    },
+};
+use crate::utils::{
+    lognum::{self, LogNum},
+    result::*,
+    settings::*,
 };
 
+/** `a > b`, and false if either is NaN (so a NaN result counts as "no progress") */
+fn is_greater<T: PartialOrd>(a: T, b: T) -> bool {
+    a.partial_cmp(&b) == Some(std::cmp::Ordering::Greater)
+}
+
 fn config() -> Result<&'static Config, String> {
-    CONFIG.get().ok_or_else(|| "Sim config (data.json) was not loaded".to_owned())
+    CONFIG
+        .get()
+        .ok_or_else(|| "Sim config (data.json) was not loaded".to_owned())
 }
 
 fn theory_config(theory: TheoryType) -> Result<&'static ConfigTheories, String> {
-    config()?.theories.get(&theory).ok_or_else(|| format!("{theory:?} is missing from data.json"))
+    config()?
+        .theories
+        .get(&theory)
+        .ok_or_else(|| format!("{theory:?} is missing from data.json"))
 }
 
 /** Theories that have been ported to the Rust sim, in data.json order */
@@ -36,17 +45,25 @@ pub fn is_ported(theory: TheoryType) -> bool {
 }
 
 /** Runs one named strat of a theory */
-pub fn run_strat(theory: TheoryType, strat: &str, input: &TheoryInput) -> Result<SimResult, String> {
+pub fn run_strat(
+    theory: TheoryType,
+    strat: &str,
+    input: &TheoryInput,
+) -> Result<SimResult, String> {
     match theory {
         TheoryType::T1 => {
-            let strat = T1Strat::from_name(strat).ok_or_else(|| format!("Unknown T1 strat \"{strat}\""))?;
+            let strat =
+                T1Strat::from_name(strat).ok_or_else(|| format!("Unknown T1 strat \"{strat}\""))?;
             Ok(simulate_t1(strat, input))
         }
         TheoryType::T2 => {
-            let strat = T2Strat::from_name(strat).ok_or_else(|| format!("Unknown T2 strat \"{strat}\""))?;
+            let strat =
+                T2Strat::from_name(strat).ok_or_else(|| format!("Unknown T2 strat \"{strat}\""))?;
             Ok(simulate_t2(strat, input))
         }
-        _ => Err(format!("{theory:?} has not been ported to the Rust sim yet")),
+        _ => Err(format!(
+            "{theory:?} has not been ported to the Rust sim yet"
+        )),
     }
 }
 
@@ -54,7 +71,13 @@ pub fn run_strat(theory: TheoryType, strat: &str, input: &TheoryInput) -> Result
  * Returns the strats to simulate for a strat category such as "Best Overall"
  * (sim-3 `getStrats`): strats whose filter condition and forced condition both hold.
  */
-fn get_strats(theory: TheoryType, category: &str, tau: f64, rho: f64, last_strat: &str) -> Result<Vec<&'static str>, String> {
+fn get_strats(
+    theory: TheoryType,
+    category: &str,
+    tau: f64,
+    rho: f64,
+    last_strat: &str,
+) -> Result<Vec<&'static str>, String> {
     let cats = &config()?.strat_categories;
     // The categories map, in order, to the Very-Active, Active, Semi-Idle and Idle play styles
     let is_cat = |i: usize| cats.get(i).is_some_and(|c| c == category);
@@ -77,7 +100,10 @@ fn get_strats(theory: TheoryType, category: &str, tau: f64, rho: f64, last_strat
 
 fn single_sim(query: SingleSimQuery) -> Result<SingleSimResponse, String> {
     if !is_ported(query.theory) {
-        return Err(format!("{:?} has not been ported to the Rust sim yet", query.theory));
+        return Err(format!(
+            "{:?} has not been ported to the Rust sim yet",
+            query.theory
+        ));
     }
 
     let input = TheoryInput {
@@ -93,7 +119,13 @@ fn single_sim(query: SingleSimQuery) -> Result<SingleSimResponse, String> {
 
     let strats: Vec<&str> = if config()?.strat_categories.contains(&query.strat) {
         let tau = query.rho.value * theory_config(query.theory)?.tau_factor;
-        get_strats(query.theory, &query.strat, tau, query.rho.value, query.last_strat.as_deref().unwrap_or(""))?
+        get_strats(
+            query.theory,
+            &query.strat,
+            tau,
+            query.rho.value,
+            query.last_strat.as_deref().unwrap_or(""),
+        )?
     } else {
         vec![query.strat.as_str()]
     };
@@ -118,18 +150,27 @@ fn chain_sim(query: ChainSimQuery, progress: Progress) -> Result<ChainSimRespons
     let mut results: Vec<SimResult> = Vec::new();
 
     while rho < query.cap {
-        progress(&format!("Simulating {}/{}", log_to_exp(rho.value, 0), log_to_exp(query.cap.value, 0)));
+        progress(&format!(
+            "Simulating {}/{}",
+            log_to_exp(rho.value, 0),
+            log_to_exp(query.cap.value, 0)
+        ));
         let res = single_sim(SingleSimQuery {
             theory: query.theory,
             strat: query.strat.clone(),
             rho,
             sigma: query.sigma,
             settings: query.settings.clone(),
-            cap: if query.hard_cap { Some(query.cap) } else { None },
-            last_strat: Some(last_strat.clone())
-        })?.result;
+            cap: if query.hard_cap {
+                Some(query.cap)
+            } else {
+                None
+            },
+            last_strat: Some(last_strat.clone()),
+        })?
+        .result;
 
-        if !(res.pub_rho > rho) {
+        if !is_greater(res.pub_rho, rho) {
             return Err(format!(
                 "Chain stopped at {rho}: no strat could make progress (last result: \"{}\")",
                 res.strat
@@ -149,7 +190,7 @@ fn chain_sim(query: ChainSimQuery, progress: Progress) -> Result<ChainSimRespons
         results,
         delta_tau,
         average_rate: delta_tau.log10_f64() / (time / 3600.),
-        total_time: time
+        total_time: time,
     })
 }
 
@@ -161,7 +202,11 @@ fn step_sim(query: StepSimQuery, progress: Progress) -> Result<StepSimResponse, 
 
     // Same tolerance as sim-3 (cap + 0.00001 in log10)
     while rho.value < query.cap.value + 0.00001 {
-        progress(&format!("Simulating {}/{}", log_to_exp(rho.value, 0), log_to_exp(query.cap.value, 0)));
+        progress(&format!(
+            "Simulating {}/{}",
+            log_to_exp(rho.value, 0),
+            log_to_exp(query.cap.value, 0)
+        ));
         let res = single_sim(SingleSimQuery {
             theory: query.theory,
             strat: query.strat.clone(),
@@ -169,8 +214,9 @@ fn step_sim(query: StepSimQuery, progress: Progress) -> Result<StepSimResponse, 
             sigma: query.sigma,
             settings: query.settings.clone(),
             cap: None,
-            last_strat: Some(last_strat.clone())
-        })?.result;
+            last_strat: Some(last_strat.clone()),
+        })?
+        .result;
 
         rho *= query.step;
         last_strat.clear();
@@ -189,7 +235,11 @@ fn convert_time(secs: f64) -> String {
     let years = (secs / 31536000.).floor();
     let mut out = String::new();
     if years > 0. {
-        out += &if years < 1e6 { format!("{years}") } else { log_to_exp(years.log10(), 3) };
+        out += &if years < 1e6 {
+            format!("{years}")
+        } else {
+            log_to_exp(years.log10(), 3)
+        };
         out.push('y');
     }
     if days > 0. {
@@ -218,8 +268,9 @@ fn amount_sim(query: AmountSimQuery, progress: Progress) -> Result<ChainSimRespo
             sigma: query.sigma,
             settings: query.settings.clone(),
             cap: None,
-            last_strat: Some(last_strat.clone())
-        })?.result;
+            last_strat: Some(last_strat.clone()),
+        })?
+        .result;
         rho = res.pub_rho;
         time += res.time;
         last_strat = res.strat.split(' ').next().unwrap_or("").to_owned();
@@ -246,10 +297,14 @@ fn time_sim(query: TimeSimQuery, progress: Progress) -> Result<ChainSimResponse,
             sigma: query.sigma,
             settings: query.settings.clone(),
             cap: None,
-            last_strat: Some(last_strat.clone())
-        })?.result;
-        if !(res.pub_rho > rho) || !(res.time > 0.) {
-            return Err(format!("Stopped at {rho}: no strat could make progress (last result: \"{}\")", res.strat));
+            last_strat: Some(last_strat.clone()),
+        })?
+        .result;
+        if !is_greater(res.pub_rho, rho) || !is_greater(res.time, 0.) {
+            return Err(format!(
+                "Stopped at {rho}: no strat could make progress (last result: \"{}\")",
+                res.strat
+            ));
         }
         rho = res.pub_rho;
         time += res.time;
@@ -260,13 +315,19 @@ fn time_sim(query: TimeSimQuery, progress: Progress) -> Result<ChainSimResponse,
     chain_response(query.theory, query.rho, rho, time, results)
 }
 
-fn chain_response(theory: TheoryType, start: LogNum, end: LogNum, time: f64, results: Vec<SimResult>) -> Result<ChainSimResponse, String> {
+fn chain_response(
+    theory: TheoryType,
+    start: LogNum,
+    end: LogNum,
+    time: f64,
+    results: Vec<SimResult>,
+) -> Result<ChainSimResponse, String> {
     let delta_tau = (end / start).powf64(theory_config(theory)?.tau_factor);
     Ok(ChainSimResponse {
         results,
         delta_tau,
         average_rate: delta_tau.log10_f64() / (time / 3600.),
-        total_time: time
+        total_time: time,
     })
 }
 
@@ -280,16 +341,23 @@ fn step_chain_sim(query: StepChainSimQuery, progress: Progress) -> Result<StepSi
     let mut results: Vec<SimResult> = Vec::new();
 
     while rho.value < query.cap.value - query.step.value + 0.000001 {
-        progress(&format!("Simulating {}/{}", log_to_exp(rho.value, 0), log_to_exp(query.cap.value, 0)));
-        let chain = chain_sim(ChainSimQuery {
-            theory: query.theory,
-            strat: query.strat.clone(),
-            sigma: query.sigma,
-            rho,
-            cap: query.cap,
-            hard_cap: query.hard_cap,
-            settings: query.settings.clone(),
-        }, &|_| {})?;
+        progress(&format!(
+            "Simulating {}/{}",
+            log_to_exp(rho.value, 0),
+            log_to_exp(query.cap.value, 0)
+        ));
+        let chain = chain_sim(
+            ChainSimQuery {
+                theory: query.theory,
+                strat: query.strat.clone(),
+                sigma: query.sigma,
+                rho,
+                cap: query.cap,
+                hard_cap: query.hard_cap,
+                settings: query.settings.clone(),
+            },
+            &|_| {},
+        )?;
 
         let (mut tau_acc, mut time_acc) = (0f64, 0f64);
         let mut best = default_result();
@@ -302,7 +370,10 @@ fn step_chain_sim(query: StepChainSimQuery, progress: Progress) -> Result<StepSi
                 sigma: query.sigma,
                 last_pub: rho,
                 pub_rho: result.pub_rho,
-                delta_tau: LogNum { value: tau_acc, sign: 1 },
+                delta_tau: LogNum {
+                    value: tau_acc,
+                    sign: 1,
+                },
                 pub_multi: 1.,
                 strat: format!("{pubs} pub{}", if pubs > 1 { "s" } else { "" }),
                 tau_h: tau_acc / (time_acc / 3600.),
@@ -316,7 +387,10 @@ fn step_chain_sim(query: StepChainSimQuery, progress: Progress) -> Result<StepSi
         }
         results.push(best);
         // sim-3 adds the step to tau
-        rho = LogNum { value: (rho.value * tau_factor + query.step.value) / tau_factor, sign: 1 };
+        rho = LogNum {
+            value: (rho.value * tau_factor + query.step.value) / tau_factor,
+            sign: 1,
+        };
     }
 
     Ok(StepSimResponse { results })
@@ -343,25 +417,32 @@ fn comparison_sim(query: ComparisonSimQuery) -> Result<StepSimResponse, String> 
 
     let mut results = Vec::new();
     for strat in strats {
-        results.push(single_sim(SingleSimQuery {
-            theory: query.theory,
-            strat: strat.to_owned(),
-            sigma: query.sigma,
-            rho: query.rho,
-            cap: None,
-            last_strat: None,
-            settings: query.settings.clone(),
-        })?.result);
+        results.push(
+            single_sim(SingleSimQuery {
+                theory: query.theory,
+                strat: strat.to_owned(),
+                sigma: query.sigma,
+                rho: query.rho,
+                cap: None,
+                last_strat: None,
+                settings: query.settings.clone(),
+            })?
+            .result,
+        );
     }
     // Stable sort, highest tau/h first
-    results.sort_by(|a, b| b.tau_h.partial_cmp(&a.tau_h).unwrap_or(std::cmp::Ordering::Equal));
+    results.sort_by(|a, b| {
+        b.tau_h
+            .partial_cmp(&a.tau_h)
+            .unwrap_or(std::cmp::Ordering::Equal)
+    });
     Ok(StepSimResponse { results })
 }
 
 /** Fastest time to reach cap from each step below it (sim-3 `pubTableSim`) */
 fn pub_table_sim(query: PubTableSimQuery, progress: Progress) -> Result<PubTableResponse, String> {
     let (start, cap, step) = (query.rho.value, query.cap.value, query.step);
-    if !(step > 0.) {
+    if !is_greater(step, 0.) {
         return Err("The step length must be greater than 0".to_owned());
     }
     let mut current = cap - step;
@@ -371,18 +452,28 @@ fn pub_table_sim(query: PubTableSimQuery, progress: Progress) -> Result<PubTable
 
     let result = (|| -> Result<(), String> {
         while current > start - 0.00001 {
-            progress(&format!("Simulating {}/{}", log_to_exp(current, 0), log_to_exp(start, 0)));
-            let collector = std::rc::Rc::new(std::cell::RefCell::new(PubTableCollector::new(current, step, cap)));
+            progress(&format!(
+                "Simulating {}/{}",
+                log_to_exp(current, 0),
+                log_to_exp(start, 0)
+            ));
+            let collector = std::rc::Rc::new(std::cell::RefCell::new(PubTableCollector::new(
+                current, step, cap,
+            )));
             set_current_collector(Some(collector.clone()));
             let res = single_sim(SingleSimQuery {
                 theory: query.theory,
                 strat: query.strat.clone(),
                 sigma: query.sigma,
-                rho: LogNum { value: current, sign: 1 },
+                rho: LogNum {
+                    value: current,
+                    sign: 1,
+                },
                 cap: None,
                 last_strat: Some(last_strat.clone()),
                 settings: query.settings.clone(),
-            })?.result;
+            })?
+            .result;
             set_current_collector(None);
             current -= step;
             last_strat = res.strat.split(' ').next().unwrap_or("").to_owned();
@@ -408,55 +499,80 @@ fn pub_table_sim(query: PubTableSimQuery, progress: Progress) -> Result<PubTable
     set_current_collector(None);
     result?;
 
-    Ok(PubTableResponse { cap, start, step, pub_table })
+    Ok(PubTableResponse {
+        cap,
+        start,
+        step,
+        pub_table,
+    })
 }
 
 fn sim_all(query: SimAllQuery, progress: Progress) -> Result<SimAllResponse, String> {
     let mut results: Vec<SimAllResult> = Vec::new();
 
     for (i, rho) in query.values.iter().enumerate() {
-        let theory = 
-            if let Ok(theory) = TheoryType::try_from(i) { theory } 
-            else { continue; };
-        if *rho <= lognum::ONE { continue; };
+        let theory = if let Ok(theory) = TheoryType::try_from(i) {
+            theory
+        } else {
+            continue;
+        };
+        if *rho <= lognum::ONE {
+            continue;
+        };
         // Theories not ported to Rust yet are left out of the results
-        if !is_ported(theory) { continue; };
+        if !is_ported(theory) {
+            continue;
+        };
         progress(&format!("Simulating {theory:?}"));
 
         let active_res = if query.settings.sim_all_strats != SimAllStrats::Idle {
             single_sim(SingleSimQuery {
                 theory,
-                strat: if query.very_active { "Best Overall".to_owned() } 
-                        else { "Best Active".to_owned() },
+                strat: if query.very_active {
+                    "Best Overall".to_owned()
+                } else {
+                    "Best Active".to_owned()
+                },
                 sigma: query.sigma,
                 rho: *rho,
                 cap: None,
                 last_strat: None,
-                settings: query.settings.clone()
-            })?.result
-        } else { SimResult::default() };
+                settings: query.settings.clone(),
+            })?
+            .result
+        } else {
+            SimResult::default()
+        };
 
         let idle_res = if query.settings.sim_all_strats != SimAllStrats::Active {
             single_sim(SingleSimQuery {
                 theory,
-                strat: if query.semi_idle { "Best Semi-Idle".to_owned() } 
-                        else { "Best Idle".to_owned() },
+                strat: if query.semi_idle {
+                    "Best Semi-Idle".to_owned()
+                } else {
+                    "Best Idle".to_owned()
+                },
                 sigma: query.sigma,
                 rho: *rho,
                 cap: None,
                 last_strat: None,
-                settings: query.settings.clone()
-            })?.result
-        } else { SimResult::default() };
+                settings: query.settings.clone(),
+            })?
+            .result
+        } else {
+            SimResult::default()
+        };
 
         results.push(SimAllResult {
             theory,
             ratio: if query.settings.sim_all_strats == SimAllStrats::All {
                 active_res.tau_h / idle_res.tau_h
-            } else { 1. },
+            } else {
+                1.
+            },
             last_pub: *rho,
             active: active_res,
-            idle: idle_res
+            idle: idle_res,
         })
     }
 
@@ -464,7 +580,7 @@ fn sim_all(query: SimAllQuery, progress: Progress) -> Result<SimAllResponse, Str
         sigma: query.sigma,
         strat_type: query.settings.sim_all_strats,
         completed_cts: query.settings.completed_cts,
-        results
+        results,
     })
 }
 
@@ -481,7 +597,7 @@ pub fn simulate(query: SimQuery, progress: Progress) -> Result<SimResponse, Stri
         SimQuery::Amount(q) => Ok(SimResponse::Chain(amount_sim(q, progress)?)),
         SimQuery::Time(q) => Ok(SimResponse::Chain(time_sim(q, progress)?)),
         SimQuery::Comparison(q) => Ok(SimResponse::Step(comparison_sim(q)?)),
-        SimQuery::PubTable(q) => Ok(SimResponse::PubTable(pub_table_sim(q, progress)?))
+        SimQuery::PubTable(q) => Ok(SimResponse::PubTable(pub_table_sim(q, progress)?)),
     }
 }
 #[cfg(test)]
@@ -499,12 +615,20 @@ mod tests {
 
     #[test]
     fn ported_theories_are_runnable() {
-        let input = TheoryInput { sigma: 60, last_pub_rho: 50., rho_cap: f64::INFINITY, params: SimParams::default() };
+        let input = TheoryInput {
+            sigma: 60,
+            last_pub_rho: 50.,
+            rho_cap: f64::INFINITY,
+            params: SimParams::default(),
+        };
         for theory in PORTED_THEORIES {
             assert!(is_ported(theory));
             let strat = format!("{theory:?}");
             let res = run_strat(theory, &strat, &input).unwrap();
-            assert!(res.tau_h > 0. && res.pub_rho.value > 50., "{theory:?}: {res:?}");
+            assert!(
+                res.tau_h > 0. && res.pub_rho.value > 50.,
+                "{theory:?}: {res:?}"
+            );
         }
         assert!(!is_ported(TheoryType::T3));
         assert!(run_strat(TheoryType::T3, "T3", &input).is_err());

@@ -1,8 +1,8 @@
 // These functions are mostly ripped out from CT itself.
 
-let interpolate = (t: number): number => {
-    let v1 = t * t;
-    let v2 = 1 - (1 - t) * (1 - t);
+const interpolate = (t: number): number => {
+    const v1 = t * t;
+    const v2 = 1 - (1 - t) * (1 - t);
     return v1 * (1 - t) + v2 * t;
 }
 
@@ -175,28 +175,28 @@ const zeta01Table: [number, number][] = [
 
 export type ComplexValue = [number, number, number];
 
-let zetaSmall = (t: number): ComplexValue =>
+const zetaSmall = (t: number): ComplexValue =>
 {
-    let fullIndex = t * (zeta01Table.length - 1);
-    let index = Math.floor(fullIndex);
-    let offset = fullIndex - index;
-    let re = zeta01Table[index][0]*(1-offset) + zeta01Table[index+1][0]*offset;
-    let im = zeta01Table[index][1]*(1-offset) + zeta01Table[index+1][1]*offset;
+    const fullIndex = t * (zeta01Table.length - 1);
+    const index = Math.floor(fullIndex);
+    const offset = fullIndex - index;
+    const re = zeta01Table[index][0]*(1-offset) + zeta01Table[index+1][0]*offset;
+    const im = zeta01Table[index][1]*(1-offset) + zeta01Table[index+1][1]*offset;
     return [re, im, -Math.sqrt(re*re + im*im)];
     // Minus sign for the last element because of theta polarity
 }
 
 
-let even = (n: number): number => {
+const even = (n: number): number => {
     if (n % 2 == 0) return 1;
     else return -1;
 }
 
-let theta = (t: number): number => {
+const theta = (t: number): number => {
     return t / 2 * Math.log(t / 2 / Math.PI) - t / 2 - Math.PI / 8 + 1 / 48 / t + 7 / 5760 / t / t / t;
 }
 
-let C = (n: number, z: number): number =>
+const C = (n: number, z: number): number =>
 {
     if(n == 0)
         return (+.38268343236508977173 * Math.pow(z, 0.0)
@@ -323,18 +323,18 @@ let C = (n: number, z: number): number =>
             +.00000000000000000004 * Math.pow(z,48.0));
 }
 
-let logLookup: number[] = [];
-let sqrtLookup: number[] = [];
+const logLookup: number[] = [];
+const sqrtLookup: number[] = [];
 let terms = 0;
 
-let riemannSiegelZeta = (t: number, n: number): ComplexValue =>
+const riemannSiegelZeta = (t: number, n: number): ComplexValue =>
 {
     let Z = 0;
     let R = 0;
-    let fullN = Math.sqrt(t / (2*Math.PI));
-    let N = Math.floor(fullN);
-    let p = fullN - N;
-    let th = theta(t);
+    const fullN = Math.sqrt(t / (2*Math.PI));
+    const N = Math.floor(fullN);
+    const p = fullN - N;
+    const th = theta(t);
 
     for(let j = terms + 1; j <= N; ++j)
     {
@@ -349,7 +349,7 @@ let riemannSiegelZeta = (t: number, n: number): ComplexValue =>
     }
     Z *= 2;
 
-    let tpot = 2*Math.PI/t;
+    const tpot = 2*Math.PI/t;
     for(let k = 0; k <= n; ++k)
     {
         R += C(k, 2*p-1) * Math.pow(tpot, k*0.5);
@@ -360,10 +360,10 @@ let riemannSiegelZeta = (t: number, n: number): ComplexValue =>
     return [Z*Math.cos(th), -Z*Math.sin(th), Z];
 }
 
-export let zeta = (T: number, ticks: number, offGrid: boolean, cache: ComplexValue[]): ComplexValue =>
+export const zeta = (T: number, ticks: number, offGrid: boolean, cache: ComplexValue[]): ComplexValue =>
 {
     if (!offGrid && cache[ticks]) return cache[ticks];
-    let t = Math.abs(T);
+    const t = Math.abs(T);
     let z: ComplexValue;
     if(t >= 1)
         z = riemannSiegelZeta(t, 2);
@@ -371,9 +371,9 @@ export let zeta = (T: number, ticks: number, offGrid: boolean, cache: ComplexVal
         z = zetaSmall(t);
     else
     {
-        let offset = interpolate((t-0.1) * 10/9);
-        let a = zetaSmall(t);
-        let b = riemannSiegelZeta(t, 1);
+        const offset = interpolate((t-0.1) * 10/9);
+        const a = zetaSmall(t);
+        const b = riemannSiegelZeta(t, 1);
         z = [
             a[0]*(1-offset) + b[0]*offset,
             a[1]*(1-offset) + b[1]*offset,

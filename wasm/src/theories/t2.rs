@@ -1,4 +1,4 @@
-/**
+/*!
  * Theory 2, ported from sim-3 `src/Theories/T1-T8/T2.ts`.
  *
  * Variable order: q1, q2, q3, q4, r1, r2, r3, r4
@@ -85,7 +85,8 @@ pub fn simulate_t2(strat: T2Strat, input: &TheoryInput) -> SimResult {
                 [3500., 2700., 2050., 550.],
             ];
             const C_TO_TRY: [f64; 7] = [1.0, 1.05, 1.1, 1.15, 1.2, 1.25, 1.3];
-            const C1_TO_TRY: [f64; 11] = [1.0, 1.05, 1.1, 1.15, 1.2, 1.25, 1.3, 1.35, 1.4, 1.45, 1.5];
+            const C1_TO_TRY: [f64; 11] =
+                [1.0, 1.05, 1.1, 1.15, 1.2, 1.25, 1.3, 1.35, 1.4, 1.45, 1.5];
             let mut best = default_result();
             for c1 in C1_TO_TRY {
                 for c2 in C_TO_TRY {
@@ -162,11 +163,24 @@ impl T2Sim {
 
         // Costs parsed like sim-3's ExponentialCost (see parse_value)
         let exp_cost = |base: f64, inc: f64| {
-            ExponentialCost::new(LogNum { value: parse_value(base), sign: 1 }, LogNum { value: parse_value(inc), sign: 1 })
+            ExponentialCost::new(
+                LogNum {
+                    value: parse_value(base),
+                    sign: 1,
+                },
+                LogNum {
+                    value: parse_value(inc),
+                    sign: 1,
+                },
+            )
         };
         let stepwise = || Value::new_stepwise(2., 10, 0.);
 
-        let mut q1 = Variable::new("q1", Cost::new(FirstFreeCost::new(exp_cost(10., 2.))), stepwise());
+        let mut q1 = Variable::new(
+            "q1",
+            Cost::new(FirstFreeCost::new(exp_cost(10., 2.))),
+            stepwise(),
+        );
         // FirstFreeCost: level 1 is free (sim-3 buys it in Variable.init)
         q1.buy();
 
@@ -192,7 +206,13 @@ impl T2Sim {
             target_rho: -1.,
             stops: [3500., 2700., 2050., 550.],
             time_to_pub: f64::INFINITY,
-            consts: T2Consts { l10_2: l10(2.), l10_4: l10(4.), l10_6: l10(6.), l10_15: l10(15.), l10_24: l10(24.) },
+            consts: T2Consts {
+                l10_2: l10(2.),
+                l10_4: l10(4.),
+                l10_6: l10(6.),
+                l10_15: l10(15.),
+                l10_24: l10(24.),
+            },
         };
         let priority = sim.milestone_priority();
         sim.core.update_milestones(&priority);
@@ -215,20 +235,39 @@ impl T2Sim {
         match self.strat {
             T2Strat::T2MS | T2Strat::T2ROIMS => {
                 let tm100 = self.core.t % 100.;
-                if tm100 < 10. { [2, 3, 0, 1] }
-                else if tm100 < 50. { [0, 1, 2, 3] }
-                else if tm100 < 60. { [2, 3, 0, 1] }
-                else { [1, 0, 2, 3] }
+                if tm100 < 10. {
+                    [2, 3, 0, 1]
+                } else if tm100 < 50. {
+                    [0, 1, 2, 3]
+                } else if tm100 < 60. {
+                    [2, 3, 0, 1]
+                } else {
+                    [1, 0, 2, 3]
+                }
             }
             T2Strat::T2QS => {
                 let lpr = self.core.last_pub_rho;
                 let mut coast_multi = f64::INFINITY;
-                if lpr > 0. { coast_multi = 10.; }
-                if lpr > 75. { coast_multi = 200.; }
-                if lpr > 150. { coast_multi = 600.; }
-                if lpr > 200. { coast_multi = 100.; }
-                if lpr > 225. { coast_multi = 25.; }
-                if self.core.cur_mult < coast_multi { [0, 1, 2, 3] } else { [2, 3, 0, 1] }
+                if lpr > 0. {
+                    coast_multi = 10.;
+                }
+                if lpr > 75. {
+                    coast_multi = 200.;
+                }
+                if lpr > 150. {
+                    coast_multi = 600.;
+                }
+                if lpr > 200. {
+                    coast_multi = 100.;
+                }
+                if lpr > 225. {
+                    coast_multi = 25.;
+                }
+                if self.core.cur_mult < coast_multi {
+                    [0, 1, 2, 3]
+                } else {
+                    [2, 3, 0, 1]
+                }
             }
             _ => [0, 1, 2, 3],
         }
@@ -257,7 +296,8 @@ impl T2Sim {
                 if k == 0 {
                     cur_mult < self.stops[0]
                 } else {
-                    self.cost(i) + self.haxolotl_l10[k - 1] < self.max_cost(k - 1) && cur_mult < self.stops[k]
+                    self.cost(i) + self.haxolotl_l10[k - 1] < self.max_cost(k - 1)
+                        && cur_mult < self.stops[k]
                 }
             }
         }
@@ -282,17 +322,31 @@ impl T2Sim {
 
         self.q[0] = add_log(self.q[0], v[0] + self.q[1] + logdt);
         self.q[1] = add_log(self.q[1], v[1] + self.q[2] + logdt);
-        if m0 > 0 { self.q[2] = add_log(self.q[2], v[2] + self.q[3] + logdt); }
-        if m0 > 1 { self.q[3] = add_log(self.q[3], v[3] + logdt); }
+        if m0 > 0 {
+            self.q[2] = add_log(self.q[2], v[2] + self.q[3] + logdt);
+        }
+        if m0 > 1 {
+            self.q[3] = add_log(self.q[3], v[3] + logdt);
+        }
 
         self.r[0] = add_log(self.r[0], v[4] + self.r[1] + logdt);
         self.r[1] = add_log(self.r[1], v[5] + self.r[2] + logdt);
-        if m1 > 0 { self.r[2] = add_log(self.r[2], v[6] + self.r[3] + logdt); }
-        if m1 > 1 { self.r[3] = add_log(self.r[3], v[7] + logdt); }
+        if m1 > 0 {
+            self.r[2] = add_log(self.r[2], v[6] + self.r[3] + logdt);
+        }
+        if m1 > 1 {
+            self.r[3] = add_log(self.r[3], v[7] + logdt);
+        }
 
         let ms = &self.core.milestones;
-        let rhodot = self.q[0] * (1. + 0.05 * ms[2] as f64) + self.r[0] * (1. + 0.05 * ms[3] as f64) + self.core.tot_mult + logdt;
-        self.core.rho += LogNum { value: rhodot, sign: 1 };
+        let rhodot = self.q[0] * (1. + 0.05 * ms[2] as f64)
+            + self.r[0] * (1. + 0.05 * ms[3] as f64)
+            + self.core.tot_mult
+            + logdt;
+        self.core.rho += LogNum {
+            value: rhodot,
+            sign: 1,
+        };
     }
 
     /** Buys variable `i` if affordable (sim-3 `buyVariableROI`'s `buyVariable`) */
@@ -316,7 +370,10 @@ impl T2Sim {
             return;
         }
         for i in (0..self.vars.len()).rev() {
-            while self.rho() > self.cost(i) && self.buying_condition(i) && self.variable_available(i) {
+            while self.rho() > self.cost(i)
+                && self.buying_condition(i)
+                && self.variable_available(i)
+            {
                 self.core.record_purchase(&self.vars[i]);
                 let cost = self.vars[i].cost;
                 self.core.rho -= cost;
@@ -327,32 +384,53 @@ impl T2Sim {
 
     // ---- ROI strats: buy the variable with the best return on investment until timeToPub ----
 
-    fn ft2(&self, t: f64, dq1: f64, dq2: f64, q1: f64, q2: f64) -> f64 {
+    // Integrals of Q1(t) / R1(t) for 2, 3 and 4 active q (or r) terms (sim-3 `ft2Func`, `ft3Func`,
+    // `ft4Func`). `d` holds dq1..dq4 (or dr1..dr4) and `q` holds q1..q4 (or r1..r4).
+
+    fn ft2(&self, t: f64, d: &[f64], q: &[f64]) -> f64 {
+        let (dq1, dq2, q1, q2) = (d[0], d[1], q[0], q[1]);
         add_log(dq1 + add_log(dq2 + t * 2. - self.consts.l10_2, q2 + t), q1)
     }
 
-    fn ft3(&self, t: f64, dq1: f64, dq2: f64, dq3: f64, q1: f64, q2: f64, q3: f64) -> f64 {
-        let c = &self.consts;
-        add_log(dq1 + add_log(dq2 + add_log(dq3 + t * 3. - c.l10_6, q3 + t * 2. - c.l10_2), q2 + t), q1 + t)
-    }
-
-    #[allow(clippy::too_many_arguments)]
-    fn ft4(&self, t: f64, dq1: f64, dq2: f64, dq3: f64, dq4: f64, q1: f64, q2: f64, q3: f64, q4: f64) -> f64 {
+    fn ft3(&self, t: f64, d: &[f64], q: &[f64]) -> f64 {
+        let (dq1, dq2, dq3, q1, q2, q3) = (d[0], d[1], d[2], q[0], q[1], q[2]);
         let c = &self.consts;
         add_log(
             dq1 + add_log(
-                dq2 + add_log(dq3 + add_log(dq4 + t * 4. - c.l10_24, q4 + t * 3. - c.l10_6), q3 + t * 2. - c.l10_2),
+                dq2 + add_log(dq3 + t * 3. - c.l10_6, q3 + t * 2. - c.l10_2),
                 q2 + t,
             ),
             q1 + t,
         )
     }
 
-    fn rho_dot_time_factor(&self, t: f64, exp: f64, milestone_count: i32, d: &[f64], q: &[f64; 4]) -> f64 {
+    fn ft4(&self, t: f64, d: &[f64], q: &[f64]) -> f64 {
+        let (dq1, dq2, dq3, dq4, q1, q2, q3, q4) = (d[0], d[1], d[2], d[3], q[0], q[1], q[2], q[3]);
+        let c = &self.consts;
+        add_log(
+            dq1 + add_log(
+                dq2 + add_log(
+                    dq3 + add_log(dq4 + t * 4. - c.l10_24, q4 + t * 3. - c.l10_6),
+                    q3 + t * 2. - c.l10_2,
+                ),
+                q2 + t,
+            ),
+            q1 + t,
+        )
+    }
+
+    fn rho_dot_time_factor(
+        &self,
+        t: f64,
+        exp: f64,
+        milestone_count: i32,
+        d: &[f64],
+        q: &[f64; 4],
+    ) -> f64 {
         let value = match milestone_count {
-            0 => self.ft2(t, d[0], d[1], q[0], q[1]),
-            1 => self.ft3(t, d[0], d[1], d[2], q[0], q[1], q[2]),
-            2 => self.ft4(t, d[0], d[1], d[2], d[3], q[0], q[1], q[2], q[3]),
+            0 => self.ft2(t, d, q),
+            1 => self.ft3(t, d, q),
+            2 => self.ft4(t, d, q),
             _ => f64::NEG_INFINITY,
         };
         value * exp
@@ -361,11 +439,25 @@ impl T2Sim {
     /** Simpson's rule on a segment (sim-3 `simp`) */
     fn simp(&self, x0: f64, x1: f64, f0: f64, fm: f64, f1: f64) -> SignedLog {
         let sum = add_log(add_log(f0, self.consts.l10_4 + fm), f1);
-        muls(&[SignedLog::pos(sum - self.consts.l10_6), adds(&[SignedLog::pos(x1), mulm1(SignedLog::pos(x0))])])
+        muls(&[
+            SignedLog::pos(sum - self.consts.l10_6),
+            adds(&[SignedLog::pos(x1), mulm1(SignedLog::pos(x0))]),
+        ])
     }
 
     #[allow(clippy::too_many_arguments)]
-    fn recurse(&self, f: &dyn Fn(f64) -> f64, a: f64, b: f64, fa: f64, fm: f64, fb: f64, whole: SignedLog, precision: f64, depth: i32) -> SignedLog {
+    fn recurse(
+        &self,
+        f: &dyn Fn(f64) -> f64,
+        a: f64,
+        b: f64,
+        fa: f64,
+        fm: f64,
+        fb: f64,
+        whole: SignedLog,
+        precision: f64,
+        depth: i32,
+    ) -> SignedLog {
         let l10_2 = self.consts.l10_2;
         let m = add_log(a, b) - l10_2;
         let lm = add_log(a, m) - l10_2;
@@ -378,7 +470,11 @@ impl T2Sim {
         let delta = adds(&[adds(&[left, right]), mulm1(whole)]);
 
         if depth <= 0 || delta.value <= l10(15. * precision) {
-            return adds(&[adds(&[left, right, SignedLog::pos(delta.value - self.consts.l10_15)])]);
+            return adds(&[adds(&[
+                left,
+                right,
+                SignedLog::pos(delta.value - self.consts.l10_15),
+            ])]);
         }
 
         adds(&[
@@ -388,14 +484,31 @@ impl T2Sim {
     }
 
     /** Adaptive Simpson integration in log space (sim-3 `integrate`) */
-    fn integrate(&self, f: &dyn Fn(f64) -> f64, mut a: f64, mut b: f64, precision: f64, max_depth: i32) -> SignedLog {
+    fn integrate(
+        &self,
+        f: &dyn Fn(f64) -> f64,
+        mut a: f64,
+        mut b: f64,
+        precision: f64,
+        max_depth: i32,
+    ) -> SignedLog {
         let swap = a > b;
         if swap {
             std::mem::swap(&mut a, &mut b);
         }
         let m = add_log(a, b) - self.consts.l10_2;
         let (fa, fb, fm) = (f(a), f(b), f(m));
-        let mut result = self.recurse(f, a, b, fa, fm, fb, self.simp(a, b, fa, fm, fb), precision, max_depth);
+        let mut result = self.recurse(
+            f,
+            a,
+            b,
+            fa,
+            fm,
+            fb,
+            self.simp(a, b, fa, fm, fb),
+            precision,
+            max_depth,
+        );
         if swap {
             result = mulm1(result);
         }
@@ -420,7 +533,11 @@ impl T2Sim {
         };
 
         let value = self.integrate(&rho_integral, t0, t1, 1e-1, 1);
-        if value.neg { f64::NEG_INFINITY } else { value.value }
+        if value.neg {
+            f64::NEG_INFINITY
+        } else {
+            value.value
+        }
     }
 
     fn buy_variables_roi(&mut self) {
@@ -443,7 +560,10 @@ impl T2Sim {
                 if !self.variable_available(i) {
                     return f64::NEG_INFINITY;
                 }
-                let next = self.vars[i].value_model.compute_from_zero(self.vars[i].level + 1).value;
+                let next = self.vars[i]
+                    .value_model
+                    .compute_from_zero(self.vars[i].level + 1)
+                    .value;
                 sub_log(next, self.val(i))
             });
 
@@ -457,28 +577,50 @@ impl T2Sim {
             let roi2: [f64; 8] = [
                 roi_for(0),
                 roi_for(1),
-                if m0 > 0 { roi_for(2) } else { f64::NEG_INFINITY },
-                if m0 > 1 { roi_for(3) } else { f64::NEG_INFINITY },
+                if m0 > 0 {
+                    roi_for(2)
+                } else {
+                    f64::NEG_INFINITY
+                },
+                if m0 > 1 {
+                    roi_for(3)
+                } else {
+                    f64::NEG_INFINITY
+                },
                 roi_for(4),
                 roi_for(5),
-                if m1 > 0 { roi_for(6) } else { f64::NEG_INFINITY },
-                if m1 > 1 { roi_for(7) } else { f64::NEG_INFINITY },
+                if m1 > 0 {
+                    roi_for(6)
+                } else {
+                    f64::NEG_INFINITY
+                },
+                if m1 > 1 {
+                    roi_for(7)
+                } else {
+                    f64::NEG_INFINITY
+                },
             ];
             // rescale: divide by the variable cost and subtract 1
             let roi: [f64; 8] = std::array::from_fn(|i| {
-                let v = adds(&[muls(&[SignedLog::pos(roi2[i]), SignedLog::pos(-self.cost(i))]), mulm1(SignedLog::pos(0.))]);
-                if self.vars[i].should_buy && self.variable_available(i) && !v.neg { v.value } else { f64::NEG_INFINITY }
+                let v = adds(&[
+                    muls(&[SignedLog::pos(roi2[i]), SignedLog::pos(-self.cost(i))]),
+                    mulm1(SignedLog::pos(0.)),
+                ]);
+                if self.vars[i].should_buy && self.variable_available(i) && !v.neg {
+                    v.value
+                } else {
+                    f64::NEG_INFINITY
+                }
             });
 
             // switch (Math.max(...roi)) { case -Infinity; case roi[7]; ... case roi[0] }
             let max = roi.iter().copied().fold(f64::NEG_INFINITY, js_max);
             let mut bought = false;
-            if max != f64::NEG_INFINITY {
-                if let Some(i) = (0..8).rev().find(|&i| roi[i] == max) {
-                    if roi[i] != f64::NEG_INFINITY {
-                        bought = self.buy_one(i);
-                    }
-                }
+            if max != f64::NEG_INFINITY
+                && let Some(i) = (0..8).rev().find(|&i| roi[i] == max)
+                && roi[i] != f64::NEG_INFINITY
+            {
+                bought = self.buy_one(i);
             }
             if !bought {
                 break;

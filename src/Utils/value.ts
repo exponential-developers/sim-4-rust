@@ -17,7 +17,7 @@ export class StepwisePowerSumValue extends BaseValue {
         this.offset = offset;
     }
     computeNewValue(prevValue: number, currentLevel: number): number {
-        let toAdd = l10(this.base) * Math.floor(currentLevel / this.length);
+        const toAdd = l10(this.base) * Math.floor(currentLevel / this.length);
         return add(prevValue, toAdd);
     }
     recomputeValue(level: number): number {

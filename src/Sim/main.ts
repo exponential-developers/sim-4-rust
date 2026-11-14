@@ -1,5 +1,4 @@
 import { parseQuery } from "./parse";
-import { simulate } from "./simulate";
 import { writeSimResponse } from "./write";
 import { setSimState } from "../UI/simState";
 import { qs, event } from "../Utils/DOMhelpers";
@@ -53,7 +52,7 @@ export async function simCall() {
 
   try {
     // A game save pasted in the "All" input is loaded first (like sim-3)
-    if (modeSelector.value === "All" && /^[A-Za-z0-9+\/=]{20,}$/.test(simAllInputArea.value.trim())) {
+    if (modeSelector.value === "All" && /^[A-Za-z0-9+/=]{20,}$/.test(simAllInputArea.value.trim())) {
       output.textContent = "Loading save...";
       await loadSaveFile();
     }

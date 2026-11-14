@@ -49,7 +49,7 @@ export class ExponentialCost extends BaseCost  {
         return this.cost + this.costInc * level;
     }
     copy(): ExponentialCost {
-        let res = new ExponentialCost("10", "10", false);
+        const res = new ExponentialCost("10", "10", false);
         // Dark hacks to make a copy of this one:
         res.cost = this.cost;
         res.costInc = this.costInc;
@@ -79,7 +79,7 @@ export class ConstantCost extends BaseCost {
         super();
         this.cost = parseValue(String(base));
     }
-    getCost(level: number): number {
+    getCost(_level: number): number {
         return this.cost;
     }
     copy(): ConstantCost {

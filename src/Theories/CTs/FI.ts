@@ -16,12 +16,12 @@ import {
 export default async function fi(data: theoryData): Promise<simResult> {
   let res;
   if(data.strat.includes("Coast")) {
-    let data2: theoryData = JSON.parse(JSON.stringify(data));
+    const data2: theoryData = JSON.parse(JSON.stringify(data));
     data2.strat = data2.strat.replace("Coast", "");
     const sim1 = new fiSim(data2);
     const res1 = await sim1.simulate();
     const lastQ1 = getLastLevel("q1", res1.bought_vars);
-    let sim = new fiSim(data);
+    const sim = new fiSim(data);
     sim.variables[1].setOriginalCap(lastQ1);
     // Maximum seen in the wild is 4, we test 5 and 6 to be safe.
     sim.variables[1].configureCap(6);
@@ -203,20 +203,20 @@ class fiSim extends theoryClass<theory> {
   }
 
   approxSin(limit: number): number {
-    let positives = add(limit * 2 - factoriallogs[2], limit * 6 - factoriallogs[6]);
-    let negatives = limit * 4 - factoriallogs[4];
+    const positives = add(limit * 2 - factoriallogs[2], limit * 6 - factoriallogs[6]);
+    const negatives = limit * 4 - factoriallogs[4];
     return subtract(positives, negatives);
   }
 
   approxCos(limit: number): number {
-    let positives = add(limit, limit * 5 - factoriallogs[5]);
-    let negatives = limit * 3 - factoriallogs[3];
+    const positives = add(limit, limit * 5 - factoriallogs[5]);
+    const negatives = limit * 3 - factoriallogs[3];
     return subtract(positives, negatives);
   }
 
   approxL10(limit: number): number {
-    let positives = add(limit * 2 - l10(2), limit * 4 - l10(12), limit * 6 - l10(30));
-    let negatives = add(limit * 3 - l10(6), limit * 5 - l10(20));
+    const positives = add(limit * 2 - l10(2), limit * 4 - l10(12), limit * 6 - l10(30));
+    const negatives = add(limit * 3 - l10(6), limit * 5 - l10(20));
     return subtract(positives, negatives) - l10(Math.log(10));
   }
 
@@ -261,8 +261,8 @@ class fiSim extends theoryClass<theory> {
     return getBestResult(this.createResult(stratExtra), this.bestForkRes);
   }
   tick() {
-    let vq1 = this.variables[1].value * (1 + 0.01 * this.milestones[2]);
-    let vden = this.approx(this.variables[3].value, 2 + this.milestones[6]);
+    const vq1 = this.variables[1].value * (1 + 0.01 * this.milestones[2]);
+    const vden = this.approx(this.variables[3].value, 2 + this.milestones[6]);
 
     this.tval += ((this.variables[0].value + 1) / 5) * this.dt;
     this.q = add(this.q, vq1 + this.variables[2].value + l10(this.dt));
@@ -275,7 +275,7 @@ class fiSim extends theoryClass<theory> {
     const vm = this.milestones[3] ? this.variables[4].value : 0;
     const vn = this.milestones[4] ? this.variables[5].value : 0;
 
-    let rhodot = l10(this.tval) + integral + this.r + vm + vn;
+    const rhodot = l10(this.tval) + integral + this.r + vm + vn;
 
     this.rho.add(this.totMult + rhodot + l10(this.dt));
   }
@@ -301,7 +301,7 @@ class fiSim extends theoryClass<theory> {
     this.msq = other.msq;
   }
   copy() {
-    let sim = new fiSim(this.getDataForCopy());
+    const sim = new fiSim(this.getDataForCopy());
     sim.copyFrom(this);
     return sim;
   }

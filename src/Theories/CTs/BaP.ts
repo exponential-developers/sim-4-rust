@@ -109,7 +109,7 @@ class bapSim extends theoryClass<theory> {
     }
 
     //let approx_sum = 1 / c1 + BigNumber.ONE / (BigNumber.TWO * (c1.pow(BigNumber.TWO)));
-    let approx_sum = add(-c1, -l10(2) - 2*c1)
+    const approx_sum = add(-c1, -l10(2) - 2*c1)
     
     if (r_ms) {
         if (c1 <= 10) { // higher accuracy estimate
@@ -186,8 +186,8 @@ class bapSim extends theoryClass<theory> {
     this.bestRes = null;
     if (this.lastPub < 1480)
     {
-      let newpubtable: pubTable = pubtable.bapdata;
-      let pubseek = this.lastPub < 100 ? Math.round(this.lastPub * 4) / 4 : Math.round(this.lastPub);
+      const newpubtable: pubTable = pubtable.bapdata;
+      const pubseek = this.lastPub < 100 ? Math.round(this.lastPub * 4) / 4 : Math.round(this.lastPub);
       this.forcedPubRho = newpubtable[pubseek.toString()].next;
       if (this.forcedPubRho === undefined) this.forcedPubRho = Infinity;
     }
@@ -205,7 +205,7 @@ class bapSim extends theoryClass<theory> {
     this.forcedPubRho = other.forcedPubRho;
   }
   copy(): bapSim {
-    let newsim = new bapSim(this.getDataForCopy());
+    const newsim = new bapSim(this.getDataForCopy());
     newsim.copyFrom(this);
     return newsim;
   }
@@ -255,7 +255,7 @@ class bapSim extends theoryClass<theory> {
   }
   getVariableWeights(): number[] {
     const rawCost = this.variables.map((item) => item.cost);
-    let nextCoast = this.getNextCoast();
+    const nextCoast = this.getNextCoast();
     const minlayercost = Math.min(...rawCost.slice(2, this.milestones[4] + 3));
     const nextm64levels = 64 - ((this.variables[1].level - 1) % 64);
     const p = 2**0.25;

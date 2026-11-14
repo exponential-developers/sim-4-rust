@@ -1,0 +1,27 @@
+{
+  "src/Sim/main.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "src/Theories/CTs/helpers/RZ.ts": {
+    "no-loss-of-precision": {
+      "count": 32
+    }
+  },
+  "src/Theories/theory.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "src/Utils/DOMhelpers.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 2
+    }
+  },
+  "src/Utils/global.types.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  }
+}

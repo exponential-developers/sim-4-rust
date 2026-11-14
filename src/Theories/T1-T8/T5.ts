@@ -16,7 +16,7 @@ import {
 export default async function t5(data: theoryData): Promise<simResult> {
   let res;
   if(data.strat.includes("Coast")) {
-    let data2: theoryData = JSON.parse(JSON.stringify(data));
+    const data2: theoryData = JSON.parse(JSON.stringify(data));
     if(data2.strat == "T5Idle2Coast") {
       data2.strat = "T5IdleCoast";
     }
@@ -27,11 +27,11 @@ export default async function t5(data: theoryData): Promise<simResult> {
     const sim2 = new t5Sim(data);
     sim2.variables[0].setOriginalCap(lastQ1);
     sim2.variables[0].configureCap(13);
-    let last_c2 = getLastLevel("c2", res1.bought_vars);
+    const last_c2 = getLastLevel("c2", res1.bought_vars);
     sim2.variables[3].setOriginalCap(last_c2);
     sim2.variables[3].configureCap(1);
     if(data.strat == "T5Idle2Coast") {
-      let last_c1 = getLastLevel("c1", res1.bought_vars) || sim1.variables[2].level;
+      const last_c1 = getLastLevel("c1", res1.bought_vars) || sim1.variables[2].level;
       sim2.variables[2].setOriginalCap(last_c1);
       sim2.variables[2].configureCap(200);
     }
@@ -215,7 +215,7 @@ class t5Sim extends theoryClass<theory> {
     this.c2Counter = other.c2Counter;
   }
   copy() {
-    let copySim = new t5Sim(this.getDataForCopy());
+    const copySim = new t5Sim(this.getDataForCopy());
     copySim.copyFrom(this);
     return copySim;
   }

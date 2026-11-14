@@ -17,7 +17,7 @@ import {
 export default async function t6(data: theoryData): Promise<simResult> {
     let res;
     if (data.strat.includes("Coast")) {
-        let data2: theoryData = JSON.parse(JSON.stringify(data));
+        const data2: theoryData = JSON.parse(JSON.stringify(data));
         data2.strat = data2.strat.replace("Coast", "");
         const sim1 = new t6Sim(data2);
         const res1 = await sim1.simulate();
@@ -430,7 +430,7 @@ class t6Sim extends theoryClass<theory> {
     }
 
     getVariableWeights(): number[] {
-        let weights = [
+        const weights = [
             l10(7 + (this.variables[0].level % 10)), //q1
             0, //q2
             l10(5 + (this.variables[2].level % 10)), //r1
@@ -441,7 +441,7 @@ class t6Sim extends theoryClass<theory> {
             Infinity, //c4
             -Math.min(0, this.k), //c5
         ];
-        for (let varIndex of [0, 2]) {
+        for (const varIndex of [0, 2]) {
             if (!this.variables[varIndex].shouldBuy) {
                 weights[varIndex] = Infinity;
             }
@@ -463,7 +463,7 @@ class t6Sim extends theoryClass<theory> {
     }
 
     copy() {
-        let copySim = new t6Sim(this.getDataForCopy());
+        const copySim = new t6Sim(this.getDataForCopy());
         copySim.copyFrom(this);
         return copySim;
     }

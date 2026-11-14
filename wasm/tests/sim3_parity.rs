@@ -6,7 +6,7 @@
 //!   wasm-pack test --node wasm --test sim3_parity
 #![cfg(target_arch = "wasm32")]
 
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 use wasm_bindgen_test::wasm_bindgen_test;
 
 const FIXTURES: &str = include_str!("fixtures/sim3_results.json");
@@ -27,8 +27,15 @@ fn settings() -> Value {
 fn api(query_type: &str, mut data: Value) -> Value {
     wasm::set_config(DATA_JSON);
     data["settings"] = settings();
-    let res: Value = serde_json::from_str(&wasm::run_query(&json!({ "type": query_type, "data": data }).to_string())).unwrap();
-    assert_eq!(res["response_type"], "success", "API error: {}", res["data"]);
+    let res: Value = serde_json::from_str(&wasm::run_query(
+        &json!({ "type": query_type, "data": data }).to_string(),
+    ))
+    .unwrap();
+    assert_eq!(
+        res["response_type"], "success",
+        "API error: {}",
+        res["data"]
+    );
     res["data"]["data"].clone()
 }
 
@@ -52,14 +59,22 @@ fn diff(label: &str, expected: &Value, actual: &Value) -> Option<String> {
             _ => expected[key] == actual[key],
         };
         if !same {
-            out.push(format!("{key}: sim-3 {} vs rust {}", expected[key], actual[key]));
+            out.push(format!(
+                "{key}: sim-3 {} vs rust {}",
+                expected[key], actual[key]
+            ));
         }
     }
     (!out.is_empty()).then(|| format!("{label}: {}", out.join(", ")))
 }
 
 fn assert_no_failures(failures: Vec<String>, total: usize) {
-    assert!(failures.is_empty(), "{} of {total} cases differ from sim-3:\n{}", failures.len(), failures.join("\n"));
+    assert!(
+        failures.is_empty(),
+        "{} of {total} cases differ from sim-3:\n{}",
+        failures.len(),
+        failures.join("\n")
+    );
 }
 
 #[wasm_bindgen_test]
@@ -69,9 +84,17 @@ fn named_strats_match_sim3() {
     let mut failures = Vec::new();
     for c in cases {
         let (theory, strat) = (c["theory"].as_str().unwrap(), c["strat"].as_str().unwrap());
-        let (sigma, rho) = (c["sigma"].as_u64().unwrap() as u32, c["rho"].as_f64().unwrap());
-        let actual: Value = serde_json::from_str(&wasm::sim_strat(theory, strat, sigma, rho)).unwrap();
-        failures.extend(diff(&format!("{theory} {strat} e{rho} sigma={sigma}"), &c["expected"], &actual));
+        let (sigma, rho) = (
+            c["sigma"].as_u64().unwrap() as u32,
+            c["rho"].as_f64().unwrap(),
+        );
+        let actual: Value =
+            serde_json::from_str(&wasm::sim_strat(theory, strat, sigma, rho)).unwrap();
+        failures.extend(diff(
+            &format!("{theory} {strat} e{rho} sigma={sigma}"),
+            &c["expected"],
+            &actual,
+        ));
     }
     assert_no_failures(failures, cases.len());
 }
@@ -87,7 +110,14 @@ fn best_strat_selection_matches_sim3() {
             "cap": null, "last_strat": null
         });
         let actual = summary(&api("single", data)["result"]);
-        failures.extend(diff(&format!("{} {} e{} sigma={}", c["theory"], c["strat"], c["rho"], c["sigma"]), &c["expected"], &actual));
+        failures.extend(diff(
+            &format!(
+                "{} {} e{} sigma={}",
+                c["theory"], c["strat"], c["rho"], c["sigma"]
+            ),
+            &c["expected"],
+            &actual,
+        ));
     }
     assert_no_failures(failures, cases.len());
 }
@@ -98,24 +128,41 @@ fn chains_match_sim3() {
     let cases = f["chains"].as_array().unwrap();
     let mut failures = Vec::new();
     for c in cases {
-        let label = format!("chain {} {} e{}->e{} sigma={}", c["theory"], c["strat"], c["rho"], c["cap"], c["sigma"]);
+        let label = format!(
+            "chain {} {} e{}->e{} sigma={}",
+            c["theory"], c["strat"], c["rho"], c["cap"], c["sigma"]
+        );
         let data = json!({
             "theory": c["theory"], "strat": c["strat"], "sigma": c["sigma"], "rho": c["rho"],
             "cap": c["cap"], "hard_cap": c["hard_cap"]
         });
         let actual = api("chain", data);
         let expected = &c["expected"];
-        let (exp_results, act_results) = (expected["results"].as_array().unwrap(), actual["results"].as_array().unwrap());
+        let (exp_results, act_results) = (
+            expected["results"].as_array().unwrap(),
+            actual["results"].as_array().unwrap(),
+        );
         if exp_results.len() != act_results.len() {
-            failures.push(format!("{label}: {} pubs in sim-3 vs {} in rust", exp_results.len(), act_results.len()));
+            failures.push(format!(
+                "{label}: {} pubs in sim-3 vs {} in rust",
+                exp_results.len(),
+                act_results.len()
+            ));
             continue;
         }
         for (i, (e, a)) in exp_results.iter().zip(act_results).enumerate() {
             failures.extend(diff(&format!("{label} pub {i}"), e, &summary(a)));
         }
-        for (exp_key, act_key) in [("deltaTau", "delta_tau"), ("averageRate", "average_rate"), ("totalTime", "total_time")] {
+        for (exp_key, act_key) in [
+            ("deltaTau", "delta_tau"),
+            ("averageRate", "average_rate"),
+            ("totalTime", "total_time"),
+        ] {
             if expected[exp_key].as_f64() != actual[act_key].as_f64() {
-                failures.push(format!("{label}: {exp_key} sim-3 {} vs rust {}", expected[exp_key], actual[act_key]));
+                failures.push(format!(
+                    "{label}: {exp_key} sim-3 {} vs rust {}",
+                    expected[exp_key], actual[act_key]
+                ));
             }
         }
     }
@@ -126,8 +173,14 @@ fn chains_match_sim3() {
 fn json_eq(a: &Value, b: &Value) -> bool {
     match (a, b) {
         (Value::Number(x), Value::Number(y)) => x.as_f64() == y.as_f64(),
-        (Value::Array(x), Value::Array(y)) => x.len() == y.len() && x.iter().zip(y).all(|(x, y)| json_eq(x, y)),
-        (Value::Object(x), Value::Object(y)) => x.len() == y.len() && x.iter().all(|(k, v)| y.get(k).is_some_and(|w| json_eq(v, w))),
+        (Value::Array(x), Value::Array(y)) => {
+            x.len() == y.len() && x.iter().zip(y).all(|(x, y)| json_eq(x, y))
+        }
+        (Value::Object(x), Value::Object(y)) => {
+            x.len() == y.len()
+                && x.iter()
+                    .all(|(k, v)| y.get(k).is_some_and(|w| json_eq(v, w)))
+        }
         _ => a == b,
     }
 }
@@ -142,24 +195,49 @@ fn other_modes_match_sim3() {
         let base = json!({ "theory": c["theory"], "strat": c["strat"], "sigma": c["sigma"], "rho": c["rho"] });
         let with = |pairs: &[(&str, &Value)]| {
             let mut d = base.clone();
-            for (k, v) in pairs { d[*k] = (*v).clone(); }
+            for (k, v) in pairs {
+                d[*k] = (*v).clone();
+            }
             d
         };
-        let summaries = |r: &Value| Value::Array(r["results"].as_array().unwrap().iter().map(summary).collect());
-        let chain_like = |r: &Value| json!({
-            "results": summaries(r), "deltaTau": r["delta_tau"], "averageRate": r["average_rate"], "totalTime": r["total_time"]
-        });
+        let summaries = |r: &Value| {
+            Value::Array(
+                r["results"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .map(summary)
+                    .collect(),
+            )
+        };
+        let chain_like = |r: &Value| {
+            json!({
+                "results": summaries(r), "deltaTau": r["delta_tau"], "averageRate": r["average_rate"], "totalTime": r["total_time"]
+            })
+        };
         let actual = match mode {
-            "step" => json!({ "results": summaries(&api("step", with(&[("cap", &extra[0]), ("step", &extra[1])]))) }),
+            "step" => {
+                json!({ "results": summaries(&api("step", with(&[("cap", &extra[0]), ("step", &extra[1])]))) })
+            }
             "amount" => chain_like(&api("amount", with(&[("amount", &extra[0])]))),
             "time" => chain_like(&api("time", with(&[("time", &extra[0])]))),
-            "step_chain" => json!({ "results": summaries(&api("step_chain", with(&[("cap", &extra[0]), ("step", &extra[1]), ("hard_cap", &extra[2])]))) }),
-            "comparison" => json!({ "results": summaries(&api("comparison", json!({ "theory": c["theory"], "sigma": c["sigma"], "rho": c["rho"] }))) }),
-            "pub_table" => api("pub_table", with(&[("cap", &extra[0]), ("step", &extra[1])])),
+            "step_chain" => {
+                json!({ "results": summaries(&api("step_chain", with(&[("cap", &extra[0]), ("step", &extra[1]), ("hard_cap", &extra[2])]))) })
+            }
+            "comparison" => {
+                json!({ "results": summaries(&api("comparison", json!({ "theory": c["theory"], "sigma": c["sigma"], "rho": c["rho"] }))) })
+            }
+            "pub_table" => api(
+                "pub_table",
+                with(&[("cap", &extra[0]), ("step", &extra[1])]),
+            ),
             other => panic!("unknown mode {other}"),
         };
         if !json_eq(&c["expected"], &actual) {
-            failures.push(format!("{mode} {} {} e{}: sim-3 {} vs rust {}", c["theory"], c["strat"], c["rho"], c["expected"], actual));
+            failures.push(format!(
+                "{mode} {} {} e{}: sim-3 {} vs rust {}",
+                c["theory"], c["strat"], c["rho"], c["expected"], actual
+            ));
         }
     }
     assert_no_failures(failures, cases.len());

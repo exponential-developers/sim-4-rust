@@ -41,7 +41,7 @@ mod imp {
     }
 }
 
-pub use imp::{log10, log2, pow};
+pub use imp::{log2, log10, pow};
 
 /** 10^x */
 #[inline]

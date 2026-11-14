@@ -2,11 +2,8 @@ import Currency from "../Utils/currency";
 import Variable from "../Utils/variable";
 import {
   binaryInsertionSearch,
-  convertTime,
   defaultResult,
-  formatNumber,
-  getBestResult,
-  logToExp
+  getBestResult
 } from "../Utils/helpers";
 import jsonData from "../Data/data.json";
 
@@ -323,7 +320,7 @@ export default abstract class theoryClass<theory extends theoryType> {
    * Runs each time a variable is purchased
    * @param id id of the purchased variable
    */
-  onVariablePurchased(id: number) {}
+  onVariablePurchased(_id: number) {}
 
   /**
    * Runs once per tick if a variable was bought
@@ -334,7 +331,7 @@ export default abstract class theoryClass<theory extends theoryType> {
    * Extra buying condition if needed.
    * @param id id of the variable to be purchased
    */
-  extraBuyingCondition(id: number): boolean {return true;};
+  extraBuyingCondition(_id: number): boolean {return true;};
 
   /** 
    * Buys variables. 
@@ -344,7 +341,7 @@ export default abstract class theoryClass<theory extends theoryType> {
   buyVariables() {
     let bought = false;
     for (let i = this.variables.length - 1; i >= 0; i--) {
-      let currency = this.variables[i].currency ?? this.rho;
+      const currency = this.variables[i].currency ?? this.rho;
       while (true) {
         if (currency.value > this.variables[i].cost && this.buyingConditions[i]() && this.variableAvailability[i]() && this.extraBuyingCondition(i)) {
           if (this.maxRho + this.settings.bought_vars_delta > this.lastPub) {
@@ -419,10 +416,10 @@ export default abstract class theoryClass<theory extends theoryType> {
     if (!this.confirmPurchase) throw "Cannot use buyVariablesFork if confirmPurchase is undefined";
     let bought = false;
     for (let i = this.variables.length - 1; i >= 0; i--) {
-      let currency = this.variables[i].currency ?? this.rho;
+      const currency = this.variables[i].currency ?? this.rho;
       while (true) {
         if (currency.value > this.variables[i].cost && this.buyingConditions[i]() && this.variableAvailability[i]() && this.extraBuyingCondition(i)) {
-          let confirmPurchase = await this.confirmPurchase(i);
+          const confirmPurchase = await this.confirmPurchase(i);
           if (!confirmPurchase) break;
           if (this.maxRho + this.settings.bought_vars_delta > this.lastPub) {
             this.boughtVars.push({ 
@@ -462,7 +459,7 @@ export default abstract class theoryClass<theory extends theoryType> {
       pub_rho: this.pubRho,
       delta_tau: (this.pubRho - this.lastPub) * this.tau_factor,
       pub_multi: 10 ** (this.getTotMult(this.pubRho) - this.totMult),
-      strat: this.strat as String + stratExtra,
+      strat: this.strat as string + stratExtra,
       tau_h: this.maxTauH,
       time: Math.max(0, this.pubT - this.recovery.time),
       bought_vars: this.boughtVars

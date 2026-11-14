@@ -20,7 +20,7 @@ const depthConvert = [
 
 // Reset
 export default async function mf(data: theoryData): Promise<simResult> {
-  let resetBundles: resetBundle[] = [
+  const resetBundles: resetBundle[] = [
     [0, 1, 0, 0],
     [0, 1, 0, 1],
     [0, 2, 0, 0]
@@ -30,17 +30,17 @@ export default async function mf(data: theoryData): Promise<simResult> {
     if (data.rho <= 100 && resetBundle[3] > 0) {
       continue;
     }
-    let isCoastStrat = data.strat.includes("Coast");
-    let sim = new mfSim(data, resetBundle);
+    const isCoastStrat = data.strat.includes("Coast");
+    const sim = new mfSim(data, resetBundle);
     if(isCoastStrat && sim.mfResetDepth > 0) {
-      let tempSim = new mfSim(data, resetBundle);
+      const tempSim = new mfSim(data, resetBundle);
       tempSim.mfResetDepth = 0;
-      let tempRes = await tempSim.simulate();
+      const tempRes = await tempSim.simulate();
       if (tempRes.strat.includes("c1: ")) {
         sim.lastC1 = parseInt(tempRes.strat.split("c1: ")[1].split(" ")[0]);
       }
     }
-    let res = await sim.simulate();
+    const res = await sim.simulate();
     bestRes = getBestResult(bestRes, res);
   }
   return bestRes
@@ -575,7 +575,7 @@ class mfSim extends theoryClass<theory> {
     this.precomputeExps();
   }
   copy(): mfSim {
-    let newsim = new mfSim(super.getDataForCopy(), this.resetBundle);
+    const newsim = new mfSim(super.getDataForCopy(), this.resetBundle);
     newsim.copyFrom(this);
     return newsim;
   }
@@ -625,7 +625,7 @@ class mfSim extends theoryClass<theory> {
 
   tick() {
     // Deal with i
-    let icap = this.precomp_va2 * i0; //max reachable i value
+    const icap = this.precomp_va2 * i0; //max reachable i value
 
     if(this.i < icap) {
         // if max i is not reached, we add a value to it:
@@ -652,7 +652,7 @@ class mfSim extends theoryClass<theory> {
     return cost
   }
   getGoalBundle(bundle: resetBundle = this.resetBundle): resetBundle {
-    let goalBundle = <resetBundle>[...bundle];
+    const goalBundle = <resetBundle>[...bundle];
     if (this.maxRho <= 65) {
       goalBundle[2] = 0;
       goalBundle[3] = 0;
@@ -678,7 +678,7 @@ class mfSim extends theoryClass<theory> {
     return goalBundle;
   }
   async testFinalReset() {
-      let fork = this.copy();
+      const fork = this.copy();
       fork.stopReset = true;
       const forkres = await fork.simulate();
       this.bestRes = getBestResult(this.bestRes, forkres);
@@ -717,9 +717,9 @@ class mfSim extends theoryClass<theory> {
   // This method also removes reliance on this.extraBuyingCondition.
   buyNormalVariables() {
     // let bought = false;
-    let boughtVarsDelta = this.settings.bought_vars_delta;
+    const boughtVarsDelta = this.settings.bought_vars_delta;
     for (let i = this.normalVariables.length - 1; i >= 0; i--) {
-      let currency = this.normalVariables[i].currency ?? this.rho;
+      const currency = this.normalVariables[i].currency ?? this.rho;
       while (true) {
         if (currency.value > this.normalVariables[i].cost && this.buyingConditions[i]() && this.variableAvailability[i]()) {
           if (this.maxRho + boughtVarsDelta > this.lastPub) {
@@ -748,9 +748,9 @@ class mfSim extends theoryClass<theory> {
   // we will always buy as many as we can.
   buyVVariables() {
     // let bought = false;
-    let boughtVarsDelta = this.settings.bought_vars_delta;
+    const boughtVarsDelta = this.settings.bought_vars_delta;
     for (let i = 8; i >= 5; i--) {
-      let currency = this.variables[i].currency ?? this.rho;
+      const currency = this.variables[i].currency ?? this.rho;
       while (true) {
         if (currency.value > this.variables[i].cost && this.variableAvailability[i]()) {
           if (this.maxRho + boughtVarsDelta > this.lastPub) {

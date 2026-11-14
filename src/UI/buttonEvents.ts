@@ -1,5 +1,5 @@
 import html2canvas from "html2canvas";
-import { qs, qsa, ce, event, removeAllChilds, downloadString, tau, rho, sigma_t, getTableHeaders } from "../Utils/DOMhelpers";
+import { qs, qsa, ce, event, removeAllChilds, downloadString, getTableHeaders } from "../Utils/DOMhelpers";
 
 //Buttons
 const clear = qs(".clear");
@@ -95,7 +95,7 @@ function makeTableCsv(): string {
     let csvTotal = "";
 
     if (table.classList.contains("big")) {
-      let headers = getTableHeaders(
+      const headers = getTableHeaders(
         theadRow.children.length == 10 ? "all" : "all_one",
         "text",
         Number(theadRow.children[0].innerHTML.match(/^\d+/))
@@ -103,13 +103,13 @@ function makeTableCsv(): string {
       csvTotal += headers.join(",") + ",\n";
       let rowIndex = 0;
       while (rowIndex < tbody.children.length) {
-        let row = tbody.children[rowIndex];
+        const row = tbody.children[rowIndex];
         if (row.children.length >= 2) {
           if ((row.children[0] as HTMLTableCellElement).rowSpan == 2) {
             rowIndex++;
-            let nextRow = tbody.children[rowIndex];
-            let row1Content = [];
-            let row2Content = [];
+            const nextRow = tbody.children[rowIndex];
+            const row1Content = [];
+            const row2Content = [];
             let j = 0;
             for (let i = 0; i < theadRow.children.length - 1; i++) {
               if ((row.children[i] as HTMLTableCellElement).rowSpan == 2) {
@@ -136,11 +136,11 @@ function makeTableCsv(): string {
       }
     }
     else {
-      let headers = getTableHeaders("single", "text");
-      let h0match = headers[0].match(/<span[^>]*>(.*)<\/span>/);
+      const headers = getTableHeaders("single", "text");
+      const h0match = headers[0].match(/<span[^>]*>(.*)<\/span>/);
       headers[0] = h0match == undefined ? headers[0] : (h0match.groups == undefined ? headers[0] : h0match.groups[0]);
       csvTotal += headers.join(",") + ",\n";
-      for (let row of tbody.children) {
+      for (const row of tbody.children) {
           if (row.children[0].innerHTML.trim().length == 0) {
             continue;
           }
@@ -178,7 +178,7 @@ event(loadSave, "pointerdown", () => loadSaveFile());
  * (decoded by the ex-save-loader service, like sim-3).
  */
 export function loadSaveFile(): Promise<void> {
-  let presumedSaveFile = simAllInputArea.value.trim();
+  const presumedSaveFile = simAllInputArea.value.trim();
 
   return fetch("https://ex-save-loader.hotab.pw/load",{
     method: "POST",
@@ -194,7 +194,7 @@ export function loadSaveFile(): Promise<void> {
       simAllInputArea.value = r[1];
       simAllInputArea.dispatchEvent(new Event("input", { bubbles: true }));
     }
-  }).catch(e => {
+  }).catch(() => {
     output.textContent = "Error loading save file.";
   })
 }

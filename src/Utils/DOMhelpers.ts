@@ -47,7 +47,7 @@ export function downloadString(str: string, filename: string) {
 
 export function getTableHeaders(tableType: "single" | "all" | "all_one", headerType: "html" | "text", sigma?: number): string[] {
   if (tableType !== "single") {
-      let headers = [
+      const headers = [
           headerType === "html" ? `${sigma}${sigma_t}` : `${sigma}σ`,
           'Input'
       ];
@@ -63,7 +63,7 @@ export function getTableHeaders(tableType: "single" | "all" | "all_one", headerT
       return headers;
   }
   else {
-    let headers = [
+    const headers = [
       '<span style="padding-inline: 0.5rem">Theory</span>',
       headerType === "html" ? sigma_t : "σ",
       'Last Pub',

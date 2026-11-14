@@ -201,8 +201,8 @@ class efSim extends theoryClass<theory> {
 
     this.forcedPubRho = Infinity;
     if (this.lastPub < 374 && this.strat !== "EF") {
-      let newpubtable: pubTable = pubtable.efdata;
-      let pubseek = Math.round(this.lastPub * 32);
+      const newpubtable: pubTable = pubtable.efdata;
+      const pubseek = Math.round(this.lastPub * 32);
       this.forcedPubRho = newpubtable[pubseek.toString()] / 32;
       if (this.forcedPubRho === undefined) this.forcedPubRho = Infinity;
     }
@@ -235,7 +235,7 @@ class efSim extends theoryClass<theory> {
     this.depth = other.depth + 1;
   }
   copy(): efSim {
-    let newsim = new efSim(this.getDataForCopy());
+    const newsim = new efSim(this.getDataForCopy());
     newsim.copyFrom(this);
     newsim.updateMilestones();
     return newsim;
@@ -248,7 +248,7 @@ class efSim extends theoryClass<theory> {
       if (!global.simulating) break;
       this.tick();
       this.updateSimStatus();
-      let prev_nextMilestoneCost = this.nextMilestoneCost;
+      const prev_nextMilestoneCost = this.nextMilestoneCost;
       if (this.lastPub <= 325) this.updateMilestones();
       if (this.nextMilestoneCost > prev_nextMilestoneCost) {
         this.coasting.fill(false);
@@ -317,7 +317,7 @@ class efSim extends theoryClass<theory> {
       if (this.depth > 100) {
         throw "Max coasting research depth reached. Please contact the authors of the sim."
       }
-      let fork = this.copy();
+      const fork = this.copy();
       fork.coasting[id] = true;
       const forkres = await fork.simulate();
       this.bestRes = getBestResult(this.bestRes, forkres);

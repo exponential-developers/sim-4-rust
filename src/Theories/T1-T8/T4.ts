@@ -20,7 +20,7 @@ export default async function t4(data: theoryData): Promise<simResult> {
     res = await sim.simulate();
   }
   else {
-    let data2: theoryData = JSON.parse(JSON.stringify(data));
+    const data2: theoryData = JSON.parse(JSON.stringify(data));
     data2.strat = data2.strat.replace("coast2", "");
     const sim1 = new t4Sim(data2);
     const res1 = await sim1.simulate();
@@ -241,7 +241,7 @@ class t4Sim extends theoryClass<theory> {
     this.q = other.q;
   }
   copy() {
-    let newsim = new t4Sim(super.getDataForCopy());
+    const newsim = new t4Sim(super.getDataForCopy());
     newsim.copyFrom(this);
     return newsim;
   }

@@ -1,7 +1,7 @@
+use num_enum::TryFromPrimitive;
+use serde::{Deserialize, Deserializer, Serialize, de};
 use std::collections::HashMap;
 use std::fmt;
-use serde::{de, Deserialize, Deserializer, Serialize};
-use num_enum::TryFromPrimitive;
 
 use crate::api::condition::Condition;
 
@@ -29,7 +29,7 @@ pub enum TheoryType {
     MF,
     BaP,
     TC,
-    BT
+    BT,
 }
 
 /** Conditions deciding when a strat is used by the "Best ..." strat categories */
@@ -53,16 +53,18 @@ pub struct ConfigTheories {
 }
 
 /** structure for the given theory configuration as written in data.json needed
- by the wasm module
- */
+by the wasm module
+*/
 #[derive(Debug, Deserialize)]
 pub struct Config {
     pub theories: HashMap<TheoryType, ConfigTheories>,
-    pub strat_categories: Vec<String>
+    pub strat_categories: Vec<String>,
 }
 
 /** Deserializes a JSON object into a list of (key, value), keeping the file order */
-fn ordered_strats<'de, D: Deserializer<'de>>(deserializer: D) -> Result<Vec<(String, StratConfig)>, D::Error> {
+fn ordered_strats<'de, D: Deserializer<'de>>(
+    deserializer: D,
+) -> Result<Vec<(String, StratConfig)>, D::Error> {
     struct OrderedVisitor;
 
     impl<'de> de::Visitor<'de> for OrderedVisitor {

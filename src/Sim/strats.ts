@@ -28,9 +28,9 @@ type StratsDataType = {
 const stratData = convertConditions(structuredClone(jsonData.theories) as TheoryDataStructure);
 
 function convertConditions(theoryData: TheoryDataStructure): StratsDataType {
-  let returnedData: StratsDataType = {};
+  const returnedData: StratsDataType = {};
   for (const theory of Object.keys(theoryData)) {
-    let currentTheory: TheoryStratDataType = {
+    const currentTheory: TheoryStratDataType = {
       strats: {}
     };
     for (const strat of Object.keys(theoryData[theory].strats)) {

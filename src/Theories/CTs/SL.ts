@@ -12,7 +12,7 @@ export default async function sl(data: theoryData): Promise<simResult> {
     res = await sim.simulate();
   }
   else {
-    let data2: theoryData = JSON.parse(JSON.stringify(data));
+    const data2: theoryData = JSON.parse(JSON.stringify(data));
     if(data2.strat == "SLCoast") {
       data2.strat = "SLStopA";
     }
@@ -256,7 +256,7 @@ class slSim extends theoryClass<theory> {
     this.inverseE_Gamma = other.inverseE_Gamma;
   }
   copy() {
-    let sim = new slSim(this.getDataForCopy());
+    const sim = new slSim(this.getDataForCopy());
     sim.copyFrom(this);
     return sim;
   }

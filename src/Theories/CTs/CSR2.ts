@@ -182,8 +182,8 @@ class csr2Sim extends theoryClass<theory> {
         this.highbounds = highboundsPassive;
     }
     if (this.strat.includes("PT") && this.lastPub >= 500 && this.lastPub < 1499.5) {
-      let newpubtable: pubTable = pubtable.csr2data;
-      let pubseek = Math.round(this.lastPub * 16);
+      const newpubtable: pubTable = pubtable.csr2data;
+      const pubseek = Math.round(this.lastPub * 16);
       this.forcedPubRho = newpubtable[pubseek.toString()] / 16;
       if (this.forcedPubRho === undefined) this.forcedPubRho = Infinity;
     }
@@ -206,7 +206,7 @@ class csr2Sim extends theoryClass<theory> {
     this.coasting = [...other.coasting];
   }
   copy(): csr2Sim {
-    let newsim = new csr2Sim(super.getDataForCopy());
+    const newsim = new csr2Sim(super.getDataForCopy());
     newsim.copyFrom(this);
     return newsim;
   }
@@ -284,7 +284,7 @@ class csr2Sim extends theoryClass<theory> {
         return false;
       }
       if (this.forcedPubRho - this.variables[id].cost < this.highbounds[id]) {
-        let fork = this.copy();
+        const fork = this.copy();
         fork.coasting[id] = true;
         const forkres = await fork.simulate(super.getDataForCopy());
         this.bestRes = getBestResult(this.bestRes, forkres);

@@ -1,14 +1,11 @@
-/**
+/*!
  * Contains structures for the different types of queries that can be sent to the wasm module
  */
 
 use serde::Deserialize;
 
 use crate::api::config::TheoryType;
-use crate::utils::{
-    lognum::LogNum,
-    settings::SimSettings
-};
+use crate::utils::{lognum::LogNum, settings::SimSettings};
 
 #[derive(Debug, Deserialize)]
 pub struct SingleSimQuery {
@@ -18,7 +15,7 @@ pub struct SingleSimQuery {
     pub rho: LogNum,
     pub cap: Option<LogNum>,
     pub last_strat: Option<String>,
-    pub settings: SimSettings
+    pub settings: SimSettings,
 }
 
 #[derive(Debug, Deserialize)]
@@ -29,7 +26,7 @@ pub struct ChainSimQuery {
     pub rho: LogNum,
     pub cap: LogNum,
     pub hard_cap: bool,
-    pub settings: SimSettings
+    pub settings: SimSettings,
 }
 
 #[derive(Debug, Deserialize)]
@@ -40,7 +37,7 @@ pub struct StepSimQuery {
     pub rho: LogNum,
     pub cap: LogNum,
     pub step: LogNum,
-    pub settings: SimSettings
+    pub settings: SimSettings,
 }
 
 #[derive(Debug, Deserialize)]
@@ -49,7 +46,7 @@ pub struct SimAllQuery {
     pub sigma: i64, // Type could change
     pub very_active: bool,
     pub semi_idle: bool,
-    pub settings: SimSettings
+    pub settings: SimSettings,
 }
 
 /** Chain of a fixed number of publications */
@@ -60,7 +57,7 @@ pub struct AmountSimQuery {
     pub sigma: i64,
     pub rho: LogNum,
     pub amount: u32,
-    pub settings: SimSettings
+    pub settings: SimSettings,
 }
 
 /** Chain until the total time (in seconds) is reached */
@@ -71,7 +68,7 @@ pub struct TimeSimQuery {
     pub sigma: i64,
     pub rho: LogNum,
     pub time: f64,
-    pub settings: SimSettings
+    pub settings: SimSettings,
 }
 
 /** For each step from rho to cap, the best number of pubs to chain towards cap */
@@ -84,7 +81,7 @@ pub struct StepChainSimQuery {
     pub cap: LogNum,
     pub step: LogNum,
     pub hard_cap: bool,
-    pub settings: SimSettings
+    pub settings: SimSettings,
 }
 
 /** Every strat of a theory, sorted by tau/h */
@@ -93,7 +90,7 @@ pub struct ComparisonSimQuery {
     pub theory: TheoryType,
     pub sigma: i64,
     pub rho: LogNum,
-    pub settings: SimSettings
+    pub settings: SimSettings,
 }
 
 /** Table of the fastest way to reach cap from each step between rho and cap */
@@ -105,7 +102,7 @@ pub struct PubTableSimQuery {
     pub rho: LogNum,
     pub cap: LogNum,
     pub step: f64,
-    pub settings: SimSettings
+    pub settings: SimSettings,
 }
 
 #[derive(Debug, Deserialize)]
@@ -121,5 +118,5 @@ pub enum SimQuery {
     Time(TimeSimQuery),
     Comparison(ComparisonSimQuery),
     #[serde(rename = "pub_table")]
-    PubTable(PubTableSimQuery)
+    PubTable(PubTableSimQuery),
 }

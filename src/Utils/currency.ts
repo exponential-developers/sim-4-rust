@@ -18,7 +18,7 @@ export default class Currency {
     }
 
     copy(): Currency {
-        let copy = new Currency(this.symbol);
+        const copy = new Currency(this.symbol);
         copy.value = this.value;
         return copy;
     }

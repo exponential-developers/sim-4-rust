@@ -90,12 +90,12 @@ class fpSim extends theoryClass<theory> {
       }, //c2 - 2
       //q1 - 3
       () => {
-        let cond1 = this.variables[3].cost + l10(((this.variables[3].level % 10) + 1) * 2) < this.variables[4].cost
+        const cond1 = this.variables[3].cost + l10(((this.variables[3].level % 10) + 1) * 2) < this.variables[4].cost
         //let cond2 = this.variables[3].cost + l10((this.variables[3].level % 10) + 1) < this.variables[2].cost
         return cond1;
       }, //q1
       () => {
-        let cond1 = true; //this.variables[4].cost + 0.05 < this.variables[2].cost;
+        const cond1 = true; //this.variables[4].cost + 0.05 < this.variables[2].cost;
         let cond2 = true;
         if(this.milestones[4] != 0) {
           cond2 = this.variables[4].cost + 0.1 < this.variables[7].cost;
@@ -200,8 +200,8 @@ class fpSim extends theoryClass<theory> {
     this.bestRes = null;
     this.doContinuityFork = true;
     if (this.lastPub >= 1200 && this.lastPub < 1990 && this.strat !== "FP") {
-      let newpubtable: pubTable = pubtable.fpdata;
-      let pubseek = Math.round(this.lastPub * 8);
+      const newpubtable: pubTable = pubtable.fpdata;
+      const pubseek = Math.round(this.lastPub * 8);
       this.forcedPubRho = newpubtable[pubseek.toString()] / 8;
       if (this.forcedPubRho === undefined) this.forcedPubRho = Infinity;
     }
@@ -226,7 +226,7 @@ class fpSim extends theoryClass<theory> {
     this.coasting = [...other.coasting];
   }
   copy(): fpSim {
-    let newsim = new fpSim(this.getDataForCopy());
+    const newsim = new fpSim(this.getDataForCopy());
     newsim.copyFrom(this);
     return newsim;
   }
@@ -308,7 +308,7 @@ class fpSim extends theoryClass<theory> {
         return false;
       }
       if (this.forcedPubRho - this.variables[id].cost < highbounds[id]) {
-        let fork = this.copy();
+        const fork = this.copy();
         fork.coasting[id] = true;
         const forkres = await fork.simulate();
         this.bestRes = getBestResult(this.bestRes, forkres);

@@ -1,6 +1,6 @@
 use crate::utils::{
-    lognum::{self, LogNum},
     cost::Cost,
+    lognum::{self, LogNum},
     value::Value,
     //currency::Currency
 };
@@ -94,7 +94,11 @@ impl Variable {
 
     /** Text shown in the strat column for the last level bought */
     pub fn prepare_extra_for_cap(&self, last_level: i32) -> String {
-        let actual_last = if last_level != 0 { last_level } else { self.level };
+        let actual_last = if last_level != 0 {
+            last_level
+        } else {
+            self.level
+        };
         format!(" {}: {}", self.name, actual_last)
     }
 }
@@ -104,7 +108,11 @@ mod tests {
     use super::*;
 
     fn var() -> Variable {
-        Variable::new("q2", Cost::new_exponential(100., 10.), Value::new_exponential(2.))
+        Variable::new(
+            "q2",
+            Cost::new_exponential(100., 10.),
+            Value::new_exponential(2.),
+        )
     }
 
     #[test]

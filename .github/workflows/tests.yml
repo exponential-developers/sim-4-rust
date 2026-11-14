@@ -1,4 +1,4 @@
-name: Tests
+name: Checks
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  rust:
+  checks:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,6 +17,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
+          components: clippy, rustfmt
 
       - name: Install wasm-pack
         run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
@@ -26,6 +27,16 @@ jobs:
         with:
           node-version: '22.x'
 
+      - name: Install dependencies
+        run: npm install
+
+      # ---- Rust ----
+      - name: Formatting (rustfmt)
+        run: cargo fmt --manifest-path wasm/Cargo.toml --check
+
+      - name: Lint (clippy, no warnings allowed)
+        run: cargo clippy --release --all-targets --manifest-path wasm/Cargo.toml -- -D warnings
+
       - name: Unit tests
         run: cargo test --release --manifest-path wasm/Cargo.toml
 
@@ -33,3 +44,41 @@ jobs:
       # Runs as WebAssembly in Node, where results must match sim-3 bit for bit.
       - name: sim-3 parity tests
         run: wasm-pack test --node --release wasm --test sim3_parity
+
+      # ---- TypeScript ----
+      # Fails on new ESLint errors; existing ones are listed in eslint-suppressions.json
+      - name: Lint (ESLint)
+        run: npm run lint
+
+      # Builds the wasm module and the website (webpack type-checks all TypeScript)
+      - name: Build
+        run: npm run build
+
+  coverage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: llvm-tools-preview
+
+      - name: Install cargo-llvm-cov
+        run: cargo install cargo-llvm-cov --locked
+
+      # Unit tests + the native coverage run (tests/coverage_cases.rs). Fails if line coverage of
+      # wasm/src drops below the threshold; raise it as coverage improves (goal: 100%).
+      - name: Coverage
+        working-directory: wasm
+        run: |
+          cargo llvm-cov --release --lcov --output-path lcov.info --fail-under-lines 80 -- --include-ignored
+          cargo llvm-cov report --release --summary-only
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-lcov
+          path: wasm/lcov.info

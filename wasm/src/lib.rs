@@ -1,20 +1,16 @@
 #[allow(dead_code)]
-pub mod utils;
-#[allow(dead_code)]
 pub mod api;
 #[allow(dead_code, unused_variables)]
 mod sim;
 pub mod theories;
+#[allow(dead_code)]
+pub mod utils;
 
-use std::sync::OnceLock;
 use serde::Serialize;
+use std::sync::OnceLock;
 use wasm_bindgen::prelude::*;
 
-use api::{
-    query::SimQuery,
-    response::SimResponse,
-    config::Config
-};
+use api::{config::Config, query::SimQuery, response::SimResponse};
 use sim::simulate;
 
 /** Holds the configuration on the sim (data.json) */
@@ -25,7 +21,7 @@ const DEFAULT_ERR: &str = "{\"response_type\": \"failure\", \"data\":\"API Error
 #[serde(tag = "response_type", content = "data", rename_all = "lowercase")]
 enum ApiResponse {
     Success(SimResponse),
-    Failure(String)
+    Failure(String),
 }
 
 /**
@@ -37,12 +33,14 @@ pub fn set_config(config: &str) -> String {
     // Only the first call counts (the page calls this once; tests may call it repeatedly)
     let _ = CONFIG.set(cfg);
 
-    format!("Sim config loaded ({} theories)", CONFIG.get().map_or(0, |c| c.theories.len()))
+    format!(
+        "Sim config loaded ({} theories)",
+        CONFIG.get().map_or(0, |c| c.theories.len())
+    )
 }
 
 fn create_error(msg: &str) -> String {
-    serde_json::to_string(&ApiResponse::Failure(msg.to_owned()))
-        .unwrap_or(DEFAULT_ERR.to_owned())
+    serde_json::to_string(&ApiResponse::Failure(msg.to_owned())).unwrap_or(DEFAULT_ERR.to_owned())
 }
 
 /**
@@ -53,10 +51,17 @@ fn create_error(msg: &str) -> String {
 #[wasm_bindgen]
 pub fn sim_strat(theory: &str, strat: &str, sigma: u32, rho: f64) -> String {
     use theories::traditional::{SimParams, TheoryInput};
-    let Ok(theory) = serde_json::from_value::<api::config::TheoryType>(serde_json::Value::from(theory)) else {
+    let Ok(theory) =
+        serde_json::from_value::<api::config::TheoryType>(serde_json::Value::from(theory))
+    else {
         return create_error(&format!("Unknown theory {theory}"));
     };
-    let input = TheoryInput { sigma: sigma as i64, last_pub_rho: rho, rho_cap: f64::INFINITY, params: SimParams::default() };
+    let input = TheoryInput {
+        sigma: sigma as i64,
+        last_pub_rho: rho,
+        rho_cap: f64::INFINITY,
+        params: SimParams::default(),
+    };
     let res = match sim::run_strat(theory, strat, &input) {
         Ok(res) => res,
         Err(err) => return create_error(&err),
@@ -67,7 +72,8 @@ pub fn sim_strat(theory: &str, strat: &str, sigma: u32, rho: f64) -> String {
         "pubRho": res.pub_rho.value,
         "time": res.time,
         "boughtVars": res.bought_vars.len(),
-    }).to_string()
+    })
+    .to_string()
 }
 
 /**
@@ -92,16 +98,15 @@ pub fn run_query_with_progress(input: &str, progress: &js_sys::Function) -> Stri
 fn run_query_impl(input: &str, progress: sim::Progress) -> String {
     let query = match serde_json::from_str::<SimQuery>(input) {
         Ok(query) => query,
-        Err(err) => return create_error(&format!("Error parsing query: {err}"))
+        Err(err) => return create_error(&format!("Error parsing query: {err}")),
     };
 
     let res = match simulate(query, progress) {
         Ok(res) => res,
-        Err(err) => return create_error(&err)
+        Err(err) => return create_error(&err),
     };
 
-    serde_json::to_string(&ApiResponse::Success(res))
-        .unwrap_or(DEFAULT_ERR.to_owned())
+    serde_json::to_string(&ApiResponse::Success(res)).unwrap_or(DEFAULT_ERR.to_owned())
 }
 
 /** Names of the theories ported to the Rust sim, as a JSON array (e.g. ["T1","T2"]) */

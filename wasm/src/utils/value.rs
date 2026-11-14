@@ -1,10 +1,10 @@
-/**
+/*!
  * Value models
  */
 
-use std::fmt::Debug;
-use num::Float;
 use dyn_clone::DynClone;
+use num::Float;
+use std::fmt::Debug;
 
 use crate::utils::lognum::LogNum;
 
@@ -54,7 +54,10 @@ impl ValueTrait for StepwisePowerSumValue {
         let x = log10(d + mod_part as f64) + log10(self.base_f) * int_part as f64;
         let y = log10(d);
         let sub_part = LogNum { value: x, sign: 1 } - LogNum { value: y, sign: 1 };
-        LogNum { value: log10(self.offset_f), sign: 1 } + sub_part
+        LogNum {
+            value: log10(self.offset_f),
+            sign: 1,
+        } + sub_part
     }
 
     fn compute_next(&self, old_value: LogNum, current_level: i32) -> LogNum {
@@ -64,14 +67,12 @@ impl ValueTrait for StepwisePowerSumValue {
 
 #[derive(Debug, Clone, Copy)]
 pub struct ExponentialValue {
-    base: LogNum
+    base: LogNum,
 }
 
 impl ExponentialValue {
     pub fn new(power: impl Into<LogNum>) -> Self {
-        ExponentialValue {
-            base: power.into()
-        }
+        ExponentialValue { base: power.into() }
     }
 }
 
@@ -90,14 +91,14 @@ impl ValueTrait for ExponentialValue {
 #[derive(Debug, Clone, Copy)]
 pub struct LinearValue {
     slope: LogNum,
-    offset: LogNum
+    offset: LogNum,
 }
 
 impl LinearValue {
     pub fn new(power: impl Into<LogNum>, offset: impl Into<LogNum>) -> Self {
         LinearValue {
             slope: power.into(),
-            offset: offset.into()
+            offset: offset.into(),
         }
     }
 }
@@ -117,7 +118,7 @@ pub enum Value {
     Stepwise(StepwisePowerSumValue),
     Exponential(ExponentialValue),
     Linear(LinearValue),
-    Other(Box<dyn ValueTrait>)
+    Other(Box<dyn ValueTrait>),
 }
 
 /** enum holding different value models */
@@ -170,7 +171,10 @@ mod tests {
         assert_eq!(v.compute_from_zero(0).value, 0.);
         assert!(close(v.compute_from_zero(5).value, 5. * 2f64.log10()));
         // computed from the level, not from the previous value
-        assert!(close(v.compute_next(LogNum::from(123.), 4).value, 5. * 2f64.log10()));
+        assert!(close(
+            v.compute_next(LogNum::from(123.), 4).value,
+            5. * 2f64.log10()
+        ));
     }
 
     #[test]
@@ -180,17 +184,27 @@ mod tests {
         let expected = |level: i32| (0..level).map(|l| 2f64.powi(l / 10)).sum::<f64>();
         assert_eq!(v.compute_from_zero(0).value, f64::NEG_INFINITY);
         for level in [1, 9, 10, 15, 37, 250] {
-            assert!(close(v.compute_from_zero(level).value, expected(level).log10()), "level {level}");
+            assert!(
+                close(v.compute_from_zero(level).value, expected(level).log10()),
+                "level {level}"
+            );
         }
         // stepping one level at a time gives the same values
         let mut value = v.compute_from_zero(0);
         for level in 0..60 {
             value = v.compute_next(value, level);
-            assert!((value.value - v.compute_from_zero(level + 1).value).abs() < 1e-9, "level {}", level + 1);
+            assert!(
+                (value.value - v.compute_from_zero(level + 1).value).abs() < 1e-9,
+                "level {}",
+                level + 1
+            );
         }
         // with an offset (c1-style variable starting at 1)
         let c1 = Value::new_stepwise(2., 10, 1.);
         assert_eq!(c1.compute_from_zero(0).value, 0.);
-        assert!(close(c1.compute_from_zero(12).value, (1. + expected(12)).log10()));
+        assert!(close(
+            c1.compute_from_zero(12).value,
+            (1. + expected(12)).log10()
+        ));
     }
 }

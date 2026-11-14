@@ -1,5 +1,5 @@
-/**
- * Sim settings 
+/*!
+ * Sim settings
  */
 
 use serde::{Deserialize, Serialize};
@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 pub enum SimAllStrats {
     All,
     Active,
-    Idle
+    Idle,
 }
 
 /** Possible user configurations for how to sim completed CTs */
@@ -19,7 +19,7 @@ pub enum SimAllStrats {
 pub enum CompletedCTs {
     In,
     End,
-    No
+    No,
 }
 
 /** Holds sim settings */
@@ -32,5 +32,5 @@ pub struct SimSettings {
     pub sim_all_strats: SimAllStrats,
     pub completed_cts: CompletedCTs,
     pub show_a23: bool,
-    pub show_unofficials: bool
+    pub show_unofficials: bool,
 }

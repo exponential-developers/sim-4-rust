@@ -1,19 +1,18 @@
-/**
+/*!
  * Contains structures for the different types of responses that can be replied by the wasm module
  */
-
 
 use serde::Serialize;
 
 use crate::utils::{
     lognum::LogNum,
-    result::{SimResult, SimAllResult},
-    settings
+    result::{SimAllResult, SimResult},
+    settings,
 };
 
 #[derive(Debug, Serialize)]
 pub struct SingleSimResponse {
-    pub result: SimResult
+    pub result: SimResult,
 }
 
 #[derive(Debug, Serialize)]
@@ -21,12 +20,12 @@ pub struct ChainSimResponse {
     pub results: Vec<SimResult>,
     pub delta_tau: LogNum,
     pub average_rate: f64,
-    pub total_time: f64
+    pub total_time: f64,
 }
 
 #[derive(Debug, Serialize)]
 pub struct StepSimResponse {
-    pub results: Vec<SimResult>
+    pub results: Vec<SimResult>,
 }
 
 #[derive(Debug, Serialize)]
@@ -34,7 +33,7 @@ pub struct SimAllResponse {
     pub sigma: i64,
     pub strat_type: settings::SimAllStrats,
     pub completed_cts: settings::CompletedCTs,
-    pub results: Vec<SimAllResult>
+    pub results: Vec<SimAllResult>,
 }
 
 #[derive(Debug, Serialize)]
@@ -44,7 +43,7 @@ pub struct PubTableResponse {
     pub start: f64,
     pub step: f64,
     /** [time to reach cap, next pub target] for cap, cap - step, cap - 2*step, ... */
-    pub pub_table: Vec<[f64; 2]>
+    pub pub_table: Vec<[f64; 2]>,
 }
 
 #[derive(Debug, Serialize)]
@@ -55,5 +54,5 @@ pub enum SimResponse {
     Step(StepSimResponse),
     All(SimAllResponse),
     #[serde(rename = "pub_table")]
-    PubTable(PubTableResponse)
+    PubTable(PubTableResponse),
 }

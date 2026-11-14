@@ -1,10 +1,10 @@
 use core::fmt::{self, Display};
+use serde::{Deserialize, Serialize, de};
 use std::cmp::Ordering;
 use std::ops::{
     Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Sub, SubAssign,
 };
 use std::str::FromStr;
-use serde::{Deserialize, Serialize, de};
 
 use num::{Float, Num, NumCast, One, ToPrimitive, Zero};
 
@@ -44,13 +44,13 @@ impl From<i32> for LogNum {
 }
 
 impl From<i64> for LogNum {
-    fn from(value:i64) -> Self {
+    fn from(value: i64) -> Self {
         LogNum::from_f64(value as f64)
     }
 }
 
 impl From<u64> for LogNum {
-    fn from(value:u64) -> Self {
+    fn from(value: u64) -> Self {
         LogNum::from_f64(value as f64)
     }
 }
@@ -162,7 +162,9 @@ impl SubAssign for LogNum {
 impl Mul for LogNum {
     type Output = LogNum;
     fn mul(self, rhs: Self) -> LogNum {
-        if self.is_zero() || rhs.is_zero() { return LogNum::zero(); }
+        if self.is_zero() || rhs.is_zero() {
+            return LogNum::zero();
+        }
         LogNum::new(self.value + rhs.value, self.sign * rhs.sign)
     }
 }
@@ -539,8 +541,9 @@ impl LogNum {
 
 impl<'de> Deserialize<'de> for LogNum {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-        where
-            D: serde::Deserializer<'de> {
+    where
+        D: serde::Deserializer<'de>,
+    {
         struct LogNumVisitor;
 
         impl<'de> de::Visitor<'de> for LogNumVisitor {
@@ -578,8 +581,9 @@ impl<'de> Deserialize<'de> for LogNum {
 
 impl Serialize for LogNum {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-        where
-            S: serde::Serializer {
+    where
+        S: serde::Serializer,
+    {
         serializer.serialize_f64(self.value)
     }
 }

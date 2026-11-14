@@ -106,10 +106,10 @@ class tcSim extends theoryClass<theory> {
     this.P = 0;
     this.timer = 0;
     this.integral = 0;
-    let automationSettings = this.getAutomationSettings(data.strat);
+    const automationSettings = this.getAutomationSettings(data.strat);
     this.amplitude = automationSettings[0];
     this.frequency = automationSettings[1];
-    let pidSettings = this.getPidValues(data.strat);
+    const pidSettings = this.getPidValues(data.strat);
     this.kp = pidSettings[0];
     this.ki = pidSettings[1];
     this.kd = pidSettings[2];
@@ -193,7 +193,7 @@ class tcSim extends theoryClass<theory> {
     // Variable calculation
     // P Update
     if (this.achievementMulti == 30) {
-      let dP = 
+      const dP = 
         this.variables[5].value + 
         this.variables[6].value + 
         Math.LOG10E * (-0.01 * Math.pow(0.8, this.milestones[4])) +

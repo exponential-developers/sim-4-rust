@@ -4,6 +4,49 @@ Guidance for AI coding agents (and people) working on sim-4.0-rust: the Exponent
 simulator, rewritten so the simulation engine runs in Rust compiled to WebAssembly. Theories are
 ported one by one from sim-3.0 (TypeScript) and must produce exactly the same results.
 
+## Rules for every change
+
+These apply to every change, and are checked in CI (`.github/workflows/tests.yml`).
+
+**Keep all checks passing.** Before finishing, run:
+
+```sh
+cargo fmt --manifest-path wasm/Cargo.toml --check
+cargo clippy --release --all-targets --manifest-path wasm/Cargo.toml -- -D warnings
+cargo test --release --manifest-path wasm/Cargo.toml
+wasm-pack test --node --release wasm --test sim3_parity
+npm run lint
+npm run build
+```
+
+**Lint.**
+- Never introduce new lint errors or warnings (Clippy or ESLint). Fix the code; don't silence the
+  lint. An `#[allow(...)]`, `eslint-disable` comment or new entry in `eslint-suppressions.json` is
+  only acceptable with a comment explaining why the code is right as written.
+- `eslint-suppressions.json` lists errors that existed before linting was set up. When you fix any of
+  them, run `npx eslint src --prune-suppressions` so the file shrinks.
+- Format Rust with `cargo fmt`.
+
+**Types (TypeScript).**
+- No `any`: use the real type, or `unknown` narrowed with a type check.
+- No `@ts-ignore` / `@ts-expect-error`, and no `as` casts that hide a real type mismatch.
+- New data passed between Rust and TypeScript gets a type in `src/Utils/global.types.ts` that
+  matches the Rust struct.
+
+**Tests.**
+- Every new or changed function that computes something (theory maths, cost/value models, helpers,
+  sim modes, parsing) gets unit tests in the same change. Aim for 100% coverage of `wasm/src`:
+  it is easier to delete a weak test later than to write the missing ones. Coverage must not go
+  down (see "Coverage").
+- Test our own behavior against expected values worked out independently: by hand, from sim-3, or
+  from the game's formulas. Don't compute the expected value by calling the function under test.
+- Cover edge cases that matter here: 0 and negative values, `-inf` (log of 0), NaN, equal values,
+  level 0 / first level, caps.
+- Don't write tests that only exercise the language or libraries: that a struct stores what it was
+  given, that `Vec::push` or serde work, that a constant equals itself, that a getter returns its
+  field. Every test should be able to fail because of a bug in this project's code.
+- Ported theories must pass the sim-3 parity tests (see "Porting a theory").
+
 ## Layout
 
 | Path | What it is |
@@ -19,6 +62,7 @@ ported one by one from sim-3.0 (TypeScript) and must produce exactly the same re
 | `src/Sim/simulate.ts`, `src/Theories/` | The old TypeScript simulator. **Not used by the page** (kept as a reference); it is still type-checked, so it must keep compiling. |
 | `bench/` | Node scripts that compare the Rust sim with sim-3 and time both, and generate the parity fixtures. |
 | `Styles/` | CSS. Every color is a token defined per theme in `themes.css`. |
+| `eslint.config.mjs`, `eslint-suppressions.json` | ESLint setup, and the list of errors that predate it (see "Rules for every change"). |
 
 ## Build and run
 
@@ -43,9 +87,26 @@ On Windows PowerShell with a restricted execution policy, use `npm.cmd` / `npx.c
 ```sh
 cargo test --release --manifest-path wasm/Cargo.toml          # unit tests (native)
 wasm-pack test --node --release wasm --test sim3_parity       # parity with sim-3 (~1 min)
+cargo clippy --release --all-targets --manifest-path wasm/Cargo.toml -- -D warnings
+cargo fmt --manifest-path wasm/Cargo.toml                     # format Rust
+npm run lint                                                  # ESLint (eslint.config.mjs)
 ```
 
-Both run in CI (`.github/workflows/tests.yml`). The parity tests compare every result with sim-3
+All of these run in CI (`.github/workflows/tests.yml`), along with `npm run build`.
+
+### Coverage
+
+```sh
+cargo install cargo-llvm-cov && rustup component add llvm-tools-preview   # once
+cd wasm && cargo llvm-cov --release -- --include-ignored                 # per-file summary
+cargo llvm-cov --release --html -- --include-ignored                    # browsable report in target/llvm-cov/html
+```
+
+Coverage is measured natively, so it includes the unit tests and `tests/coverage_cases.rs`, an
+ignored-by-default test that runs every saved sim-3 case through the public API so the theory and
+sim-mode code is counted. (The parity tests run as WebAssembly, which `cargo llvm-cov` can't
+measure.) CI fails if line coverage of `wasm/src` drops below the `--fail-under-lines` threshold in
+the coverage job: raise it when coverage improves, never lower it. The parity tests compare every result with sim-3
 **bit for bit** (`==` on floats, no tolerance): strat results, "Best ..." selection, chains and the
 other modes. They only pass in WebAssembly, which is why they run with `wasm-pack test --node`.
 

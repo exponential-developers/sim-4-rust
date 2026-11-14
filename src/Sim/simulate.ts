@@ -53,7 +53,7 @@ async function singleSim(query: SingleSimQuery): Promise<SingleSimResponse> {
         : [query.strat];
 
     let bestRes = defaultResult();
-    for (let strat of strats) {
+    for (const strat of strats) {
         const data: theoryData = {
             theory: query.theory,
             sigma: query.sigma,
@@ -237,12 +237,12 @@ async function stepChainSim(query: StepChainQuery): Promise<StepSimResponse> {
         let time_acc = 0;
         let pub_count = 0;
         let bestRes = defaultResult();
-        for (let result of chain_res.results) {
+        for (const result of chain_res.results) {
             tau_acc += result.delta_tau;
             time_acc += result.time;
             pub_count++;
             const tauH = tau_acc / (time_acc / 3600);
-            let cur_res: simResult = {
+            const cur_res: simResult = {
                 theory: query.theory,
                 sigma: query.sigma,
                 last_pub: rho,

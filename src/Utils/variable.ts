@@ -103,7 +103,7 @@ export default class Variable {
    * @returns string to output to the user in the stratExtra output
    */
   prepareExtraForCap(lastLevel: number) {
-    let actualLast = lastLevel || this.level;
+    const actualLast = lastLevel || this.level;
     return ` ${this.name}: ${actualLast}` // ${this.name}delta: ${this.originalCap - actualLast}`
   }
   /**
@@ -182,14 +182,14 @@ export default class Variable {
    * @returns a copy of the variable
    */
   copy(currency?: Currency): Variable {
-    let varData = {
+    const varData = {
       currency: currency ?? this.currency,
       name: this.name,
       level: this.data.level,
       cost: this.data.cost.copy(),
       valueScaling: this.data.valueScaling.copy(),
     }
-    let copy = new Variable(varData);
+    const copy = new Variable(varData);
     copy.level = this.level;
     copy.cost = this.cost;
     copy.value = this.value;

@@ -1,4 +1,4 @@
-/**
+/*!
  * Theory 1, ported from sim-3 `src/Theories/T1-T8/T1.ts`.
  *
  * Variable order: q1, q2, c1, c2, c3, c4
@@ -9,8 +9,8 @@ use std::f64::consts::LOG10_E;
 use crate::api::config::TheoryType;
 use crate::theories::traditional::*;
 use crate::utils::{
-    fastmath,
     cost::{Cost, ExponentialCost, FirstFreeCost},
+    fastmath,
     lognum::LogNum,
     result::SimResult,
     value::Value,
@@ -95,7 +95,10 @@ impl T1Strat {
 
     /** Strats using the "new" pub cycle and the two-pass coasting setup */
     fn is_new_cycle(self) -> bool {
-        matches!(self, T1Strat::T1SolarXLII | T1Strat::T1C34Coast | T1Strat::T1C4Coast)
+        matches!(
+            self,
+            T1Strat::T1SolarXLII | T1Strat::T1C34Coast | T1Strat::T1C4Coast
+        )
     }
 
     /** Strat with "Coast" removed (used for the first pass of coasting strats) */
@@ -137,7 +140,11 @@ pub fn simulate_t1(strat: T1Strat, input: &TheoryInput) -> SimResult {
 
         let mut sim = T1Sim::new(strat, input);
         // T1Coast force-skips 2 levels due to a better pub cycle; active strats don't.
-        sim.vars[Q1].set_original_cap(if strat == T1Strat::T1Coast { last_q1 - 2 } else { last_q1 });
+        sim.vars[Q1].set_original_cap(if strat == T1Strat::T1Coast {
+            last_q1 - 2
+        } else {
+            last_q1
+        });
         sim.vars[Q1].configure_cap(18);
         sim.vars[C3].set_original_cap(last_c3);
         sim.vars[C3].configure_cap(3);
@@ -209,9 +216,21 @@ impl T1Sim {
 
         let vars = vec![
             q1,
-            Variable::new("q2", Cost::new_exponential(100., 10.), Value::new_exponential(2.)),
-            Variable::new("c1", Cost::new_exponential(15., 2.), Value::new_stepwise(2., 10, 1.)),
-            Variable::new("c2", Cost::new_exponential(3000., 10.), Value::new_exponential(2.)),
+            Variable::new(
+                "q2",
+                Cost::new_exponential(100., 10.),
+                Value::new_exponential(2.),
+            ),
+            Variable::new(
+                "c1",
+                Cost::new_exponential(15., 2.),
+                Value::new_stepwise(2., 10, 1.),
+            ),
+            Variable::new(
+                "c2",
+                Cost::new_exponential(3000., 10.),
+                Value::new_exponential(2.),
+            ),
             Variable::new(
                 "c3",
                 Cost::Exponential(ExponentialCost::new(log_cost(4.), log2_inc(4.5 * l2_10))),
@@ -225,7 +244,17 @@ impl T1Sim {
         ];
 
         let lpr = core.last_pub_rho;
-        let c3_ratio = if lpr < 300. { 1. } else if lpr < 450. { 1.1 } else if lpr < 550. { 2. } else if lpr < 655. { 5. } else { 10. };
+        let c3_ratio = if lpr < 300. {
+            1.
+        } else if lpr < 450. {
+            1.1
+        } else if lpr < 550. {
+            2.
+        } else if lpr < 655. {
+            5.
+        } else {
+            10.
+        };
 
         let mut sim = T1Sim {
             core,
@@ -252,7 +281,11 @@ impl T1Sim {
     }
 
     fn c4_cost_or_1000(&self) -> f64 {
-        if self.core.milestones[3] > 0 { self.cost(C4) } else { 1000. }
+        if self.core.milestones[3] > 0 {
+            self.cost(C4)
+        } else {
+            1000.
+        }
     }
 
     fn solar_q1(&self) -> bool {
@@ -278,12 +311,26 @@ impl T1Sim {
         let coast_ok = |id: usize| self.vars[id].should_buy;
         match self.strat {
             T1 => true,
-            T1Coast => match i { Q1 | C3 => coast_ok(i), _ => true },
+            T1Coast => match i {
+                Q1 | C3 => coast_ok(i),
+                _ => true,
+            },
             T1C34 => !matches!(i, C1 | C2),
-            T1C34Coast => match i { Q1 | Q2 | C3 => coast_ok(i), C1 | C2 => false, _ => true },
+            T1C34Coast => match i {
+                Q1 | Q2 | C3 => coast_ok(i),
+                C1 | C2 => false,
+                _ => true,
+            },
             T1C4 => !matches!(i, C1 | C2 | C3),
-            T1C4Coast => match i { Q1 | Q2 => coast_ok(i), C1 | C2 | C3 => false, _ => true },
-            T1Ratio => match i { Q1 => self.cost(Q1) + 1. < self.rho(), _ => self.ratio_cond(i) },
+            T1C4Coast => match i {
+                Q1 | Q2 => coast_ok(i),
+                C1 | C2 | C3 => false,
+                _ => true,
+            },
+            T1Ratio => match i {
+                Q1 => self.cost(Q1) + 1. < self.rho(),
+                _ => self.ratio_cond(i),
+            },
             T1RatioCoast => match i {
                 Q1 => coast_ok(Q1) && self.cost(Q1) + 1. < self.rho(),
                 C3 => coast_ok(C3) && self.ratio_cond(C3),
@@ -296,7 +343,10 @@ impl T1Sim {
                 C3 => coast_ok(C3) && self.ratio_cond(C3),
                 _ => self.ratio_cond(i),
             },
-            T1SolarXLIIOld => match i { Q1 => self.solar_q1(), _ => self.ratio_cond(i) },
+            T1SolarXLIIOld => match i {
+                Q1 => self.solar_q1(),
+                _ => self.ratio_cond(i),
+            },
         }
     }
 
@@ -313,21 +363,34 @@ impl T1Sim {
         let ms = &self.core.milestones;
         self.term1 = self.vars[C1].value.value * (1. + 0.05 * ms[1] as f64)
             + self.vars[C2].value.value
-            + if ms[0] > 0 { fastmath::log10(1. + rho.max(0.) / LOG10_E / 100.) } else { 0. };
+            + if ms[0] > 0 {
+                fastmath::log10(1. + rho.max(0.) / LOG10_E / 100.)
+            } else {
+                0.
+            };
         self.term2 = add_log(
             self.vars[C3].value.value + rho * 0.2,
             self.vars[C4].value.value + rho * 0.3,
         );
         self.term3 = self.vars[Q1].value.value + self.vars[Q2].value.value;
 
-        let rhodot = add_log(self.term1, self.term2) + self.term3 + self.core.tot_mult + fastmath::log10(self.core.dt);
-        self.core.rho += LogNum { value: rhodot, sign: 1 };
+        let rhodot = add_log(self.term1, self.term2)
+            + self.term3
+            + self.core.tot_mult
+            + fastmath::log10(self.core.dt);
+        self.core.rho += LogNum {
+            value: rhodot,
+            sign: 1,
+        };
     }
 
     fn buy_variables(&mut self) {
         let mut bought = false;
         for i in (0..self.vars.len()).rev() {
-            while self.rho() > self.cost(i) && self.buying_condition(i) && self.variable_available(i) {
+            while self.rho() > self.cost(i)
+                && self.buying_condition(i)
+                && self.variable_available(i)
+            {
                 self.core.record_purchase(&self.vars[i]);
                 let cost = self.vars[i].cost;
                 self.core.rho -= cost;
@@ -366,7 +429,8 @@ impl T1Sim {
         let mut fork = self.clone();
         // sim-3 builds the fork with its constructor, which computes milestones from the
         // last pub rho only; copyFrom does not copy milestones.
-        fork.core.set_milestones_at(fork.core.last_pub_rho.max(0.), &MILESTONE_PRIORITY);
+        fork.core
+            .set_milestones_at(fork.core.last_pub_rho.max(0.), &MILESTONE_PRIORITY);
         fork.vars[id].stop_buying();
         let res = fork.simulate();
         self.core.best_fork_res = Some(best_result(res, self.core.best_fork_res.take()));
@@ -395,14 +459,24 @@ impl T1Sim {
         if self.strat.is_new_cycle() {
             let c4dist = next_c4 - lpr;
             let (prev_point, next_point) = if self.strat == T1Strat::T1SolarXLII {
-                if c4dist > 7.5 { (next_c4 - 10. + l10(5.5), next_c4 - 6. + l10(1.5)) }
-                else if c4dist > 4.5 { (next_c4 - 6. + l10(1.5), next_c4 - 4. + l10(5.5)) }
-                else if c4dist > 2.25 { (next_c4 - 4. + l10(5.5), next_c4 - 2. + l10(5.5)) }
-                else { (next_c4 - 2. + l10(5.5), next_c4 + 2. + l10(1.5)) }
-            } else if c4dist > 7.5 { (next_c4 - 10. + l10(6.5), next_c4 - 6.) }
-            else if c4dist > 4.5 { (next_c4 - 6., next_c4 - 4. + l10(6.5)) }
-            else if c4dist > 2.25 { (next_c4 - 4. + l10(6.5), next_c4 - 2. + l10(6.5)) }
-            else { (next_c4 - 2. + l10(6.5), next_c4 + 2.) };
+                if c4dist > 7.5 {
+                    (next_c4 - 10. + l10(5.5), next_c4 - 6. + l10(1.5))
+                } else if c4dist > 4.5 {
+                    (next_c4 - 6. + l10(1.5), next_c4 - 4. + l10(5.5))
+                } else if c4dist > 2.25 {
+                    (next_c4 - 4. + l10(5.5), next_c4 - 2. + l10(5.5))
+                } else {
+                    (next_c4 - 2. + l10(5.5), next_c4 + 2. + l10(1.5))
+                }
+            } else if c4dist > 7.5 {
+                (next_c4 - 10. + l10(6.5), next_c4 - 6.)
+            } else if c4dist > 4.5 {
+                (next_c4 - 6., next_c4 - 4. + l10(6.5))
+            } else if c4dist > 2.25 {
+                (next_c4 - 4. + l10(6.5), next_c4 - 2. + l10(6.5))
+            } else {
+                (next_c4 - 2. + l10(6.5), next_c4 + 2.)
+            };
 
             let mut misalignment = lpr - prev_point;
             if misalignment.abs() < l10(2.) {

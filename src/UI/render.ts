@@ -31,7 +31,7 @@ const theories = Object.keys(data.theories) as theoryType[];
 /** Populates a select element with the given items */
 function populateSelectElement(select: HTMLSelectElement, items: string[], clear = true) {
   if (clear) removeAllChilds(select);
-  for (let item of items) {
+  for (const item of items) {
     const option = ce<HTMLOptionElement>("option");
     option.value = item;
     option.textContent = item;

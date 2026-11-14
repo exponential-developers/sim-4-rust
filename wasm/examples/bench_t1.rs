@@ -5,19 +5,35 @@
 
 use std::time::Instant;
 use wasm::theories::{
-    t1::{simulate_t1, T1Strat},
+    t1::{T1Strat, simulate_t1},
     traditional::{SimParams, TheoryInput},
 };
 
 fn main() {
-    let iterations: u32 = std::env::args().nth(1).and_then(|s| s.parse().ok()).unwrap_or(5);
+    let iterations: u32 = std::env::args()
+        .nth(1)
+        .and_then(|s| s.parse().ok())
+        .unwrap_or(5);
     // Same cases as bench/run.js: [log10 rho of last pub, students]
-    let cases = [(25., 30), (75., 60), (150., 90), (300., 140), (500., 180), (700., 220), (1000., 280)];
+    let cases = [
+        (25., 30),
+        (75., 60),
+        (150., 90),
+        (300., 140),
+        (500., 180),
+        (700., 220),
+        (1000., 280),
+    ];
 
     let mut total_ms = 0.;
     for (rho, sigma) in cases {
         for strat in T1Strat::ALL {
-            let input = TheoryInput { sigma, last_pub_rho: rho, rho_cap: f64::INFINITY, params: SimParams::default() };
+            let input = TheoryInput {
+                sigma,
+                last_pub_rho: rho,
+                rho_cap: f64::INFINITY,
+                params: SimParams::default(),
+            };
             // warm-up + result
             let res = simulate_t1(strat, &input);
             let start = Instant::now();
@@ -28,7 +44,12 @@ fn main() {
             total_ms += ms;
             println!(
                 "{{\"rho\":{rho},\"sigma\":{sigma},\"strat\":\"{}\",\"resStrat\":{:?},\"tauH\":{},\"pubRho\":{},\"time\":{},\"boughtVars\":{},\"ms\":{ms}}}",
-                strat.name(), res.strat, res.tau_h, res.pub_rho.value, res.time, res.bought_vars.len()
+                strat.name(),
+                res.strat,
+                res.tau_h,
+                res.pub_rho.value,
+                res.time,
+                res.bought_vars.len()
             );
         }
     }

@@ -1,4 +1,4 @@
-/**
+/*!
  * Shared state and logic for "traditional" theories (log(tau) proportional to log(rho)).
  *
  * Port of sim-3's `theory.ts` + `traditionalTheory.ts`. Values are kept as log10 f64s,
@@ -25,7 +25,11 @@ pub struct SimParams {
 impl Default for SimParams {
     /** sim-3 defaults: dt 1.5, ddt 1.0001, bought vars delta e5 */
     fn default() -> Self {
-        SimParams { dt: 1.5, ddt: 1.0001, bought_vars_delta: 5. }
+        SimParams {
+            dt: 1.5,
+            ddt: 1.0001,
+            bought_vars_delta: 5.,
+        }
     }
 }
 
@@ -51,7 +55,11 @@ pub struct Converter {
 
 impl Converter {
     fn r9(&self, sigma: i64) -> f64 {
-        if self.r9_affected { r9_multiplier(sigma) } else { 0. }
+        if self.r9_affected {
+            r9_multiplier(sigma)
+        } else {
+            0.
+        }
     }
     pub fn rho_to_tau(&self, rho: f64) -> f64 {
         rho * self.tau_factor
@@ -63,7 +71,15 @@ impl Converter {
 
 /** R9 multiplier as a log10 value */
 pub fn r9_multiplier(sigma: i64) -> f64 {
-    let exp = if sigma < 65 { 0 } else if sigma < 75 { 1 } else if sigma < 85 { 2 } else { 3 };
+    let exp = if sigma < 65 {
+        0
+    } else if sigma < 75 {
+        1
+    } else if sigma < 85 {
+        2
+    } else {
+        3
+    };
     l10(fastmath::pow(sigma as f64 / 20., exp as f64))
 }
 
@@ -77,14 +93,22 @@ pub fn l10(x: f64) -> f64 {
 #[inline]
 pub fn add_log(a: f64, b: f64) -> f64 {
     let (max, min) = if a > b { (a, b) } else { (b, a) };
-    if max != f64::NEG_INFINITY { max + fastmath::log10(1. + fastmath::exp10(min - max)) } else { max }
+    if max != f64::NEG_INFINITY {
+        max + fastmath::log10(1. + fastmath::exp10(min - max))
+    } else {
+        max
+    }
 }
 
 /** Difference of two log10 values, |10^a - 10^b| as a log10 value (sim-3 `subtract`) */
 #[inline]
 pub fn sub_log(a: f64, b: f64) -> f64 {
     let (max, min) = if a > b { (a, b) } else { (b, a) };
-    if max != f64::NEG_INFINITY { max + fastmath::log10(1. - fastmath::exp10(min - max)) } else { max }
+    if max != f64::NEG_INFINITY {
+        max + fastmath::log10(1. - fastmath::exp10(min - max))
+    } else {
+        max
+    }
 }
 
 /**
@@ -124,7 +148,11 @@ pub fn adds(values: &[SignedLog]) -> SignedLog {
         if result.neg == adder.neg {
             result.value = add_log(result.value, adder.value);
         } else {
-            result.neg = if adder.neg { adder.value > result.value } else { result.value > adder.value };
+            result.neg = if adder.neg {
+                adder.value > result.value
+            } else {
+                result.value > adder.value
+            };
             result.value = sub_log(result.value, adder.value);
         }
     }
@@ -148,13 +176,20 @@ pub fn muls(values: &[SignedLog]) -> SignedLog {
 
 /** sim-3 `mulm1`: multiplies by -1 */
 pub fn mulm1(v: SignedLog) -> SignedLog {
-    SignedLog { neg: !v.neg, value: v.value }
+    SignedLog {
+        neg: !v.neg,
+        value: v.value,
+    }
 }
 
 /** JavaScript `Math.max` semantics: NaN if any argument is NaN */
 #[inline]
 pub fn js_max(a: f64, b: f64) -> f64 {
-    if a.is_nan() || b.is_nan() { f64::NAN } else { a.max(b) }
+    if a.is_nan() || b.is_nan() {
+        f64::NAN
+    } else {
+        a.max(b)
+    }
 }
 
 /** sim-3 `logToExp`: formats a log10 value as "x.xxey" */
@@ -172,7 +207,11 @@ pub fn log_to_exp(num: f64, dec: i32) -> String {
 
 /** Returns the last bought level of `name` in a purchase list, 0 if none (sim-3 `getLastLevel`) */
 pub fn get_last_level(name: &str, bought: &[VarBuy]) -> i32 {
-    bought.iter().rev().find(|b| b.var_name == name).map_or(0, |b| b.level)
+    bought
+        .iter()
+        .rev()
+        .find(|b| b.var_name == name)
+        .map_or(0, |b| b.level)
 }
 
 /**
@@ -190,12 +229,20 @@ pub struct PubTableCollector {
 impl PubTableCollector {
     pub fn new(last_pub: f64, step: f64, cap: f64) -> Self {
         // last_pub can be reached immediately
-        PubTableCollector { last_pub, step, cap, timings: vec![0.] }
+        PubTableCollector {
+            last_pub,
+            step,
+            cap,
+            timings: vec![0.],
+        }
     }
 
     fn collect(&mut self, max_rho: f64, pub_unlock_rho: f64, t: f64) {
         // Not interested if we are over cap, or if pubs are not available yet (1e-7: precision)
-        if max_rho > self.cap + self.step || max_rho + 0.0000001 < pub_unlock_rho || max_rho < self.last_pub {
+        if max_rho > self.cap + self.step
+            || max_rho + 0.0000001 < pub_unlock_rho
+            || max_rho < self.last_pub
+        {
             return;
         }
         let delta_num = ((max_rho - self.last_pub) / self.step).floor() as usize;
@@ -225,7 +272,11 @@ pub fn set_current_collector(collector: Option<SharedCollector>) {
 
 /** Result with tau/h = 0, used where sim-3 uses `defaultResult()` */
 pub fn default_result() -> SimResult {
-    SimResult { tau_h: 0., time: 0., ..SimResult::default() }
+    SimResult {
+        tau_h: 0.,
+        time: 0.,
+        ..SimResult::default()
+    }
 }
 
 /** Returns the result with the highest tau/h, the first one on ties (sim-3 `getBestResult`) */
@@ -332,7 +383,11 @@ impl TraditionalCore {
     /** Total multiplier (log10) for a given rho */
     pub fn tot_mult_from_rho(&self, rho: f64) -> f64 {
         if rho < self.pub_unlock_rho {
-            if self.is_main_theory { r9_multiplier(self.sigma) } else { 0. }
+            if self.is_main_theory {
+                r9_multiplier(self.sigma)
+            } else {
+                0.
+            }
         } else {
             self.converter.rho_to_mult(rho, self.sigma)
         }
@@ -423,13 +478,18 @@ impl TraditionalCore {
     #[inline]
     pub fn collect_pub_table(&self) {
         if let Some(c) = &self.collector {
-            c.borrow_mut().collect(self.max_rho, self.pub_unlock_rho, self.t);
+            c.borrow_mut()
+                .collect(self.max_rho, self.pub_unlock_rho, self.t);
         }
     }
 
     /** Removes purchases made after the publication point */
     pub fn trim_bought_vars(&mut self) {
-        while self.bought_vars.last().is_some_and(|b| b.timestamp > self.pub_t) {
+        while self
+            .bought_vars
+            .last()
+            .is_some_and(|b| b.timestamp > self.pub_t)
+        {
             self.bought_vars.pop();
         }
     }
@@ -440,9 +500,18 @@ impl TraditionalCore {
         SimResult {
             theory: self.theory,
             sigma: self.sigma,
-            last_pub: LogNum { value: self.last_pub_rho, sign: 1 },
-            pub_rho: LogNum { value: self.pub_rho, sign: 1 },
-            delta_tau: LogNum { value: pub_tau - start_tau, sign: 1 },
+            last_pub: LogNum {
+                value: self.last_pub_rho,
+                sign: 1,
+            },
+            pub_rho: LogNum {
+                value: self.pub_rho,
+                sign: 1,
+            },
+            delta_tau: LogNum {
+                value: pub_tau - start_tau,
+                sign: 1,
+            },
             pub_multi: fastmath::exp10(self.tot_mult_from_rho(self.pub_rho) - self.tot_mult),
             strat: format!("{strat}{strat_extra}"),
             tau_h: self.max_tau_h,
@@ -512,7 +581,10 @@ mod tests {
     #[test]
     fn signed_log_arithmetic() {
         let pos = SignedLog::pos;
-        let neg = |v: f64| SignedLog { neg: true, value: v };
+        let neg = |v: f64| SignedLog {
+            neg: true,
+            value: v,
+        };
 
         // 100 - 10 = 90
         let r = adds(&[pos(2.), neg(1.)]);
@@ -537,7 +609,11 @@ mod tests {
 
     #[test]
     fn best_result_prefers_higher_tau_h_and_first_on_ties() {
-        let res = |tau_h: f64, strat: &str| SimResult { tau_h, strat: strat.to_owned(), ..default_result() };
+        let res = |tau_h: f64, strat: &str| SimResult {
+            tau_h,
+            strat: strat.to_owned(),
+            ..default_result()
+        };
         assert_eq!(best_result(res(2., "a"), Some(res(1., "b"))).strat, "a");
         assert_eq!(best_result(res(1., "a"), Some(res(2., "b"))).strat, "b");
         assert_eq!(best_result(res(1., "a"), Some(res(1., "b"))).strat, "a");

@@ -25,7 +25,6 @@ const simAllStrats = qs<HTMLSelectElement>(".simallstrats");
 const completedCTs = qs<HTMLSelectElement>(".completedcts");
 const showA23 = qs<HTMLInputElement>(".a23");
 const showUnofficials = qs<HTMLInputElement>(".unofficials");
-const generateTotalPurchaseList = qs<HTMLInputElement>(".total_purchase_list");
 
 function parseSettings(): Settings {
     return {
@@ -64,7 +63,7 @@ function parseCurrency(str: string, theory: theoryType, sigma: number, defaultTy
         str = str.slice(0, str.length - 1);
     };
 
-    let value = parseExponentialValue(str);
+    const value = parseExponentialValue(str);
 
     if (type == 't') {
         return value / jsonData.theories[theory].tau_factor;
@@ -230,7 +229,7 @@ function parsePubTableSim(): PubTableSimQuery {
 function parseSimAll(): SimAllQuery {
     const settings = parseSettings();
     const str = simAllInputArea.value;
-    let split = str.split(" ").map(s => s.replace("\n", "")).filter(s => s != "");
+    const split = str.split(" ").map(s => s.replace("\n", "")).filter(s => s != "");
     
     const sigmaStr = split.shift() ?? "";
     if (split.length < 1) throw "Student count and at least one theory value that is not 0 is required.";

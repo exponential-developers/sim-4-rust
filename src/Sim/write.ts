@@ -77,7 +77,7 @@ function fillTableRow(row: HTMLTableRowElement, count: number) {
 
 function makeVarBuyCsv(arr: varBuy[]): string {
     let csvTotal = "variable,level,cost,timeStamp\n";
-    for(let item of arr) {
+    for(const item of arr) {
         csvTotal += `"${item.var_name}",${item.level},${logToExp(item.cost, 2)}${getCurrencySymbol(item.symbol)},${convertTime(item.timestamp)}\n`;
     }
     return csvTotal;
@@ -139,7 +139,7 @@ function openVarModal(arr: varBuy[]) {
   document.body.style.overflow = "hidden";
   varBuyDialog.showModal();
   removeAllChilds(varBuyTable);
-  for (let varBuy of arr) {
+  for (const varBuy of arr) {
     const row = ce<HTMLTableRowElement>("tr");
     addTableCell(row, varBuy.var_name);
     addTableCell(row, varBuy.level.toString());
@@ -233,7 +233,7 @@ function writeSimAllResponse(response: SimAllResponse) {
     }
 
     let sets: simAllResult[][] = [[], [], []];
-    response.results.forEach((res, i) => {
+    response.results.forEach((res) => {
         if (isMainTheory(res.theory)) {
             sets[0].push(res);
         }
