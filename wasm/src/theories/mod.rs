@@ -2,6 +2,7 @@
 
 pub mod t1;
 pub mod t2;
+pub mod t3;
 pub mod traditional;
 
 #[cfg(test)]
@@ -34,6 +35,11 @@ mod tests {
             .map(|s| s.name().to_owned())
             .collect();
         assert_eq!(t2, data_json_strats("T2"));
+        let t3: BTreeSet<String> = super::t3::T3Strat::ALL
+            .iter()
+            .map(|s| s.name().to_owned())
+            .collect();
+        assert_eq!(t3, data_json_strats("T3"));
     }
 
     #[test]
@@ -43,6 +49,9 @@ mod tests {
         }
         for s in super::t2::T2Strat::ALL {
             assert_eq!(super::t2::T2Strat::from_name(s.name()), Some(s));
+        }
+        for s in super::t3::T3Strat::ALL {
+            assert_eq!(super::t3::T3Strat::from_name(s.name()), Some(s));
         }
         assert_eq!(super::t1::T1Strat::from_name("T2"), None);
     }

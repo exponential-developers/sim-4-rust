@@ -4,12 +4,17 @@ const STRATS = {
   T1: ["T1", "T1Coast", "T1C34", "T1C34Coast", "T1C4", "T1C4Coast",
     "T1Ratio", "T1RatioCoast", "T1SolarXLII", "T1SolarXLIIOld", "T1SolarXLIIOldCoast"],
   T2: ["T2", "T2MC", "T2MCAlt", "T2MCAlt2", "T2MCAlt3", "T2Haxolotl", "T2MS", "T2QS", "T2ROI", "T2ROIMS"],
+  T3: ["T3Play2", "T3Play", "T3Snax", "T3SnaxCoast", "T3SnaxdC12", "T3Snax2", "T3P2C23d", "T3P2C23C33d",
+    "T3P2C23", "T3P2C23C33", "T3P2C23C33Coast", "T3noC11C13C21C33d", "T3noC11C13C21C33", "T3noC13C33d",
+    "T3noC13C33", "T3noC11C13C33d", "T3noC11C13C33", "T3noC13C32C33d", "T3noC13C32C33", "T3C11C12C21d",
+    "T3C11C12C21", "T3"],
 };
 
 // [log10 rho of last pub, students]: rough progression of a real account
 const STRAT_CASES = {
   T1: [[25, 30], [75, 60], [150, 90], [300, 140], [500, 180], [700, 220], [1000, 280]],
   T2: [[20, 30], [60, 60], [150, 90], [250, 140], [400, 200]],
+  T3: [[30, 40], [100, 70], [160, 95], [200, 110], [280, 140], [400, 180], [600, 230], [800, 280]],
 };
 
 // Very slow strats (many sims per result): checked once for accuracy, left out of timings
@@ -20,6 +25,7 @@ const CATEGORIES = ["Best Overall", "Best Active", "Best Semi-Idle", "Best Idle"
 const BEST_CASES = {
   T1: [[15, 20], [25, 30], [75, 60], [150, 90], [240, 120], [300, 140], [500, 180], [700, 220], [1000, 280]],
   T2: [[10, 20], [30, 40], [100, 70], [200, 110], [260, 150], [400, 200]],
+  T3: [[20, 30], [120, 80], [160, 95], [180, 100], [260, 130], [300, 150], [450, 190], [700, 250]],
 };
 
 // [theory, strat, sigma, rho, cap, hardCap]
@@ -32,6 +38,9 @@ const CHAINS = [
   ["T2", "Best Overall", 60, 15, 150, false],
   ["T2", "Best Semi-Idle", 90, 100, 260, false],
   ["T2", "Best Idle", 120, 200, 320, true],
+  ["T3", "Best Overall", 60, 20, 180, false],
+  ["T3", "Best Semi-Idle", 120, 175, 300, true],
+  ["T3", "Best Active", 160, 300, 420, false],
 ];
 
 // Other modes: [mode, theory, strat, sigma, rho, extra...]
@@ -48,6 +57,12 @@ const MODES = [
   ["comparison", "T2", null, 150, 260],
   ["pub_table", "T1", "Best Overall", 90, 150, 170, 2],
   ["pub_table", "T2", "Best Semi-Idle", 120, 200, 215, 1],
+  ["step", "T3", "Best Active", 100, 150, 250, 25],
+  ["amount", "T3", "Best Semi-Idle", 120, 200, 6],
+  ["time", "T3", "T3P2C23", 150, 300, 4 * 86400],
+  ["step_chain", "T3", "Best Overall", 120, 175, 260, 20, false],
+  ["comparison", "T3", null, 150, 300],
+  ["pub_table", "T3", "Best Semi-Idle", 150, 300, 312, 2],
 ];
 
 module.exports = { STRATS, STRAT_CASES, SLOW, CATEGORIES, BEST_CASES, CHAINS, MODES };

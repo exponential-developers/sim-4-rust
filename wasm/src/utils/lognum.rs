@@ -141,12 +141,12 @@ impl Add for LogNum {
         }
         if self.sign == rhs.sign {
             LogNum::new(
-                max.value + fastmath::log10(1. + fastmath::exp10(min.value - max.value)),
+                max.value + fastmath::log10_1p_exp10(min.value - max.value),
                 max.sign,
             )
         } else {
             LogNum::new(
-                max.value + fastmath::log10(1. - fastmath::exp10(min.value - max.value)),
+                max.value + fastmath::log10_1m_exp10(min.value - max.value),
                 max.sign,
             )
         }

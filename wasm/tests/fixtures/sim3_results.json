@@ -1604,6 +1604,2294 @@
     "time": 45728.91868903249,
     "boughtVars": 438
    }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3Play2",
+   "sigma": 40,
+   "rho": 30,
+   "expected": {
+    "strat": "T3Play2",
+    "tauH": 1.5871142704737132e-18,
+    "pubRho": 151.753536148095,
+    "time": 2.761696106495954e+23,
+    "boughtVars": 2032
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3Play",
+   "sigma": 40,
+   "rho": 30,
+   "expected": {
+    "strat": "T3Play",
+    "tauH": 1.8579907617880609e-9,
+    "pubRho": 30.777664217483522,
+    "time": 1506784231933.6716,
+    "boughtVars": 8
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3Snax",
+   "sigma": 40,
+   "rho": 30,
+   "expected": {
+    "strat": "T3Snax",
+    "tauH": 2.8510824235785948,
+    "pubRho": 32.39674606152501,
+    "time": 3026.3193200356714,
+    "boughtVars": 143
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3SnaxCoast",
+   "sigma": 40,
+   "rho": 30,
+   "expected": {
+    "strat": "T3SnaxCoast b2: 206 b3: 0",
+    "tauH": 2.976710020587877,
+    "pubRho": 32.46794380773661,
+    "time": 2984.70379929623,
+    "boughtVars": 138
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3SnaxdC12",
+   "sigma": 40,
+   "rho": 30,
+   "expected": {
+    "strat": "T3SnaxdC12",
+    "tauH": 0.000008569725765337677,
+    "pubRho": 68.71242972702888,
+    "time": 16262451195.462786,
+    "boughtVars": 312
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3Snax2",
+   "sigma": 40,
+   "rho": 30,
+   "expected": {
+    "strat": "T3Snax2",
+    "tauH": 2.599493270980502,
+    "pubRho": 31.461243063708633,
+    "time": 2023.6540282971694,
+    "boughtVars": 133
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23d",
+   "sigma": 40,
+   "rho": 30,
+   "expected": {
+    "strat": "T3P2C23d",
+    "tauH": 0.000012299929861534954,
+    "pubRho": 30.979303377750657,
+    "time": 286627013.2911479,
+    "boughtVars": 21
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23C33d",
+   "sigma": 40,
+   "rho": 30,
+   "expected": {
+    "strat": "T3P2C23C33d",
+    "tauH": 0.000012299929861534954,
+    "pubRho": 30.979303377750657,
+    "time": 286627013.2911479,
+    "boughtVars": 21
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23",
+   "sigma": 40,
+   "rho": 30,
+   "expected": {
+    "strat": "T3P2C23",
+    "tauH": 2.8622703423442544,
+    "pubRho": 32.39476536148209,
+    "time": 3011.9989624301597,
+    "boughtVars": 81
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23C33",
+   "sigma": 40,
+   "rho": 30,
+   "expected": {
+    "strat": "T3P2C23C33",
+    "tauH": 2.8622703423442544,
+    "pubRho": 32.39476536148209,
+    "time": 3011.9989624301597,
+    "boughtVars": 81
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23C33Coast",
+   "sigma": 40,
+   "rho": 30,
+   "expected": {
+    "strat": "T3P2C23C33Coast b2: 206 b3: 0",
+    "tauH": 2.985878791108287,
+    "pubRho": 32.466933645425506,
+    "time": 2974.3207091924255,
+    "boughtVars": 76
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC11C13C21C33d",
+   "sigma": 40,
+   "rho": 30,
+   "expected": {
+    "strat": "T3noC11C13C21C33d",
+    "tauH": 0.000009566683734196467,
+    "pubRho": 30.979291867278178,
+    "time": 368513355.32286763,
+    "boughtVars": 21
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC11C13C21C33",
+   "sigma": 40,
+   "rho": 30,
+   "expected": {
+    "strat": "T3noC11C13C21C33",
+    "tauH": 2.050978899733363,
+    "pubRho": 32.50214828039127,
+    "time": 4391.919297940905,
+    "boughtVars": 189
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC13C33d",
+   "sigma": 40,
+   "rho": 30,
+   "expected": {
+    "strat": "T3noC13C33d",
+    "tauH": 0.000007960176371661657,
+    "pubRho": 30.747920075612477,
+    "time": 338247815.9391417,
+    "boughtVars": 31
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC13C33",
+   "sigma": 40,
+   "rho": 30,
+   "expected": {
+    "strat": "T3noC13C33",
+    "tauH": 73.71380264393385,
+    "pubRho": 32.49252756926153,
+    "time": 121.72888831532752,
+    "boughtVars": 228
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC11C13C33d",
+   "sigma": 40,
+   "rho": 30,
+   "expected": {
+    "strat": "T3noC11C13C33d",
+    "tauH": 0.000008799577515721985,
+    "pubRho": 30.747886008356055,
+    "time": 305968056.4517299,
+    "boughtVars": 25
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC11C13C33",
+   "sigma": 40,
+   "rho": 30,
+   "expected": {
+    "strat": "T3noC11C13C33",
+    "tauH": 46.736258692282334,
+    "pubRho": 32.06738845971741,
+    "time": 159.24677462921687,
+    "boughtVars": 203
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC13C32C33d",
+   "sigma": 40,
+   "rho": 30,
+   "expected": {
+    "strat": "T3noC13C32C33d",
+    "tauH": 3.1473518162122427,
+    "pubRho": 32.608285163637625,
+    "time": 2983.405458750355,
+    "boughtVars": 99
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC13C32C33",
+   "sigma": 40,
+   "rho": 30,
+   "expected": {
+    "strat": "T3noC13C32C33",
+    "tauH": 73.71380264393385,
+    "pubRho": 32.49252756926153,
+    "time": 121.72888831532752,
+    "boughtVars": 228
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3C11C12C21d",
+   "sigma": 40,
+   "rho": 30,
+   "expected": {
+    "strat": "T3C11C12C21d",
+    "tauH": 100.86875457741799,
+    "pubRho": 32.646080049880645,
+    "time": 94.43844349499811,
+    "boughtVars": 200
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3C11C12C21",
+   "sigma": 40,
+   "rho": 30,
+   "expected": {
+    "strat": "T3C11C12C21",
+    "tauH": 75.70747480325217,
+    "pubRho": 32.09219020374997,
+    "time": 99.48667226153938,
+    "boughtVars": 201
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3",
+   "sigma": 40,
+   "rho": 30,
+   "expected": {
+    "strat": "T3",
+    "tauH": 73.71380264393385,
+    "pubRho": 32.49252756926153,
+    "time": 121.72888831532752,
+    "boughtVars": 228
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3Play2",
+   "sigma": 70,
+   "rho": 100,
+   "expected": {
+    "strat": "T3Play2",
+    "tauH": 5.581808625949626e-77,
+    "pubRho": 593.9696459624942,
+    "time": 3.185868317300901e+82,
+    "boughtVars": 8179
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3Play",
+   "sigma": 70,
+   "rho": 100,
+   "expected": {
+    "strat": "T3Play",
+    "tauH": 5.2519741073589905e-40,
+    "pubRho": 100.87291880595396,
+    "time": 5.983479044633926e+42,
+    "boughtVars": 8
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3Snax",
+   "sigma": 70,
+   "rho": 100,
+   "expected": {
+    "strat": "T3Snax",
+    "tauH": 10.130924651578816,
+    "pubRho": 102.94085336286426,
+    "time": 1045.0252539052724,
+    "boughtVars": 150
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3SnaxCoast",
+   "sigma": 70,
+   "rho": 100,
+   "expected": {
+    "strat": "T3SnaxCoast b2: 733 b3: 0",
+    "tauH": 10.313648691067598,
+    "pubRho": 103.07944241474613,
+    "time": 1074.8856224555489,
+    "boughtVars": 147
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3SnaxdC12",
+   "sigma": 70,
+   "rho": 100,
+   "expected": {
+    "strat": "T3SnaxdC12",
+    "tauH": 4.4336192166024017e-20,
+    "pubRho": 241.76076860543674,
+    "time": 1.1510658494724277e+25,
+    "boughtVars": 1341
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3Snax2",
+   "sigma": 70,
+   "rho": 100,
+   "expected": {
+    "strat": "T3Snax2",
+    "tauH": 8.35654861480588,
+    "pubRho": 101.5985215482402,
+    "time": 688.6428642883446,
+    "boughtVars": 134
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23d",
+   "sigma": 70,
+   "rho": 100,
+   "expected": {
+    "strat": "T3P2C23d",
+    "tauH": 6.416969721599102e-23,
+    "pubRho": 101.36563650901196,
+    "time": 7.661391039286272e+25,
+    "boughtVars": 23
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23C33d",
+   "sigma": 70,
+   "rho": 100,
+   "expected": {
+    "strat": "T3P2C23C33d",
+    "tauH": 6.416969721599102e-23,
+    "pubRho": 101.36563650901196,
+    "time": 7.661391039286272e+25,
+    "boughtVars": 23
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23",
+   "sigma": 70,
+   "rho": 100,
+   "expected": {
+    "strat": "T3P2C23",
+    "tauH": 10.142266655352055,
+    "pubRho": 102.9130457729396,
+    "time": 1033.9863009861408,
+    "boughtVars": 86
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23C33",
+   "sigma": 70,
+   "rho": 100,
+   "expected": {
+    "strat": "T3P2C23C33",
+    "tauH": 10.142266655352055,
+    "pubRho": 102.9130457729396,
+    "time": 1033.9863009861408,
+    "boughtVars": 86
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23C33Coast",
+   "sigma": 70,
+   "rho": 100,
+   "expected": {
+    "strat": "T3P2C23C33Coast b2: 728 b3: 0",
+    "tauH": 10.361088177669448,
+    "pubRho": 102.60024897431774,
+    "time": 903.466522726711,
+    "boughtVars": 77
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC11C13C21C33d",
+   "sigma": 70,
+   "rho": 100,
+   "expected": {
+    "strat": "T3noC11C13C21C33d",
+    "tauH": 4.866983504537148e-23,
+    "pubRho": 101.36565633441528,
+    "time": 1.010145770847963e+26,
+    "boughtVars": 23
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC11C13C21C33",
+   "sigma": 70,
+   "rho": 100,
+   "expected": {
+    "strat": "T3noC11C13C21C33",
+    "tauH": 7.514014160941405,
+    "pubRho": 102.665713332322,
+    "time": 1277.1559636183702,
+    "boughtVars": 193
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC13C33d",
+   "sigma": 70,
+   "rho": 100,
+   "expected": {
+    "strat": "T3noC13C33d",
+    "tauH": 4.2894977586640647e-23,
+    "pubRho": 100.84159897482174,
+    "time": 7.063195926000077e+25,
+    "boughtVars": 33
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC13C33",
+   "sigma": 70,
+   "rho": 100,
+   "expected": {
+    "strat": "T3noC13C33",
+    "tauH": 60.71033105228392,
+    "pubRho": 102.80549828187428,
+    "time": 166.3603811688892,
+    "boughtVars": 238
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC11C13C33d",
+   "sigma": 70,
+   "rho": 100,
+   "expected": {
+    "strat": "T3noC11C13C33d",
+    "tauH": 4.5834367079526473e-23,
+    "pubRho": 100.87016661506499,
+    "time": 6.834609080122422e+25,
+    "boughtVars": 26
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC11C13C33",
+   "sigma": 70,
+   "rho": 100,
+   "expected": {
+    "strat": "T3noC11C13C33",
+    "tauH": 46.71914457124849,
+    "pubRho": 102.62150462641715,
+    "time": 202.00319893934088,
+    "boughtVars": 219
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC13C32C33d",
+   "sigma": 70,
+   "rho": 100,
+   "expected": {
+    "strat": "T3noC13C32C33d",
+    "tauH": 11.016723786777506,
+    "pubRho": 103.2081283946486,
+    "time": 1048.3390928432466,
+    "boughtVars": 105
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC13C32C33",
+   "sigma": 70,
+   "rho": 100,
+   "expected": {
+    "strat": "T3noC13C32C33",
+    "tauH": 60.71033105228392,
+    "pubRho": 102.80549828187428,
+    "time": 166.3603811688892,
+    "boughtVars": 238
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3C11C12C21d",
+   "sigma": 70,
+   "rho": 100,
+   "expected": {
+    "strat": "T3C11C12C21d",
+    "tauH": 80.85783967685883,
+    "pubRho": 103.28033504200293,
+    "time": 146.04899411615492,
+    "boughtVars": 219
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3C11C12C21",
+   "sigma": 70,
+   "rho": 100,
+   "expected": {
+    "strat": "T3C11C12C21",
+    "tauH": 63.115005804500846,
+    "pubRho": 102.84534461596802,
+    "time": 162.29485344916813,
+    "boughtVars": 221
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3",
+   "sigma": 70,
+   "rho": 100,
+   "expected": {
+    "strat": "T3",
+    "tauH": 60.71033105228392,
+    "pubRho": 102.80549828187428,
+    "time": 166.3603811688892,
+    "boughtVars": 238
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3Play2",
+   "sigma": 95,
+   "rho": 160,
+   "expected": {
+    "strat": "T3Play2",
+    "tauH": 96.02898438409689,
+    "pubRho": 162.76155546408074,
+    "time": 103.52707294004327,
+    "boughtVars": 174
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3Play",
+   "sigma": 95,
+   "rho": 160,
+   "expected": {
+    "strat": "T3Play",
+    "tauH": 109.23806355028586,
+    "pubRho": 163.69373001047094,
+    "time": 121.72888831532752,
+    "boughtVars": 280
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3Snax",
+   "sigma": 95,
+   "rho": 160,
+   "expected": {
+    "strat": "T3Snax",
+    "tauH": 102.42413750105055,
+    "pubRho": 162.88798144051998,
+    "time": 101.5066705908584,
+    "boughtVars": 205
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3SnaxCoast",
+   "sigma": 95,
+   "rho": 160,
+   "expected": {
+    "strat": "T3SnaxCoast b2: 1178 b3: 502",
+    "tauH": 107.92718557576494,
+    "pubRho": 162.9220409447063,
+    "time": 97.46707787129435,
+    "boughtVars": 196
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3SnaxdC12",
+   "sigma": 95,
+   "rho": 160,
+   "expected": {
+    "strat": "T3SnaxdC12",
+    "tauH": 94.98663645564645,
+    "pubRho": 163.26525363091423,
+    "time": 123.75333531027947,
+    "boughtVars": 195
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3Snax2",
+   "sigma": 95,
+   "rho": 160,
+   "expected": {
+    "strat": "T3Snax2",
+    "tauH": 95.57459007604815,
+    "pubRho": 162.34645971743052,
+    "time": 88.38389969581286,
+    "boughtVars": 203
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23d",
+   "sigma": 95,
+   "rho": 160,
+   "expected": {
+    "strat": "T3P2C23d",
+    "tauH": 85.70360207385882,
+    "pubRho": 163.28377651479727,
+    "time": 137.93580628130877,
+    "boughtVars": 143
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23C33d",
+   "sigma": 95,
+   "rho": 160,
+   "expected": {
+    "strat": "T3P2C23C33d",
+    "tauH": 81.17748627716726,
+    "pubRho": 163.65963562186798,
+    "time": 162.29485344916813,
+    "boughtVars": 165
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23",
+   "sigma": 95,
+   "rho": 160,
+   "expected": {
+    "strat": "T3P2C23",
+    "tauH": 79.31096402555316,
+    "pubRho": 163.35172860955916,
+    "time": 152.13814562290992,
+    "boughtVars": 147
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23C33",
+   "sigma": 95,
+   "rho": 160,
+   "expected": {
+    "strat": "T3P2C23C33",
+    "tauH": 78.31351314081175,
+    "pubRho": 163.35374737160262,
+    "time": 154.16867477341594,
+    "boughtVars": 157
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23C33Coast",
+   "sigma": 95,
+   "rho": 160,
+   "expected": {
+    "strat": "T3P2C23C33Coast b2: 1183 b3: 501",
+    "tauH": 79.87621777502827,
+    "pubRho": 163.21800182261518,
+    "time": 145.03449066708822,
+    "boughtVars": 148
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC11C13C21C33d",
+   "sigma": 95,
+   "rho": 160,
+   "expected": {
+    "strat": "T3noC11C13C21C33d",
+    "tauH": 99.62432159001155,
+    "pubRho": 164.85706663692778,
+    "time": 175.51376625578078,
+    "boughtVars": 306
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC11C13C21C33",
+   "sigma": 95,
+   "rho": 160,
+   "expected": {
+    "strat": "T3noC11C13C21C33",
+    "tauH": 89.35382315870888,
+    "pubRho": 163.52430314623012,
+    "time": 141.99158892052242,
+    "boughtVars": 284
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC13C33d",
+   "sigma": 95,
+   "rho": 160,
+   "expected": {
+    "strat": "T3noC13C33d",
+    "tauH": 152.30378925979952,
+    "pubRho": 163.39793236450848,
+    "time": 80.31682318398688,
+    "boughtVars": 322
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC13C33",
+   "sigma": 95,
+   "rho": 160,
+   "expected": {
+    "strat": "T3noC13C33",
+    "tauH": 138.9937732702206,
+    "pubRho": 163.3735009670665,
+    "time": 87.3751621795949,
+    "boughtVars": 310
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC11C13C33d",
+   "sigma": 95,
+   "rho": 160,
+   "expected": {
+    "strat": "T3noC11C13C33d",
+    "tauH": 144.92299240052276,
+    "pubRho": 163.43620424907914,
+    "time": 85.3579897280694,
+    "boughtVars": 263
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC11C13C33",
+   "sigma": 95,
+   "rho": 160,
+   "expected": {
+    "strat": "T3noC11C13C33",
+    "tauH": 123.71059533237782,
+    "pubRho": 163.21060268186986,
+    "time": 93.42910058493962,
+    "boughtVars": 281
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC13C32C33d",
+   "sigma": 95,
+   "rho": 160,
+   "expected": {
+    "strat": "T3noC13C32C33d",
+    "tauH": 162.2735292061346,
+    "pubRho": 163.43865290618723,
+    "time": 76.28570428482456,
+    "boughtVars": 289
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC13C32C33",
+   "sigma": 95,
+   "rho": 160,
+   "expected": {
+    "strat": "T3noC13C32C33",
+    "tauH": 145.19936639335174,
+    "pubRho": 163.36141456469585,
+    "time": 83.34122065052709,
+    "boughtVars": 313
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3C11C12C21d",
+   "sigma": 95,
+   "rho": 160,
+   "expected": {
+    "strat": "T3C11C12C21d",
+    "tauH": 156.90714393484507,
+    "pubRho": 163.36885447320086,
+    "time": 77.29333285525304,
+    "boughtVars": 223
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3C11C12C21",
+   "sigma": 95,
+   "rho": 160,
+   "expected": {
+    "strat": "T3C11C12C21",
+    "tauH": 134.53793691859687,
+    "pubRho": 163.07691951629306,
+    "time": 82.33298735179191,
+    "boughtVars": 229
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3",
+   "sigma": 95,
+   "rho": 160,
+   "expected": {
+    "strat": "T3",
+    "tauH": 138.0492938473184,
+    "pubRho": 163.3118994058485,
+    "time": 86.3665255270422,
+    "boughtVars": 348
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3Play2",
+   "sigma": 110,
+   "rho": 200,
+   "expected": {
+    "strat": "T3Play2",
+    "tauH": 95.84954563948267,
+    "pubRho": 202.83710486111133,
+    "time": 106.558434177841,
+    "boughtVars": 167
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3Play",
+   "sigma": 110,
+   "rho": 200,
+   "expected": {
+    "strat": "T3Play",
+    "tauH": 108.09973976221657,
+    "pubRho": 203.3514740097129,
+    "time": 111.61272415184395,
+    "boughtVars": 252
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3Snax",
+   "sigma": 110,
+   "rho": 200,
+   "expected": {
+    "strat": "T3Snax",
+    "tauH": 95.77075412030933,
+    "pubRho": 202.53919893046657,
+    "time": 95.44788733934762,
+    "boughtVars": 214
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3SnaxCoast",
+   "sigma": 110,
+   "rho": 200,
+   "expected": {
+    "strat": "T3SnaxCoast b2: 1477 b3: 626",
+    "tauH": 102.06260853784958,
+    "pubRho": 202.7060167670224,
+    "time": 95.44788733934762,
+    "boughtVars": 208
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3SnaxdC12",
+   "sigma": 110,
+   "rho": 200,
+   "expected": {
+    "strat": "T3SnaxdC12",
+    "tauH": 90.5068469049999,
+    "pubRho": 203.06036051629755,
+    "time": 121.72888831532752,
+    "boughtVars": 194
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3Snax2",
+   "sigma": 110,
+   "rho": 200,
+   "expected": {
+    "strat": "T3Snax2",
+    "tauH": 94.43929579857767,
+    "pubRho": 202.42446287886145,
+    "time": 92.41985859907972,
+    "boughtVars": 202
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23d",
+   "sigma": 110,
+   "rho": 200,
+   "expected": {
+    "strat": "T3P2C23d",
+    "tauH": 82.06521934145647,
+    "pubRho": 203.3987108437643,
+    "time": 149.09311320600563,
+    "boughtVars": 147
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23C33d",
+   "sigma": 110,
+   "rho": 200,
+   "expected": {
+    "strat": "T3P2C23C33d",
+    "tauH": 77.04895899171963,
+    "pubRho": 203.43002059632852,
+    "time": 160.2626993066798,
+    "boughtVars": 159
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23",
+   "sigma": 110,
+   "rho": 200,
+   "expected": {
+    "strat": "T3P2C23",
+    "tauH": 75.13512061217105,
+    "pubRho": 203.1328845490816,
+    "time": 150.10802251732622,
+    "boughtVars": 142
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23C33",
+   "sigma": 110,
+   "rho": 200,
+   "expected": {
+    "strat": "T3P2C23C33",
+    "tauH": 73.39293145193952,
+    "pubRho": 203.1430252721338,
+    "time": 154.16867477341594,
+    "boughtVars": 156
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23C33Coast",
+   "sigma": 110,
+   "rho": 200,
+   "expected": {
+    "strat": "T3P2C23C33Coast b2: 1482 b3: 629",
+    "tauH": 74.98969424515857,
+    "pubRho": 203.2960251876833,
+    "time": 158.23095153406348,
+    "boughtVars": 150
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC11C13C21C33d",
+   "sigma": 110,
+   "rho": 200,
+   "expected": {
+    "strat": "T3noC11C13C21C33d",
+    "tauH": 97.41464626958158,
+    "pubRho": 202.25518209148507,
+    "time": 83.34122065052709,
+    "boughtVars": 232
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC11C13C21C33",
+   "sigma": 110,
+   "rho": 200,
+   "expected": {
+    "strat": "T3noC11C13C21C33",
+    "tauH": 87.12027754214387,
+    "pubRho": 203.60806483392486,
+    "time": 149.09311320600563,
+    "boughtVars": 310
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC13C33d",
+   "sigma": 110,
+   "rho": 200,
+   "expected": {
+    "strat": "T3noC13C33d",
+    "tauH": 106.67217568051873,
+    "pubRho": 203.6369600122176,
+    "time": 122.74106120415905,
+    "boughtVars": 301
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC13C33",
+   "sigma": 110,
+   "rho": 200,
+   "expected": {
+    "strat": "T3noC13C33",
+    "tauH": 90.523810565973,
+    "pubRho": 203.4429754212101,
+    "time": 136.9221140699018,
+    "boughtVars": 312
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC11C13C33d",
+   "sigma": 110,
+   "rho": 200,
+   "expected": {
+    "strat": "T3noC11C13C33d",
+    "tauH": 107.90009355021606,
+    "pubRho": 204.10386358812104,
+    "time": 136.9221140699018,
+    "boughtVars": 294
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC11C13C33",
+   "sigma": 110,
+   "rho": 200,
+   "expected": {
+    "strat": "T3noC11C13C33",
+    "tauH": 90.63213494922677,
+    "pubRho": 203.5747224579722,
+    "time": 141.99158892052242,
+    "boughtVars": 295
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC13C32C33d",
+   "sigma": 110,
+   "rho": 200,
+   "expected": {
+    "strat": "T3noC13C32C33d",
+    "tauH": 107.34649835096532,
+    "pubRho": 203.62976941911282,
+    "time": 121.72888831532752,
+    "boughtVars": 284
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC13C32C33",
+   "sigma": 110,
+   "rho": 200,
+   "expected": {
+    "strat": "T3noC13C32C33",
+    "tauH": 88.40006750756888,
+    "pubRho": 203.41198722442914,
+    "time": 138.9495998619369,
+    "boughtVars": 303
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3C11C12C21d",
+   "sigma": 110,
+   "rho": 200,
+   "expected": {
+    "strat": "T3C11C12C21d",
+    "tauH": 58.31609814832843,
+    "pubRho": 202.81017126860246,
+    "time": 173.47896872724564,
+    "boughtVars": 207
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3C11C12C21",
+   "sigma": 110,
+   "rho": 200,
+   "expected": {
+    "strat": "T3C11C12C21",
+    "tauH": 43.74391631137234,
+    "pubRho": 202.6530521467625,
+    "time": 218.33865217646152,
+    "boughtVars": 219
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3",
+   "sigma": 110,
+   "rho": 200,
+   "expected": {
+    "strat": "T3",
+    "tauH": 85.50031643038398,
+    "pubRho": 203.63740574841117,
+    "time": 153.1533594374722,
+    "boughtVars": 354
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3Play2",
+   "sigma": 140,
+   "rho": 280,
+   "expected": {
+    "strat": "T3Play2",
+    "tauH": 37.49609314055702,
+    "pubRho": 282.46586082421584,
+    "time": 236.7473041498089,
+    "boughtVars": 169
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3Play",
+   "sigma": 140,
+   "rho": 280,
+   "expected": {
+    "strat": "T3Play",
+    "tauH": 40.075163873352736,
+    "pubRho": 283.06930108179836,
+    "time": 275.71899467194055,
+    "boughtVars": 247
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3Snax",
+   "sigma": 140,
+   "rho": 280,
+   "expected": {
+    "strat": "T3Snax",
+    "tauH": 36.02079462403091,
+    "pubRho": 282.6868397762642,
+    "time": 268.52886771404405,
+    "boughtVars": 212
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3SnaxCoast",
+   "sigma": 140,
+   "rho": 280,
+   "expected": {
+    "strat": "T3SnaxCoast b2: 2074 b3: 884",
+    "tauH": 37.616609638141384,
+    "pubRho": 282.8487987965947,
+    "time": 272.6368954139369,
+    "boughtVars": 207
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3SnaxdC12",
+   "sigma": 140,
+   "rho": 280,
+   "expected": {
+    "strat": "T3SnaxdC12",
+    "tauH": 32.320709539147636,
+    "pubRho": 282.752565331369,
+    "time": 306.5908927811775,
+    "boughtVars": 189
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3Snax2",
+   "sigma": 140,
+   "rho": 280,
+   "expected": {
+    "strat": "T3Snax2",
+    "tauH": 34.97983648249811,
+    "pubRho": 282.49950617787766,
+    "time": 257.2402602528396,
+    "boughtVars": 199
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23d",
+   "sigma": 140,
+   "rho": 280,
+   "expected": {
+    "strat": "T3P2C23d",
+    "tauH": 32.85457469900771,
+    "pubRho": 283.0711898705256,
+    "time": 336.521888814042,
+    "boughtVars": 139
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23C33d",
+   "sigma": 140,
+   "rho": 280,
+   "expected": {
+    "strat": "T3P2C23C33d",
+    "tauH": 30.955975169751703,
+    "pubRho": 283.0983668632256,
+    "time": 360.3220588738297,
+    "boughtVars": 153
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23",
+   "sigma": 140,
+   "rho": 280,
+   "expected": {
+    "strat": "T3P2C23",
+    "tauH": 28.79027150873015,
+    "pubRho": 282.7822418529714,
+    "time": 347.89774968464354,
+    "boughtVars": 136
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23C33",
+   "sigma": 140,
+   "rho": 280,
+   "expected": {
+    "strat": "T3P2C23C33",
+    "tauH": 28.3657004333622,
+    "pubRho": 282.7819876078636,
+    "time": 353.07273345274496,
+    "boughtVars": 148
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23C33Coast",
+   "sigma": 140,
+   "rho": 280,
+   "expected": {
+    "strat": "T3P2C23C33Coast b2: 2075 b3: 885",
+    "tauH": 29.37465228065482,
+    "pubRho": 282.98236973710976,
+    "time": 365.50325603908084,
+    "boughtVars": 145
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC11C13C21C33d",
+   "sigma": 140,
+   "rho": 280,
+   "expected": {
+    "strat": "T3noC11C13C21C33d",
+    "tauH": 38.93698584492339,
+    "pubRho": 282.6824701703054,
+    "time": 248.01335808479212,
+    "boughtVars": 230
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC11C13C21C33",
+   "sigma": 140,
+   "rho": 280,
+   "expected": {
+    "strat": "T3noC11C13C21C33",
+    "tauH": 28.652393601173458,
+    "pubRho": 282.3827582352275,
+    "time": 299.3791641361435,
+    "boughtVars": 251
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC13C33d",
+   "sigma": 140,
+   "rho": 280,
+   "expected": {
+    "strat": "T3noC13C33d",
+    "tauH": 36.10314378630454,
+    "pubRho": 282.68268539203507,
+    "time": 267.5021175022938,
+    "boughtVars": 258
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC13C33",
+   "sigma": 140,
+   "rho": 280,
+   "expected": {
+    "strat": "T3noC13C33",
+    "tauH": 28.5476305891006,
+    "pubRho": 283.1041435388106,
+    "time": 391.44813454272185,
+    "boughtVars": 291
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC11C13C33d",
+   "sigma": 140,
+   "rho": 280,
+   "expected": {
+    "strat": "T3noC11C13C33d",
+    "tauH": 38.374332447628106,
+    "pubRho": 282.6874097001178,
+    "time": 252.1131783498206,
+    "boughtVars": 235
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC11C13C33",
+   "sigma": 140,
+   "rho": 280,
+   "expected": {
+    "strat": "T3noC11C13C33",
+    "tauH": 28.35164395348125,
+    "pubRho": 282.72355720804643,
+    "time": 345.82848053025265,
+    "boughtVars": 265
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC13C32C33d",
+   "sigma": 140,
+   "rho": 280,
+   "expected": {
+    "strat": "T3noC13C32C33d",
+    "tauH": 33.44262602583168,
+    "pubRho": 283.0781631386433,
+    "time": 331.3551779862124,
+    "boughtVars": 263
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC13C32C33",
+   "sigma": 140,
+   "rho": 280,
+   "expected": {
+    "strat": "T3noC13C32C33",
+    "tauH": 25.677009396173897,
+    "pubRho": 282.9478063506873,
+    "time": 413.29201149319135,
+    "boughtVars": 277
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3C11C12C21d",
+   "sigma": 140,
+   "rho": 280,
+   "expected": {
+    "strat": "T3C11C12C21d",
+    "tauH": 4.75291373793894,
+    "pubRho": 283.06706697897266,
+    "time": 2323.088895168884,
+    "boughtVars": 202
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3C11C12C21",
+   "sigma": 140,
+   "rho": 280,
+   "expected": {
+    "strat": "T3C11C12C21",
+    "tauH": 3.2110210021074312,
+    "pubRho": 282.98153713303094,
+    "time": 3342.71674706171,
+    "boughtVars": 203
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3",
+   "sigma": 140,
+   "rho": 280,
+   "expected": {
+    "strat": "T3",
+    "tauH": 25.632360758931863,
+    "pubRho": 282.8833922748745,
+    "time": 404.96512541986954,
+    "boughtVars": 314
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3Play2",
+   "sigma": 180,
+   "rho": 400,
+   "expected": {
+    "strat": "T3Play2",
+    "tauH": 6.046888639015341,
+    "pubRho": 402.48347134926803,
+    "time": 1478.5284451378209,
+    "boughtVars": 162
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3Play",
+   "sigma": 180,
+   "rho": 400,
+   "expected": {
+    "strat": "T3Play",
+    "tauH": 5.591936215695679,
+    "pubRho": 403.1508451349542,
+    "time": 2028.4642113758257,
+    "boughtVars": 239
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3Snax",
+   "sigma": 180,
+   "rho": 400,
+   "expected": {
+    "strat": "T3Snax",
+    "tauH": 5.020126707109292,
+    "pubRho": 402.31992980434904,
+    "time": 1663.6526890504906,
+    "boughtVars": 189
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3SnaxCoast",
+   "sigma": 180,
+   "rho": 400,
+   "expected": {
+    "strat": "T3SnaxCoast b2: 2964 b3: 1265",
+    "tauH": 5.423379365186948,
+    "pubRho": 402.46767096280905,
+    "time": 1638.0221385833966,
+    "boughtVars": 180
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3SnaxdC12",
+   "sigma": 180,
+   "rho": 400,
+   "expected": {
+    "strat": "T3SnaxdC12",
+    "tauH": 4.89385760294814,
+    "pubRho": 403.1781319441297,
+    "time": 2337.884737793447,
+    "boughtVars": 188
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3Snax2",
+   "sigma": 180,
+   "rho": 400,
+   "expected": {
+    "strat": "T3Snax2",
+    "tauH": 5.126958696045435,
+    "pubRho": 402.15640638997337,
+    "time": 1514.1653101071395,
+    "boughtVars": 187
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23d",
+   "sigma": 180,
+   "rho": 400,
+   "expected": {
+    "strat": "T3P2C23d",
+    "tauH": 5.400584103740801,
+    "pubRho": 402.5623621288105,
+    "time": 1708.0566632280143,
+    "boughtVars": 127
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23C33d",
+   "sigma": 180,
+   "rho": 400,
+   "expected": {
+    "strat": "T3P2C23C33d",
+    "tauH": 5.124244826971289,
+    "pubRho": 402.58527027475196,
+    "time": 1816.262357356567,
+    "boughtVars": 139
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23",
+   "sigma": 180,
+   "rho": 400,
+   "expected": {
+    "strat": "T3P2C23",
+    "tauH": 4.5982875825150495,
+    "pubRho": 402.75467780328,
+    "time": 2156.637642568663,
+    "boughtVars": 132
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23C33",
+   "sigma": 180,
+   "rho": 400,
+   "expected": {
+    "strat": "T3P2C23C33",
+    "tauH": 4.543602725385494,
+    "pubRho": 402.76032162004464,
+    "time": 2187.065734563663,
+    "boughtVars": 143
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23C33Coast",
+   "sigma": 180,
+   "rho": 400,
+   "expected": {
+    "strat": "T3P2C23C33Coast b2: 2964 b3: 1265",
+    "tauH": 4.777174309455723,
+    "pubRho": 402.5234655968478,
+    "time": 1901.6421759345747,
+    "boughtVars": 129
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC11C13C21C33d",
+   "sigma": 180,
+   "rho": 400,
+   "expected": {
+    "strat": "T3noC11C13C21C33d",
+    "tauH": 5.3142098734395935,
+    "pubRho": 403.4238165633264,
+    "time": 2319.392707762455,
+    "boughtVars": 242
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC11C13C21C33",
+   "sigma": 180,
+   "rho": 400,
+   "expected": {
+    "strat": "T3noC11C13C21C33",
+    "tauH": 3.90004786582668,
+    "pubRho": 402.4780530249041,
+    "time": 2287.4054874615895,
+    "boughtVars": 236
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC13C33d",
+   "sigma": 180,
+   "rho": 400,
+   "expected": {
+    "strat": "T3noC13C33d",
+    "tauH": 5.355001468007259,
+    "pubRho": 402.67710206978904,
+    "time": 1799.7319905174472,
+    "boughtVars": 247
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC13C33",
+   "sigma": 180,
+   "rho": 400,
+   "expected": {
+    "strat": "T3noC13C33",
+    "tauH": 3.8262923024643007,
+    "pubRho": 402.47959770966634,
+    "time": 2332.950817440089,
+    "boughtVars": 248
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC11C13C33d",
+   "sigma": 180,
+   "rho": 400,
+   "expected": {
+    "strat": "T3noC11C13C33d",
+    "tauH": 5.457319787285279,
+    "pubRho": 403.02401200872947,
+    "time": 1994.8332983509313,
+    "boughtVars": 247
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC11C13C33",
+   "sigma": 180,
+   "rho": 400,
+   "expected": {
+    "strat": "T3noC11C13C33",
+    "tauH": 3.8706561170814533,
+    "pubRho": 402.5521759667657,
+    "time": 2373.714740457032,
+    "boughtVars": 241
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC13C32C33d",
+   "sigma": 180,
+   "rho": 400,
+   "expected": {
+    "strat": "T3noC13C32C33d",
+    "tauH": 4.177102771196945,
+    "pubRho": 402.67691961916813,
+    "time": 2307.0800880112956,
+    "boughtVars": 239
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC13C32C33",
+   "sigma": 180,
+   "rho": 400,
+   "expected": {
+    "strat": "T3noC13C32C33",
+    "tauH": 3.030292975101058,
+    "pubRho": 402.6222098888561,
+    "time": 3115.195684855245,
+    "boughtVars": 245
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3C11C12C21d",
+   "sigma": 180,
+   "rho": 400,
+   "expected": {
+    "strat": "T3C11C12C21d",
+    "tauH": 0.06756091144283202,
+    "pubRho": 402.6748134733565,
+    "time": 142528.10239588644,
+    "boughtVars": 186
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3C11C12C21",
+   "sigma": 180,
+   "rho": 400,
+   "expected": {
+    "strat": "T3C11C12C21",
+    "tauH": 0.04484629827278623,
+    "pubRho": 402.6171386899527,
+    "time": 210088.67279346916,
+    "boughtVars": 192
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3",
+   "sigma": 180,
+   "rho": 400,
+   "expected": {
+    "strat": "T3",
+    "tauH": 3.4671544433241444,
+    "pubRho": 402.54875306158135,
+    "time": 2646.409662932643,
+    "boughtVars": 283
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3Play2",
+   "sigma": 230,
+   "rho": 600,
+   "expected": {
+    "strat": "T3Play2",
+    "tauH": 0.16083328616350673,
+    "pubRho": 602.6827212545044,
+    "time": 60048.49335974773,
+    "boughtVars": 182
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3Play",
+   "sigma": 230,
+   "rho": 600,
+   "expected": {
+    "strat": "T3Play",
+    "tauH": 0.1363371152783242,
+    "pubRho": 603.2664935364975,
+    "time": 86252.20437871848,
+    "boughtVars": 256
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3Snax",
+   "sigma": 230,
+   "rho": 600,
+   "expected": {
+    "strat": "T3Snax",
+    "tauH": 0.1217140946337137,
+    "pubRho": 602.5026446446939,
+    "time": 74022.0000650803,
+    "boughtVars": 191
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3SnaxCoast",
+   "sigma": 230,
+   "rho": 600,
+   "expected": {
+    "strat": "T3SnaxCoast b2: 4454 b3: 1905",
+    "tauH": 0.13222132892114397,
+    "pubRho": 602.6476224535286,
+    "time": 72087.01433024771,
+    "boughtVars": 183
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3SnaxdC12",
+   "sigma": 230,
+   "rho": 600,
+   "expected": {
+    "strat": "T3SnaxdC12",
+    "tauH": 0.12724264132430418,
+    "pubRho": 602.8804232269864,
+    "time": 81494.09277603879,
+    "boughtVars": 186
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3Snax2",
+   "sigma": 230,
+   "rho": 600,
+   "expected": {
+    "strat": "T3Snax2",
+    "tauH": 0.12394698171634312,
+    "pubRho": 602.30117065777,
+    "time": 66836.75756567034,
+    "boughtVars": 188
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23d",
+   "sigma": 230,
+   "rho": 600,
+   "expected": {
+    "strat": "T3P2C23d",
+    "tauH": 0.14170483166982803,
+    "pubRho": 602.7102120838698,
+    "time": 68852.72285326544,
+    "boughtVars": 130
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23C33d",
+   "sigma": 230,
+   "rho": 600,
+   "expected": {
+    "strat": "T3P2C23C33d",
+    "tauH": 0.13770413925920144,
+    "pubRho": 602.7227524861174,
+    "time": 71180.93183511749,
+    "boughtVars": 142
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23",
+   "sigma": 230,
+   "rho": 600,
+   "expected": {
+    "strat": "T3P2C23",
+    "tauH": 0.11867758439025863,
+    "pubRho": 602.9104010129693,
+    "time": 88284.94193339303,
+    "boughtVars": 135
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23C33",
+   "sigma": 230,
+   "rho": 600,
+   "expected": {
+    "strat": "T3P2C23C33",
+    "tauH": 0.12097781270317191,
+    "pubRho": 602.9020606256013,
+    "time": 86358.13475813228,
+    "boughtVars": 147
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23C33Coast",
+   "sigma": 230,
+   "rho": 600,
+   "expected": {
+    "strat": "T3P2C23C33Coast b2: 4454 b3: 1906",
+    "tauH": 0.1283344265831937,
+    "pubRho": 602.6607139613013,
+    "time": 74637.57399870719,
+    "boughtVars": 133
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC11C13C21C33d",
+   "sigma": 230,
+   "rho": 600,
+   "expected": {
+    "strat": "T3noC11C13C21C33d",
+    "tauH": 0.11338979371678527,
+    "pubRho": 601.5878491650868,
+    "time": 50412.44724891298,
+    "boughtVars": 199
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC11C13C21C33",
+   "sigma": 230,
+   "rho": 600,
+   "expected": {
+    "strat": "T3noC11C13C21C33",
+    "tauH": 0.0908798477979817,
+    "pubRho": 602.66676254883,
+    "time": 105637.77788370299,
+    "boughtVars": 241
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC13C33d",
+   "sigma": 230,
+   "rho": 600,
+   "expected": {
+    "strat": "T3noC13C33d",
+    "tauH": 0.125061634424068,
+    "pubRho": 602.558080346902,
+    "time": 73636.40569113557,
+    "boughtVars": 247
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC13C33",
+   "sigma": 230,
+   "rho": 600,
+   "expected": {
+    "strat": "T3noC13C33",
+    "tauH": 0.08924745884382952,
+    "pubRho": 602.5224807522483,
+    "time": 101750.01984072312,
+    "boughtVars": 252
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC11C13C33d",
+   "sigma": 230,
+   "rho": 600,
+   "expected": {
+    "strat": "T3noC11C13C33d",
+    "tauH": 0.12791479610655335,
+    "pubRho": 603.2003570977209,
+    "time": 90069.99895616548,
+    "boughtVars": 256
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC11C13C33",
+   "sigma": 230,
+   "rho": 600,
+   "expected": {
+    "strat": "T3noC11C13C33",
+    "tauH": 0.09042934448316098,
+    "pubRho": 602.6672267624568,
+    "time": 106182.52736126618,
+    "boughtVars": 248
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC13C32C33d",
+   "sigma": 230,
+   "rho": 600,
+   "expected": {
+    "strat": "T3noC13C32C33d",
+    "tauH": 0.07228179753740387,
+    "pubRho": 602.5586834885486,
+    "time": 127435.4107478901,
+    "boughtVars": 237
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC13C32C33",
+   "sigma": 230,
+   "rho": 600,
+   "expected": {
+    "strat": "T3noC13C32C33",
+    "tauH": 0.05151970120139322,
+    "pubRho": 602.9569032486381,
+    "time": 206617.10854040037,
+    "boughtVars": 257
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3C11C12C21d",
+   "sigma": 230,
+   "rho": 600,
+   "expected": {
+    "strat": "T3C11C12C21d",
+    "tauH": 0.00003453539200729379,
+    "pubRho": 602.5581345260684,
+    "time": 266662219.78605074,
+    "boughtVars": 186
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3C11C12C21",
+   "sigma": 230,
+   "rho": 600,
+   "expected": {
+    "strat": "T3C11C12C21",
+    "tauH": 0.00002261021154385216,
+    "pubRho": 602.9573190027324,
+    "time": 470864608.63881695,
+    "boughtVars": 201
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3",
+   "sigma": 230,
+   "rho": 600,
+   "expected": {
+    "strat": "T3",
+    "tauH": 0.08251118514613492,
+    "pubRho": 602.522190420021,
+    "time": 110044.29879409022,
+    "boughtVars": 281
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3Play2",
+   "sigma": 280,
+   "rho": 800,
+   "expected": {
+    "strat": "T3Play2",
+    "tauH": 0.0036676358735672665,
+    "pubRho": 802.8285562782569,
+    "time": 2776394.1003828826,
+    "boughtVars": 168
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3Play",
+   "sigma": 280,
+   "rho": 800,
+   "expected": {
+    "strat": "T3Play",
+    "tauH": 0.003045523047693741,
+    "pubRho": 803.0052591773338,
+    "time": 3552405.570069249,
+    "boughtVars": 238
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3Snax",
+   "sigma": 280,
+   "rho": 800,
+   "expected": {
+    "strat": "T3Snax",
+    "tauH": 0.0027625872433774228,
+    "pubRho": 802.2934058641506,
+    "time": 2988597.421035074,
+    "boughtVars": 185
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3SnaxCoast",
+   "sigma": 280,
+   "rho": 800,
+   "expected": {
+    "strat": "T3SnaxCoast b2: 5944 b3: 2546",
+    "tauH": 0.0029948627536453077,
+    "pubRho": 802.7966804019758,
+    "time": 3361773.234802864,
+    "boughtVars": 183
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3SnaxdC12",
+   "sigma": 280,
+   "rho": 800,
+   "expected": {
+    "strat": "T3SnaxdC12",
+    "tauH": 0.0029049152660975746,
+    "pubRho": 803.4749406268353,
+    "time": 4306420.363652305,
+    "boughtVars": 195
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3Snax2",
+   "sigma": 280,
+   "rho": 800,
+   "expected": {
+    "strat": "T3Snax2",
+    "tauH": 0.002913681116617163,
+    "pubRho": 802.0912723006418,
+    "time": 2583872.421513036,
+    "boughtVars": 190
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23d",
+   "sigma": 280,
+   "rho": 800,
+   "expected": {
+    "strat": "T3P2C23d",
+    "tauH": 0.0032098138459604104,
+    "pubRho": 802.8593859057506,
+    "time": 3206973.9102338036,
+    "boughtVars": 134
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23C33d",
+   "sigma": 280,
+   "rho": 800,
+   "expected": {
+    "strat": "T3P2C23C33d",
+    "tauH": 0.003237102727633077,
+    "pubRho": 802.855487073556,
+    "time": 3175603.1024440113,
+    "boughtVars": 145
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23",
+   "sigma": 280,
+   "rho": 800,
+   "expected": {
+    "strat": "T3P2C23",
+    "tauH": 0.0026652523851732977,
+    "pubRho": 803.0632590489139,
+    "time": 4137594.1120761726,
+    "boughtVars": 138
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23C33",
+   "sigma": 280,
+   "rho": 800,
+   "expected": {
+    "strat": "T3P2C23C33",
+    "tauH": 0.002814062878534323,
+    "pubRho": 803.0396996286212,
+    "time": 3888654.637573612,
+    "boughtVars": 150
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3P2C23C33Coast",
+   "sigma": 280,
+   "rho": 800,
+   "expected": {
+    "strat": "T3P2C23C33Coast b2: 5945 b3: 2546",
+    "tauH": 0.0030293719419777266,
+    "pubRho": 802.8246533972886,
+    "time": 3356719.618786768,
+    "boughtVars": 136
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC11C13C21C33d",
+   "sigma": 280,
+   "rho": 800,
+   "expected": {
+    "strat": "T3noC11C13C21C33d",
+    "tauH": 0.0028481604651974775,
+    "pubRho": 802.8476681530763,
+    "time": 3599377.730412997,
+    "boughtVars": 224
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC11C13C21C33",
+   "sigma": 280,
+   "rho": 800,
+   "expected": {
+    "strat": "T3noC11C13C21C33",
+    "tauH": 0.002025999384788725,
+    "pubRho": 802.7902571486418,
+    "time": 4958010.259296269,
+    "boughtVars": 242
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC13C33d",
+   "sigma": 280,
+   "rho": 800,
+   "expected": {
+    "strat": "T3noC13C33d",
+    "tauH": 0.00280035305126216,
+    "pubRho": 802.4421375194378,
+    "time": 3139495.2382927067,
+    "boughtVars": 241
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC13C33",
+   "sigma": 280,
+   "rho": 800,
+   "expected": {
+    "strat": "T3noC13C33",
+    "tauH": 0.001995674645569875,
+    "pubRho": 802.7898334577571,
+    "time": 5032584.078883139,
+    "boughtVars": 259
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC11C13C33d",
+   "sigma": 280,
+   "rho": 800,
+   "expected": {
+    "strat": "T3noC11C13C33d",
+    "tauH": 0.0028955237006927843,
+    "pubRho": 802.8478035345188,
+    "time": 3540669.5934882937,
+    "boughtVars": 235
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC11C13C33",
+   "sigma": 280,
+   "rho": 800,
+   "expected": {
+    "strat": "T3noC11C13C33",
+    "tauH": 0.002016462436863875,
+    "pubRho": 802.789951998312,
+    "time": 4980914.60089075,
+    "boughtVars": 249
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC13C32C33d",
+   "sigma": 280,
+   "rho": 800,
+   "expected": {
+    "strat": "T3noC13C32C33d",
+    "tauH": 0.0012342595916360925,
+    "pubRho": 802.8477461740899,
+    "time": 8306102.132967193,
+    "boughtVars": 249
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3noC13C32C33",
+   "sigma": 280,
+   "rho": 800,
+   "expected": {
+    "strat": "T3noC13C32C33",
+    "tauH": 0.0008760419098695147,
+    "pubRho": 802.7902483568512,
+    "time": 11466225.498458654,
+    "boughtVars": 249
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3C11C12C21d",
+   "sigma": 280,
+   "rho": 800,
+   "expected": {
+    "strat": "T3C11C12C21d",
+    "tauH": 1.5627781556253378e-8,
+    "pubRho": 803.2450447062188,
+    "time": 747525226170.892,
+    "boughtVars": 203
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3C11C12C21",
+   "sigma": 280,
+   "rho": 800,
+   "expected": {
+    "strat": "T3C11C12C21",
+    "tauH": 1.0182233193063376e-8,
+    "pubRho": 803.0056856163314,
+    "time": 1062681242280.3901,
+    "boughtVars": 201
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "T3",
+   "sigma": 280,
+   "rho": 800,
+   "expected": {
+    "strat": "T3",
+    "tauH": 0.00188944948919676,
+    "pubRho": 802.7898507365549,
+    "time": 5315549.692660552,
+    "boughtVars": 289
+   }
   }
  ],
  "best": [
@@ -2385,6 +4673,422 @@
     "pubRho": 416.11163165856595,
     "time": 43575.997963100446,
     "boughtVars": 439
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Overall",
+   "sigma": 30,
+   "rho": 20,
+   "expected": {
+    "strat": "T3C11C12C21d",
+    "tauH": 128.24082174833234,
+    "pubRho": 23.004737838373106,
+    "time": 84.34955477259214,
+    "boughtVars": 207
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Overall",
+   "sigma": 80,
+   "rho": 120,
+   "expected": {
+    "strat": "T3C11C12C21d",
+    "tauH": 137.13515827798523,
+    "pubRho": 123.86670370493019,
+    "time": 101.5066705908584,
+    "boughtVars": 238
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Overall",
+   "sigma": 95,
+   "rho": 160,
+   "expected": {
+    "strat": "T3noC13C32C33d",
+    "tauH": 162.2735292061346,
+    "pubRho": 163.43865290618723,
+    "time": 76.28570428482456,
+    "boughtVars": 289
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Overall",
+   "sigma": 100,
+   "rho": 180,
+   "expected": {
+    "strat": "T3noC11C13C33d",
+    "tauH": 133.9850119576029,
+    "pubRho": 183.62753544279389,
+    "time": 97.46707787129435,
+    "boughtVars": 277
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Overall",
+   "sigma": 130,
+   "rho": 260,
+   "expected": {
+    "strat": "T3Play",
+    "tauH": 50.02008154500108,
+    "pubRho": 263.73106551673425,
+    "time": 268.52886771404405,
+    "boughtVars": 260
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Overall",
+   "sigma": 150,
+   "rho": 300,
+   "expected": {
+    "strat": "T3Play",
+    "tauH": 31.437307301942898,
+    "pubRho": 303.2551697445957,
+    "time": 372.7612854368208,
+    "boughtVars": 263
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Overall",
+   "sigma": 190,
+   "rho": 450,
+   "expected": {
+    "strat": "T3Play2",
+    "tauH": 2.378450915778591,
+    "pubRho": 452.77134769938,
+    "time": 4194.684721716029,
+    "boughtVars": 165
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Overall",
+   "sigma": 250,
+   "rho": 700,
+   "expected": {
+    "strat": "T3Play2",
+    "tauH": 0.02239412425690649,
+    "pubRho": 702.5057457689927,
+    "time": 402814.80378013535,
+    "boughtVars": 165
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Active",
+   "sigma": 30,
+   "rho": 20,
+   "expected": {
+    "strat": "T3C11C12C21d",
+    "tauH": 128.24082174833234,
+    "pubRho": 23.004737838373106,
+    "time": 84.34955477259214,
+    "boughtVars": 207
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Active",
+   "sigma": 80,
+   "rho": 120,
+   "expected": {
+    "strat": "T3C11C12C21d",
+    "tauH": 137.13515827798523,
+    "pubRho": 123.86670370493019,
+    "time": 101.5066705908584,
+    "boughtVars": 238
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Active",
+   "sigma": 95,
+   "rho": 160,
+   "expected": {
+    "strat": "T3noC13C32C33d",
+    "tauH": 162.2735292061346,
+    "pubRho": 163.43865290618723,
+    "time": 76.28570428482456,
+    "boughtVars": 289
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Active",
+   "sigma": 100,
+   "rho": 180,
+   "expected": {
+    "strat": "T3noC11C13C33d",
+    "tauH": 133.9850119576029,
+    "pubRho": 183.62753544279389,
+    "time": 97.46707787129435,
+    "boughtVars": 277
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Active",
+   "sigma": 130,
+   "rho": 260,
+   "expected": {
+    "strat": "T3noC11C13C33d",
+    "tauH": 48.29020315192346,
+    "pubRho": 262.79178986297615,
+    "time": 208.12593136323972,
+    "boughtVars": 247
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Active",
+   "sigma": 150,
+   "rho": 300,
+   "expected": {
+    "strat": "T3noC11C13C33d",
+    "tauH": 29.949721468053458,
+    "pubRho": 303.5943981678846,
+    "time": 432.0518779510903,
+    "boughtVars": 275
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Active",
+   "sigma": 190,
+   "rho": 450,
+   "expected": {
+    "strat": "T3P2C23d",
+    "tauH": 2.1420336560129276,
+    "pubRho": 452.49165490662045,
+    "time": 4187.589508061164,
+    "boughtVars": 127
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Active",
+   "sigma": 250,
+   "rho": 700,
+   "expected": {
+    "strat": "T3P2C23d",
+    "tauH": 0.020413129084484963,
+    "pubRho": 703.007767243313,
+    "time": 530441.0720724096,
+    "boughtVars": 136
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Semi-Idle",
+   "sigma": 30,
+   "rho": 20,
+   "expected": {
+    "strat": "T3C11C12C21",
+    "tauH": 99.36980186052955,
+    "pubRho": 22.189141364752256,
+    "time": 79.30889229475741,
+    "boughtVars": 218
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Semi-Idle",
+   "sigma": 80,
+   "rho": 120,
+   "expected": {
+    "strat": "T3C11C12C21",
+    "tauH": 113.2264579793507,
+    "pubRho": 123.38324084754696,
+    "time": 107.56909002125877,
+    "boughtVars": 245
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Semi-Idle",
+   "sigma": 95,
+   "rho": 160,
+   "expected": {
+    "strat": "T3noC13C32C33",
+    "tauH": 145.19936639335174,
+    "pubRho": 163.36141456469585,
+    "time": 83.34122065052709,
+    "boughtVars": 313
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Semi-Idle",
+   "sigma": 100,
+   "rho": 180,
+   "expected": {
+    "strat": "T3SnaxCoast b2: 1330 b3: 564",
+    "tauH": 115.6529340120602,
+    "pubRho": 182.64501432033683,
+    "time": 82.33298735179191,
+    "boughtVars": 206
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Semi-Idle",
+   "sigma": 130,
+   "rho": 260,
+   "expected": {
+    "strat": "T3SnaxCoast b2: 1924 b3: 819",
+    "tauH": 46.04907444144025,
+    "pubRho": 262.714462392576,
+    "time": 212.2097942641744,
+    "boughtVars": 198
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Semi-Idle",
+   "sigma": 150,
+   "rho": 300,
+   "expected": {
+    "strat": "T3SnaxCoast b2: 2222 b3: 947",
+    "tauH": 29.5291938940072,
+    "pubRho": 302.616332566385,
+    "time": 318.96560647046437,
+    "boughtVars": 196
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Semi-Idle",
+   "sigma": 190,
+   "rho": 450,
+   "expected": {
+    "strat": "T3SnaxCoast b2: 3337 b3: 1426",
+    "tauH": 2.0804751175877825,
+    "pubRho": 452.75208566017426,
+    "time": 4762.13740451491,
+    "boughtVars": 182
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Semi-Idle",
+   "sigma": 250,
+   "rho": 700,
+   "expected": {
+    "strat": "T3SnaxCoast b2: 5196 b3: 2225",
+    "tauH": 0.018955709987017923,
+    "pubRho": 702.4715036018969,
+    "time": 469379.04055940127,
+    "boughtVars": 176
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Idle",
+   "sigma": 30,
+   "rho": 20,
+   "expected": {
+    "strat": "T3C11C12C21",
+    "tauH": 99.36980186052955,
+    "pubRho": 22.189141364752256,
+    "time": 79.30889229475741,
+    "boughtVars": 218
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Idle",
+   "sigma": 80,
+   "rho": 120,
+   "expected": {
+    "strat": "T3C11C12C21",
+    "tauH": 113.2264579793507,
+    "pubRho": 123.38324084754696,
+    "time": 107.56909002125877,
+    "boughtVars": 245
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Idle",
+   "sigma": 95,
+   "rho": 160,
+   "expected": {
+    "strat": "T3noC13C32C33",
+    "tauH": 145.19936639335174,
+    "pubRho": 163.36141456469585,
+    "time": 83.34122065052709,
+    "boughtVars": 313
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Idle",
+   "sigma": 100,
+   "rho": 180,
+   "expected": {
+    "strat": "T3noC13C33",
+    "tauH": 118.05627634819791,
+    "pubRho": 183.39500575903605,
+    "time": 103.52707294004327,
+    "boughtVars": 312
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Idle",
+   "sigma": 130,
+   "rho": 260,
+   "expected": {
+    "strat": "T3noC11C13C21C33",
+    "tauH": 37.10818517420142,
+    "pubRho": 262.9586349742066,
+    "time": 287.02793890735956,
+    "boughtVars": 264
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Idle",
+   "sigma": 150,
+   "rho": 300,
+   "expected": {
+    "strat": "T3P2C23",
+    "tauH": 23.205059867693336,
+    "pubRho": 302.91281917138855,
+    "time": 451.8906254406115,
+    "boughtVars": 137
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Idle",
+   "sigma": 190,
+   "rho": 450,
+   "expected": {
+    "strat": "T3P2C23",
+    "tauH": 1.8164650935536366,
+    "pubRho": 452.7130202347765,
+    "time": 5376.856885307898,
+    "boughtVars": 132
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Idle",
+   "sigma": 250,
+   "rho": 700,
+   "expected": {
+    "strat": "T3P2C23C33",
+    "tauH": 0.01765351942234663,
+    "pubRho": 703.1907948513884,
+    "time": 650683.9339048599,
+    "boughtVars": 151
    }
   }
  ],
@@ -4475,6 +7179,1080 @@
     "averageRate": 9.691152834691117,
     "totalTime": 44578.18313483453
    }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Overall",
+   "sigma": 60,
+   "rho": 20,
+   "cap": 180,
+   "hard_cap": false,
+   "expected": {
+    "results": [
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 128.24082174833234,
+      "pubRho": 23.004737838373106,
+      "time": 84.34955477259214,
+      "boughtVars": 207
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 111.84893641047331,
+      "pubRho": 26.94401900939477,
+      "time": 126.79076503359636,
+      "boughtVars": 249
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 127.55646933512728,
+      "pubRho": 29.397182363334363,
+      "time": 69.23512480562597,
+      "boughtVars": 203
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 105.60579319648926,
+      "pubRho": 31.81241581764617,
+      "time": 82.33298735179191,
+      "boughtVars": 211
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 86.9506569180871,
+      "pubRho": 34.239706708702876,
+      "time": 100.49662092876554,
+      "boughtVars": 191
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 70.97940260062892,
+      "pubRho": 36.65973093060244,
+      "time": 122.74106120415905,
+      "boughtVars": 199
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 58.04471978193086,
+      "pubRho": 39.68661958154529,
+      "time": 187.73110085349018,
+      "boughtVars": 210
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 44.99592081707437,
+      "pubRho": 42.23693464831712,
+      "time": 204.04370159916076,
+      "boughtVars": 187
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 36.41348479570264,
+      "pubRho": 44.65230943056781,
+      "time": 238.7947559781119,
+      "boughtVars": 191
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 29.966242765628678,
+      "pubRho": 47.058644068279634,
+      "time": 289.0854473654204,
+      "boughtVars": 189
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 33.697506743621084,
+      "pubRho": 53.48462246946881,
+      "time": 686.5054563320236,
+      "boughtVars": 289
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 92.39365616311115,
+      "pubRho": 56.29725744407582,
+      "time": 109.59070491495392,
+      "boughtVars": 207
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 83.0973015607841,
+      "pubRho": 58.80356085623906,
+      "time": 108.5798469302609,
+      "boughtVars": 191
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 75.55880809084535,
+      "pubRho": 61.37971871412566,
+      "time": 122.74106120415905,
+      "boughtVars": 200
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 67.09782916824163,
+      "pubRho": 63.912820623392655,
+      "time": 135.90852321758004,
+      "boughtVars": 195
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 59.16591709684367,
+      "pubRho": 67.14892884686664,
+      "time": 196.90372728335237,
+      "boughtVars": 217
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 52.62648573177038,
+      "pubRho": 70.28096985434391,
+      "time": 214.25233834512517,
+      "boughtVars": 204
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 45.030262126041734,
+      "pubRho": 72.75667634821484,
+      "time": 197.9234176560807,
+      "boughtVars": 193
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 42.333690974808825,
+      "pubRho": 75.96271137009953,
+      "time": 272.6368954139369,
+      "boughtVars": 208
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 42.02952215395121,
+      "pubRho": 79.16969846935503,
+      "time": 274.6915255193886,
+      "boughtVars": 207
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 36.08110126712219,
+      "pubRho": 81.58355037626131,
+      "time": 240.84261731725508,
+      "boughtVars": 181
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 32.6725289103371,
+      "pubRho": 84.30062659720318,
+      "time": 299.3791641361435,
+      "boughtVars": 197
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 28.95414945405381,
+      "pubRho": 86.85771080294779,
+      "time": 317.9338130891555,
+      "boughtVars": 192
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 26.529694610162306,
+      "pubRho": 89.39862179000295,
+      "time": 344.79400113013963,
+      "boughtVars": 194
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 23.419122662647354,
+      "pubRho": 91.95187393966157,
+      "time": 392.4872793561761,
+      "boughtVars": 195
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 20.629433351121776,
+      "pubRho": 94.4277032231113,
+      "time": 432.0518779510903,
+      "boughtVars": 184
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 18.418330875694032,
+      "pubRho": 96.83064595763999,
+      "time": 469.6730611848849,
+      "boughtVars": 188
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 17.51546583380018,
+      "pubRho": 100.85107750997554,
+      "time": 826.329926120371,
+      "boughtVars": 225
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 25.21781114376779,
+      "pubRho": 103.25185062577111,
+      "time": 342.7253526323596,
+      "boughtVars": 188
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 23.17997578543513,
+      "pubRho": 105.66537508289935,
+      "time": 374.835941421521,
+      "boughtVars": 188
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 20.967637230967327,
+      "pubRho": 108.52298628400403,
+      "time": 490.63231162657223,
+      "boughtVars": 196
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 18.88099942779766,
+      "pubRho": 111.07971355920274,
+      "time": 487.4857512661324,
+      "boughtVars": 178
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 16.87484720595134,
+      "pubRho": 113.62106542322363,
+      "time": 542.1599732914083,
+      "boughtVars": 182
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 15.1268815320115,
+      "pubRho": 116.0945010926251,
+      "time": 588.6453457708295,
+      "boughtVars": 183
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 13.728886145366307,
+      "pubRho": 118.50523908593125,
+      "time": 632.1457315625953,
+      "boughtVars": 188
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 12.347724878757743,
+      "pubRho": 120.91491968545262,
+      "time": 702.5464402110698,
+      "boughtVars": 186
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 11.234802471889196,
+      "pubRho": 123.82302021928524,
+      "time": 931.8510003173197,
+      "boughtVars": 198
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 10.112652623682285,
+      "pubRho": 126.37011058046919,
+      "time": 906.737889798428,
+      "boughtVars": 193
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 9.096286516810816,
+      "pubRho": 128.92146589025083,
+      "time": 1009.7394247904754,
+      "boughtVars": 182
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 8.06414186282515,
+      "pubRho": 131.34662297859663,
+      "time": 1082.640368504908,
+      "boughtVars": 182
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 7.31599570941647,
+      "pubRho": 133.7572120261578,
+      "time": 1186.184480678482,
+      "boughtVars": 186
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 6.597338889095628,
+      "pubRho": 136.57219010146207,
+      "time": 1536.0619245807134,
+      "boughtVars": 196
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 5.891872898662453,
+      "pubRho": 139.12206205622908,
+      "time": 1558.0001800862246,
+      "boughtVars": 178
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 5.3581949705571,
+      "pubRho": 141.67128372477353,
+      "time": 1712.7405884235384,
+      "boughtVars": 181
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 4.810471754215978,
+      "pubRho": 144.19167810814463,
+      "time": 1886.1808661871582,
+      "boughtVars": 183
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 4.275702234110068,
+      "pubRho": 146.59944656967565,
+      "time": 2027.261485227303,
+      "boughtVars": 182
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 3.883068727146022,
+      "pubRho": 149.00852652867857,
+      "time": 2233.462362327225,
+      "boughtVars": 185
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 3.484309358365426,
+      "pubRho": 151.86844260599827,
+      "time": 2954.874788494919,
+      "boughtVars": 196
+     },
+     {
+      "strat": "T3noC13C32C33d",
+      "tauH": 3.1790711730810624,
+      "pubRho": 154.41848830690418,
+      "time": 2887.6876368779554,
+      "boughtVars": 229
+     },
+     {
+      "strat": "T3noC13C32C33d",
+      "tauH": 2.8920297259871313,
+      "pubRho": 156.96857093887098,
+      "time": 3174.344092174569,
+      "boughtVars": 243
+     },
+     {
+      "strat": "T3noC13C32C33d",
+      "tauH": 2.568883292323484,
+      "pubRho": 159.44281696286347,
+      "time": 3467.3765495654643,
+      "boughtVars": 237
+     },
+     {
+      "strat": "T3noC13C32C33d",
+      "tauH": 2.378777586988518,
+      "pubRho": 161.8503952807687,
+      "time": 3643.5865176581874,
+      "boughtVars": 231
+     },
+     {
+      "strat": "T3noC13C32C33d",
+      "tauH": 2.1637374001187064,
+      "pubRho": 164.2596900370655,
+      "time": 4008.555346038108,
+      "boughtVars": 237
+     },
+     {
+      "strat": "T3noC13C32C33d",
+      "tauH": 1.989512280143228,
+      "pubRho": 167.16767590125633,
+      "time": 5261.967576462179,
+      "boughtVars": 252
+     },
+     {
+      "strat": "T3noC13C32C33d",
+      "tauH": 1.8032147590982464,
+      "pubRho": 169.71822082426874,
+      "time": 5091.995657486966,
+      "boughtVars": 228
+     },
+     {
+      "strat": "T3noC13C32C33d",
+      "tauH": 1.6403470845133021,
+      "pubRho": 172.26839318063358,
+      "time": 5596.754839014666,
+      "boughtVars": 237
+     },
+     {
+      "strat": "T3noC13C32C33d",
+      "tauH": 1.470887724889389,
+      "pubRho": 176.0930412359949,
+      "time": 9360.83207869324,
+      "boughtVars": 284
+     },
+     {
+      "strat": "T3noC13C33d",
+      "tauH": 1.690069874327387,
+      "pubRho": 178.6425902660161,
+      "time": 5430.76747742703,
+      "boughtVars": 248
+     },
+     {
+      "strat": "T3noC13C33d",
+      "tauH": 1.5451419594040914,
+      "pubRho": 181.11743734562214,
+      "time": 5766.104164317562,
+      "boughtVars": 243
+     }
+    ],
+    "deltaTau": 161.11743734562214,
+    "averageRate": 6.902920201369338,
+    "totalTime": 84025.7104999099
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Semi-Idle",
+   "sigma": 120,
+   "rho": 175,
+   "cap": 300,
+   "hard_cap": true,
+   "expected": {
+    "results": [
+     {
+      "strat": "T3noC11C13C33",
+      "tauH": 193.4223373750746,
+      "pubRho": 178.23323396660248,
+      "time": 60.177342688181604,
+      "boughtVars": 280
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1317 b3: 558",
+      "tauH": 181.97161126626153,
+      "pubRho": 181.42762922680345,
+      "time": 63.19569770636851,
+      "boughtVars": 229
+     },
+     {
+      "strat": "T3noC11C13C33",
+      "tauH": 168.13007370233044,
+      "pubRho": 185.22572751638768,
+      "time": 81.32485486630529,
+      "boughtVars": 308
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1367 b3: 581",
+      "tauH": 158.39148235853688,
+      "pubRho": 188.0947444814997,
+      "time": 65.20843747786675,
+      "boughtVars": 210
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1393 b3: 591",
+      "tauH": 152.37985345322187,
+      "pubRho": 191.19581938923034,
+      "time": 73.26342304993364,
+      "boughtVars": 214
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1414 b3: 601",
+      "tauH": 143.62928361812047,
+      "pubRho": 194.48066049797413,
+      "time": 82.33298735179191,
+      "boughtVars": 208
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1438 b3: 611",
+      "tauH": 140.84237325586002,
+      "pubRho": 197.54402367216537,
+      "time": 78.30106218853857,
+      "boughtVars": 202
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1462 b3: 621",
+      "tauH": 127.79001515753875,
+      "pubRho": 200.64559958864393,
+      "time": 87.3751621795949,
+      "boughtVars": 214
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1483 b3: 628",
+      "tauH": 122.1804236942085,
+      "pubRho": 203.6452613421386,
+      "time": 88.38389969581286,
+      "boughtVars": 213
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1506 b3: 638",
+      "tauH": 115.49628300173009,
+      "pubRho": 206.67506389662228,
+      "time": 94.43844349499811,
+      "boughtVars": 199
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1532 b3: 648",
+      "tauH": 110.79076792559195,
+      "pubRho": 209.7989533367143,
+      "time": 101.5066705908584,
+      "boughtVars": 210
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1552 b3: 660",
+      "tauH": 105.27424246244732,
+      "pubRho": 212.7377604584675,
+      "time": 100.49662092876554,
+      "boughtVars": 225
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1574 b3: 670",
+      "tauH": 100.64622228178096,
+      "pubRho": 215.74510005428098,
+      "time": 107.56909002125877,
+      "boughtVars": 205
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1594 b3: 678",
+      "tauH": 93.50679295427086,
+      "pubRho": 218.38164539606342,
+      "time": 101.5066705908584,
+      "boughtVars": 200
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1615 b3: 687",
+      "tauH": 87.85682644001437,
+      "pubRho": 221.30300314388165,
+      "time": 119.70484614904926,
+      "boughtVars": 211
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1637 b3: 696",
+      "tauH": 85.20266698593579,
+      "pubRho": 224.25588405922838,
+      "time": 124.7657106438105,
+      "boughtVars": 202
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1657 b3: 706",
+      "tauH": 80.11282617105988,
+      "pubRho": 226.89722567651143,
+      "time": 118.69297685136412,
+      "boughtVars": 205
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1675 b3: 714",
+      "tauH": 73.31877525586071,
+      "pubRho": 229.41762650394963,
+      "time": 123.75333531027947,
+      "boughtVars": 198
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1695 b3: 721",
+      "tauH": 71.13681054382779,
+      "pubRho": 231.98307887119157,
+      "time": 129.82910607695618,
+      "boughtVars": 193
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1714 b3: 729",
+      "tauH": 67.57036274611448,
+      "pubRho": 234.51499730472446,
+      "time": 134.8950337142086,
+      "boughtVars": 196
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1735 b3: 737",
+      "tauH": 64.71149044451249,
+      "pubRho": 237.10381802445346,
+      "time": 144.0200886582224,
+      "boughtVars": 212
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1755 b3: 746",
+      "tauH": 61.11115789408821,
+      "pubRho": 239.66918012184965,
+      "time": 151.12303331957796,
+      "boughtVars": 194
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1774 b3: 756",
+      "tauH": 59.432650847320645,
+      "pubRho": 242.49957060788185,
+      "time": 171.44457809718045,
+      "boughtVars": 211
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1795 b3: 763",
+      "tauH": 55.258570330729576,
+      "pubRho": 245.44372888616405,
+      "time": 191.80680459844953,
+      "boughtVars": 200
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1815 b3: 772",
+      "tauH": 51.10510253552927,
+      "pubRho": 248.07981326588396,
+      "time": 185.69386022450666,
+      "boughtVars": 199
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1835 b3: 782",
+      "tauH": 48.216490886979216,
+      "pubRho": 250.662422255321,
+      "time": 192.82598527890937,
+      "boughtVars": 210
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1854 b3: 790",
+      "tauH": 45.434524969572685,
+      "pubRho": 253.1989699508774,
+      "time": 200.98310062927794,
+      "boughtVars": 201
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1874 b3: 797",
+      "tauH": 44.188144156933305,
+      "pubRho": 256.05467330741874,
+      "time": 232.65362869818028,
+      "boughtVars": 197
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1894 b3: 806",
+      "tauH": 41.50807862610111,
+      "pubRho": 258.6664098654698,
+      "time": 226.51618480532377,
+      "boughtVars": 194
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1916 b3: 816",
+      "tauH": 39.662002035111314,
+      "pubRho": 261.6022294853793,
+      "time": 266.47546995529825,
+      "boughtVars": 209
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1935 b3: 824",
+      "tauH": 37.0540760857115,
+      "pubRho": 264.2077320273126,
+      "time": 253.1383896676556,
+      "boughtVars": 201
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1955 b3: 832",
+      "tauH": 34.81092231684448,
+      "pubRho": 266.7844700506344,
+      "time": 266.47546995529825,
+      "boughtVars": 200
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1975 b3: 841",
+      "tauH": 32.210692767368116,
+      "pubRho": 269.6660887824091,
+      "time": 322.0616057316927,
+      "boughtVars": 197
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1995 b3: 848",
+      "tauH": 30.62662751157684,
+      "pubRho": 272.2743790800899,
+      "time": 306.5908927811775,
+      "boughtVars": 186
+     },
+     {
+      "strat": "T3SnaxCoast b2: 2014 b3: 858",
+      "tauH": 29.16445940074269,
+      "pubRho": 274.8166099370133,
+      "time": 313.8076711509786,
+      "boughtVars": 188
+     },
+     {
+      "strat": "T3SnaxCoast b2: 2034 b3: 867",
+      "tauH": 27.583396315610997,
+      "pubRho": 277.37922157713274,
+      "time": 334.45489449059494,
+      "boughtVars": 198
+     },
+     {
+      "strat": "T3SnaxCoast b2: 2053 b3: 874",
+      "tauH": 26.012522433709346,
+      "pubRho": 279.91546006894725,
+      "time": 351.0024294568293,
+      "boughtVars": 194
+     },
+     {
+      "strat": "T3SnaxCoast b2: 2072 b3: 884",
+      "tauH": 24.447486589821764,
+      "pubRho": 282.439826810143,
+      "time": 371.72411302551825,
+      "boughtVars": 190
+     },
+     {
+      "strat": "T3SnaxCoast b2: 2092 b3: 889",
+      "tauH": 22.28650541472554,
+      "pubRho": 285.0241820693117,
+      "time": 417.4579531369635,
+      "boughtVars": 192
+     },
+     {
+      "strat": "T3SnaxCoast b2: 2111 b3: 899",
+      "tauH": 21.6809655450853,
+      "pubRho": 287.84017477533763,
+      "time": 467.5794406209663,
+      "boughtVars": 192
+     },
+     {
+      "strat": "T3SnaxCoast b2: 2131 b3: 909",
+      "tauH": 20.416590294844752,
+      "pubRho": 290.450407857107,
+      "time": 460.25506505571815,
+      "boughtVars": 186
+     },
+     {
+      "strat": "T3SnaxCoast b2: 2148 b3: 916",
+      "tauH": 19.37329170762048,
+      "pubRho": 292.92725664467207,
+      "time": 460.25506505571815,
+      "boughtVars": 192
+     },
+     {
+      "strat": "T3SnaxCoast b2: 2167 b3: 924",
+      "tauH": 18.65257244940766,
+      "pubRho": 295.4476186976601,
+      "time": 486.4371075553769,
+      "boughtVars": 185
+     },
+     {
+      "strat": "T3SnaxCoast b2: 2187 b3: 933",
+      "tauH": 17.54337870023026,
+      "pubRho": 298.0126525529053,
+      "time": 526.3593767579949,
+      "boughtVars": 191
+     },
+     {
+      "strat": "T3SnaxCoast b2: 2203 b3: 937",
+      "tauH": 15.331134619817115,
+      "pubRho": 300.00390903891054,
+      "time": 467.5794406209663,
+      "boughtVars": 174
+     }
+    ],
+    "deltaTau": 125.00390903891054,
+    "averageRate": 46.36718504974618,
+    "totalTime": 9705.443020905177
+   }
+  },
+  {
+   "theory": "T3",
+   "strat": "Best Active",
+   "sigma": 160,
+   "rho": 300,
+   "cap": 420,
+   "hard_cap": false,
+   "expected": {
+    "results": [
+     {
+      "strat": "T3noC11C13C33d",
+      "tauH": 35.800550489717146,
+      "pubRho": 303.6038646713654,
+      "time": 362.394226888825,
+      "boughtVars": 275
+     },
+     {
+      "strat": "T3noC11C13C33d",
+      "tauH": 32.91283697670946,
+      "pubRho": 306.15279950155343,
+      "time": 278.8020186521877,
+      "boughtVars": 231
+     },
+     {
+      "strat": "T3noC11C13C33d",
+      "tauH": 31.26618719024268,
+      "pubRho": 308.6992715024598,
+      "time": 293.2016989306508,
+      "boughtVars": 241
+     },
+     {
+      "strat": "T3noC11C13C33d",
+      "tauH": 29.308586228363,
+      "pubRho": 311.2540657216404,
+      "time": 313.8076711509786,
+      "boughtVars": 229
+     },
+     {
+      "strat": "T3noC11C13C21C33d",
+      "tauH": 27.93064536642488,
+      "pubRho": 313.6327550268756,
+      "time": 306.5908927811775,
+      "boughtVars": 216
+     },
+     {
+      "strat": "T3noC11C13C33d",
+      "tauH": 27.210787891186946,
+      "pubRho": 316.3484379943123,
+      "time": 359.2861302608036,
+      "boughtVars": 247
+     },
+     {
+      "strat": "T3noC11C13C21C33d",
+      "tauH": 25.416515017160943,
+      "pubRho": 319.8271861180489,
+      "time": 492.7305429952207,
+      "boughtVars": 247
+     },
+     {
+      "strat": "T3noC11C13C21C33d",
+      "tauH": 23.881455019864983,
+      "pubRho": 322.92204216699497,
+      "time": 466.5327873422321,
+      "boughtVars": 242
+     },
+     {
+      "strat": "T3noC11C13C21C33d",
+      "tauH": 22.12800582383733,
+      "pubRho": 326.021673718906,
+      "time": 504.27831932596087,
+      "boughtVars": 237
+     },
+     {
+      "strat": "T3noC11C13C33d",
+      "tauH": 20.87344678579189,
+      "pubRho": 329.09191190043714,
+      "time": 529.51760037233,
+      "boughtVars": 249
+     },
+     {
+      "strat": "T3noC11C13C21C33d",
+      "tauH": 19.61166798700548,
+      "pubRho": 332.212210411541,
+      "time": 572.7750769295484,
+      "boughtVars": 236
+     },
+     {
+      "strat": "T3noC11C13C21C33d",
+      "tauH": 18.075986289365613,
+      "pubRho": 335.31159878271205,
+      "time": 617.2718853399537,
+      "boughtVars": 231
+     },
+     {
+      "strat": "T3noC11C13C21C33d",
+      "tauH": 17.012783787480284,
+      "pubRho": 338.40459649928886,
+      "time": 654.4955792520323,
+      "boughtVars": 241
+     },
+     {
+      "strat": "T3noC11C13C21C33d",
+      "tauH": 15.889596871278806,
+      "pubRho": 341.5054797543738,
+      "time": 702.5464402110698,
+      "boughtVars": 234
+     },
+     {
+      "strat": "T3noC11C13C21C33d",
+      "tauH": 14.671748085686621,
+      "pubRho": 344.5960909642146,
+      "time": 758.3418342822639,
+      "boughtVars": 230
+     },
+     {
+      "strat": "T3noC11C13C21C33d",
+      "tauH": 13.680277738452077,
+      "pubRho": 347.69509016394545,
+      "time": 815.5095482946914,
+      "boughtVars": 228
+     },
+     {
+      "strat": "T3noC11C13C21C33d",
+      "tauH": 12.738926264631319,
+      "pubRho": 350.78806019539564,
+      "time": 874.0683384074009,
+      "boughtVars": 241
+     },
+     {
+      "strat": "T3P2C23d",
+      "tauH": 10.982338514485697,
+      "pubRho": 354.01652170286496,
+      "time": 1058.2865763570783,
+      "boughtVars": 141
+     },
+     {
+      "strat": "T3Snax2",
+      "tauH": 10.58212667095574,
+      "pubRho": 356.23616679705157,
+      "time": 755.1149771249221,
+      "boughtVars": 194
+     },
+     {
+      "strat": "T3Snax2",
+      "tauH": 9.879105978510186,
+      "pubRho": 358.296547669184,
+      "time": 750.8140064305052,
+      "boughtVars": 189
+     },
+     {
+      "strat": "T3Snax2",
+      "tauH": 9.451897067429126,
+      "pubRho": 360.69153327846675,
+      "time": 912.192349526189,
+      "boughtVars": 194
+     },
+     {
+      "strat": "T3P2C23d",
+      "tauH": 8.840853914430115,
+      "pubRho": 363.6623032532482,
+      "time": 1209.6989739596381,
+      "boughtVars": 135
+     },
+     {
+      "strat": "T3Snax2",
+      "tauH": 8.51425119371861,
+      "pubRho": 365.82486368638524,
+      "time": 914.3748971180178,
+      "boughtVars": 193
+     },
+     {
+      "strat": "T3P2C23d",
+      "tauH": 8.078755623514645,
+      "pubRho": 368.73398425490086,
+      "time": 1296.3424733597824,
+      "boughtVars": 135
+     },
+     {
+      "strat": "T3Snax2",
+      "tauH": 7.523267853677002,
+      "pubRho": 370.8786706414377,
+      "time": 1026.2655991649915,
+      "boughtVars": 189
+     },
+     {
+      "strat": "T3Snax2",
+      "tauH": 7.094018433137573,
+      "pubRho": 372.9357800404603,
+      "time": 1043.9208618190905,
+      "boughtVars": 189
+     },
+     {
+      "strat": "T3P2C23d",
+      "tauH": 6.780151077149481,
+      "pubRho": 375.8309338006777,
+      "time": 1537.2155307731714,
+      "boughtVars": 137
+     },
+     {
+      "strat": "T3P2C23d",
+      "tauH": 6.4098602994957234,
+      "pubRho": 378.3981855724048,
+      "time": 1441.857692116115,
+      "boughtVars": 131
+     },
+     {
+      "strat": "T3P2C23d",
+      "tauH": 6.150825803034056,
+      "pubRho": 381.28852298018415,
+      "time": 1691.6776708052653,
+      "boughtVars": 134
+     },
+     {
+      "strat": "T3P2C23d",
+      "tauH": 5.704711200252036,
+      "pubRho": 383.93775868654757,
+      "time": 1671.8196957081595,
+      "boughtVars": 131
+     },
+     {
+      "strat": "T3P2C23d",
+      "tauH": 5.437434858936756,
+      "pubRho": 386.9037114372781,
+      "time": 1963.688794373495,
+      "boughtVars": 137
+     },
+     {
+      "strat": "T3P2C23d",
+      "tauH": 5.050424539234475,
+      "pubRho": 389.878164858678,
+      "time": 2120.224197758784,
+      "boughtVars": 136
+     },
+     {
+      "strat": "T3P2C23d",
+      "tauH": 4.780006722745656,
+      "pubRho": 392.8762282872182,
+      "time": 2257.952544582444,
+      "boughtVars": 137
+     },
+     {
+      "strat": "T3P2C23d",
+      "tauH": 4.472737433220388,
+      "pubRho": 395.54512487611714,
+      "time": 2148.1313990565027,
+      "boughtVars": 133
+     },
+     {
+      "strat": "T3P2C23d",
+      "tauH": 4.21835825733075,
+      "pubRho": 398.4591008539963,
+      "time": 2486.823754747394,
+      "boughtVars": 132
+     },
+     {
+      "strat": "T3P2C23d",
+      "tauH": 3.9211608994559732,
+      "pubRho": 401.11484039955,
+      "time": 2438.2224063592703,
+      "boughtVars": 133
+     },
+     {
+      "strat": "T3P2C23d",
+      "tauH": 3.6409784849505598,
+      "pubRho": 404.05626899994417,
+      "time": 2908.323409541575,
+      "boughtVars": 136
+     },
+     {
+      "strat": "T3P2C23d",
+      "tauH": 3.491463534366975,
+      "pubRho": 407.0204370027276,
+      "time": 3056.3128341407833,
+      "boughtVars": 135
+     },
+     {
+      "strat": "T3P2C23d",
+      "tauH": 3.2702248667623857,
+      "pubRho": 410.03273134277504,
+      "time": 3316.059312736781,
+      "boughtVars": 138
+     },
+     {
+      "strat": "T3P2C23d",
+      "tauH": 3.046822225073811,
+      "pubRho": 412.7416252901056,
+      "time": 3200.717826637831,
+      "boughtVars": 131
+     },
+     {
+      "strat": "T3P2C23d",
+      "tauH": 2.898625231208407,
+      "pubRho": 415.63039931481677,
+      "time": 3587.765116025252,
+      "boughtVars": 135
+     },
+     {
+      "strat": "T3P2C23d",
+      "tauH": 2.734554756359077,
+      "pubRho": 418.6359955756875,
+      "time": 3956.8220435055837,
+      "boughtVars": 137
+     },
+     {
+      "strat": "T3P2C23d",
+      "tauH": 2.5379835150923196,
+      "pubRho": 421.2500192503476,
+      "time": 3707.8590829357536,
+      "boughtVars": 129
+     }
+    ],
+    "deltaTau": 121.25001925034758,
+    "averageRate": 7.113682445074057,
+    "totalTime": 61360.634618081705
+   }
   }
  ],
  "modes": [
@@ -5717,6 +9495,836 @@
      [
       7935.5746546754945,
       205
+     ]
+    ]
+   }
+  },
+  {
+   "mode": "step",
+   "theory": "T3",
+   "strat": "Best Active",
+   "sigma": 100,
+   "rho": 150,
+   "extra": [
+    250,
+    25
+   ],
+   "expected": {
+    "results": [
+     {
+      "strat": "T3noC13C32C33d",
+      "tauH": 236.27440412091323,
+      "pubRho": 154.47794483150724,
+      "time": 68.22830197542844,
+      "boughtVars": 317
+     },
+     {
+      "strat": "T3noC11C13C33d",
+      "tauH": 147.19999527673082,
+      "pubRho": 178.6551696177781,
+      "time": 89.39273808578244,
+      "boughtVars": 293
+     },
+     {
+      "strat": "T3noC11C13C33d",
+      "tauH": 85.38517224852977,
+      "pubRho": 202.8871783601184,
+      "time": 121.72888831532752,
+      "boughtVars": 259
+     },
+     {
+      "strat": "T3noC11C13C33d",
+      "tauH": 51.41935925201533,
+      "pubRho": 228.36687868012453,
+      "time": 235.72373177663124,
+      "boughtVars": 267
+     },
+     {
+      "strat": "T3noC11C13C33d",
+      "tauH": 28.915974884368378,
+      "pubRho": 253.87348424460455,
+      "time": 482.2435811463734,
+      "boughtVars": 290
+     }
+    ]
+   }
+  },
+  {
+   "mode": "amount",
+   "theory": "T3",
+   "strat": "Best Semi-Idle",
+   "sigma": 120,
+   "rho": 200,
+   "extra": [
+    6
+   ],
+   "expected": {
+    "results": [
+     {
+      "strat": "T3SnaxCoast b2: 1476 b3: 627",
+      "tauH": 123.57102083272014,
+      "pubRho": 202.68770616303445,
+      "time": 78.30106218853857,
+      "boughtVars": 189
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1502 b3: 637",
+      "tauH": 120.81910745860226,
+      "pubRho": 206.06045950837304,
+      "time": 100.49662092876554,
+      "boughtVars": 211
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1525 b3: 648",
+      "tauH": 113.57284668508218,
+      "pubRho": 209.16720764724909,
+      "time": 98.47682457908148,
+      "boughtVars": 209
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1545 b3: 656",
+      "tauH": 105.27566407396417,
+      "pubRho": 211.81084559653553,
+      "time": 90.40167735959102,
+      "boughtVars": 210
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1566 b3: 665",
+      "tauH": 98.70324676303954,
+      "pubRho": 214.73241876968513,
+      "time": 106.558434177841,
+      "boughtVars": 197
+     },
+     {
+      "strat": "T3SnaxCoast b2: 1586 b3: 675",
+      "tauH": 96.12121387896637,
+      "pubRho": 217.3348226136364,
+      "time": 97.46707787129435,
+      "boughtVars": 217
+     }
+    ],
+    "deltaTau": 17.33482261363639,
+    "averageRate": 109.157208602124,
+    "totalTime": 571.7016971051119
+   }
+  },
+  {
+   "mode": "time",
+   "theory": "T3",
+   "strat": "T3P2C23",
+   "sigma": 150,
+   "rho": 300,
+   "extra": [
+    345600
+   ],
+   "expected": {
+    "results": [
+     {
+      "strat": "T3P2C23",
+      "tauH": 23.205059867693336,
+      "pubRho": 302.91281917138855,
+      "time": 451.8906254406115,
+      "boughtVars": 137
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 21.979321378640854,
+      "pubRho": 305.5315508398735,
+      "time": 428.92288820651277,
+      "boughtVars": 130
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 20.816429186197816,
+      "pubRho": 308.45960873547256,
+      "time": 506.37928003260924,
+      "boughtVars": 137
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 19.561666938982476,
+      "pubRho": 311.42851264886656,
+      "time": 546.3774698524929,
+      "boughtVars": 138
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 18.24072664282023,
+      "pubRho": 314.0635161910859,
+      "time": 520.0457710780657,
+      "boughtVars": 133
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 17.347260524080806,
+      "pubRho": 317.058421605901,
+      "time": 621.5194311728729,
+      "boughtVars": 139
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 16.231423035394073,
+      "pubRho": 320.02858273050504,
+      "time": 658.7580167960868,
+      "boughtVars": 138
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 15.226068181853659,
+      "pubRho": 322.6887321717326,
+      "time": 628.9567256655648,
+      "boughtVars": 133
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 14.577032741317765,
+      "pubRho": 325.59851644923526,
+      "time": 718.6115024162685,
+      "boughtVars": 136
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 13.567626847771676,
+      "pubRho": 328.5783581366294,
+      "time": 790.6637022804555,
+      "boughtVars": 136
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 12.647820797579527,
+      "pubRho": 331.5843202051425,
+      "time": 855.5990490249603,
+      "boughtVars": 138
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 11.860648833335562,
+      "pubRho": 334.2639925463286,
+      "time": 813.3467708070623,
+      "boughtVars": 133
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 11.224775655263,
+      "pubRho": 337.2240752853518,
+      "time": 949.3550862628543,
+      "boughtVars": 138
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 10.555202303992287,
+      "pubRho": 340.1846319250685,
+      "time": 1009.7394247904754,
+      "boughtVars": 137
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 9.838575758823058,
+      "pubRho": 342.85106026483544,
+      "time": 975.6637808630571,
+      "boughtVars": 133
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 9.335366030087737,
+      "pubRho": 345.7621587302103,
+      "time": 1122.607773661223,
+      "boughtVars": 136
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 8.793169981796684,
+      "pubRho": 348.76074681471897,
+      "time": 1227.6479502362142,
+      "boughtVars": 137
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 8.247006486420977,
+      "pubRho": 351.37325483301504,
+      "time": 1140.4172994590947,
+      "boughtVars": 131
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 7.794718297132913,
+      "pubRho": 354.27566586482203,
+      "time": 1340.4820182338658,
+      "boughtVars": 136
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 7.292538678534129,
+      "pubRho": 357.35925030173223,
+      "time": 1522.2276442019656,
+      "boughtVars": 139
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 6.793560163524248,
+      "pubRho": 360.37582129059837,
+      "time": 1598.5220265252644,
+      "boughtVars": 138
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 6.336778083562708,
+      "pubRho": 363.01677439723125,
+      "time": 1500.3572885943681,
+      "boughtVars": 133
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 6.030602827824454,
+      "pubRho": 365.9251805904944,
+      "time": 1736.1883371657036,
+      "boughtVars": 136
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 5.6557177195882264,
+      "pubRho": 368.92581506790475,
+      "time": 1909.9758252191848,
+      "boughtVars": 138
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 5.291480109436852,
+      "pubRho": 371.562491837377,
+      "time": 1793.8338940690792,
+      "boughtVars": 132
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 4.892569172932704,
+      "pubRho": 374.1275156586803,
+      "time": 1887.3694842737768,
+      "boughtVars": 130
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 4.711769181988693,
+      "pubRho": 376.9900014717638,
+      "time": 2187.065734563663,
+      "boughtVars": 135
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 4.517876926649443,
+      "pubRho": 379.5961538480287,
+      "time": 2076.67200919341,
+      "boughtVars": 129
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 4.198065246745149,
+      "pubRho": 382.15224067063906,
+      "time": 2191.9412921301823,
+      "boughtVars": 129
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 3.9372970852109574,
+      "pubRho": 385.1200988717926,
+      "time": 2713.6101982968125,
+      "boughtVars": 136
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 3.672053198915588,
+      "pubRho": 387.68474613057685,
+      "time": 2514.323630809558,
+      "boughtVars": 130
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 3.5042366042287667,
+      "pubRho": 390.2238859709942,
+      "time": 2608.5291770743006,
+      "boughtVars": 130
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 3.332399513821351,
+      "pubRho": 393.1123752034494,
+      "time": 3120.44255009339,
+      "boughtVars": 136
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 3.1076985655892813,
+      "pubRho": 395.7349686682396,
+      "time": 3038.0476979930336,
+      "boughtVars": 131
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 2.9616119403791132,
+      "pubRho": 398.679810735726,
+      "time": 3579.6153096255675,
+      "boughtVars": 136
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 2.7453980832605125,
+      "pubRho": 401.69413263654155,
+      "time": 3952.635834162307,
+      "boughtVars": 137
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 2.5537163012480506,
+      "pubRho": 404.3711449631518,
+      "time": 3773.8116685423906,
+      "boughtVars": 133
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 2.4534804602807476,
+      "pubRho": 407.28423997195694,
+      "time": 4274.3939483009135,
+      "boughtVars": 135
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 2.3070173616757534,
+      "pubRho": 410.26719517714037,
+      "time": 4654.77153187096,
+      "boughtVars": 137
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 2.142112623273622,
+      "pubRho": 412.93291979814757,
+      "time": 4479.973896498579,
+      "boughtVars": 133
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 1.993538377915464,
+      "pubRho": 415.8501715370085,
+      "time": 5268.073279271867,
+      "boughtVars": 137
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 1.905647603824446,
+      "pubRho": 418.8782725623875,
+      "time": 5720.450973982177,
+      "boughtVars": 137
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 1.769739758203918,
+      "pubRho": 421.4815495135737,
+      "time": 5295.579183790093,
+      "boughtVars": 131
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 1.658199352871692,
+      "pubRho": 424.44063975516275,
+      "time": 6424.272721655544,
+      "boughtVars": 137
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 1.5739161664837678,
+      "pubRho": 427.43477734597946,
+      "time": 6848.455817707815,
+      "boughtVars": 137
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 1.4765247568531803,
+      "pubRho": 430.43133359626444,
+      "time": 7306.076278745803,
+      "boughtVars": 136
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 1.3753980011774107,
+      "pubRho": 433.09692577446435,
+      "time": 6976.985449524369,
+      "boughtVars": 133
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 1.2913426801771641,
+      "pubRho": 436.03527314897013,
+      "time": 8191.513151853364,
+      "boughtVars": 138
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 1.2301624221846184,
+      "pubRho": 439.00197241499745,
+      "time": 8681.87579550005,
+      "boughtVars": 136
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 1.1400056782163883,
+      "pubRho": 441.63874946147445,
+      "time": 8326.622883290052,
+      "boughtVars": 131
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 1.0559634836475857,
+      "pubRho": 444.6435010153381,
+      "time": 10243.825436599216,
+      "boughtVars": 138
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 1.0113458304786183,
+      "pubRho": 447.63617367185503,
+      "time": 10652.757186295461,
+      "boughtVars": 138
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 0.949781957403577,
+      "pubRho": 450.6277838743722,
+      "time": 11339.230699331492,
+      "boughtVars": 137
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 0.8865473027650255,
+      "pubRho": 453.26491540649664,
+      "time": 10708.592182321758,
+      "boughtVars": 131
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 0.8368711989327114,
+      "pubRho": 456.19656264073626,
+      "time": 12611.176076703792,
+      "boughtVars": 136
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 0.7848839843760511,
+      "pubRho": 459.1693798933617,
+      "time": 13635.317222021351,
+      "boughtVars": 137
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 0.7338475633387511,
+      "pubRho": 461.7572093803388,
+      "time": 12694.988194458538,
+      "boughtVars": 130
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 0.6838593649544495,
+      "pubRho": 464.76233388724273,
+      "time": 15819.697410409488,
+      "boughtVars": 137
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 0.6503539402219538,
+      "pubRho": 467.76274991156254,
+      "time": 16608.644953953757,
+      "boughtVars": 138
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 0.6046990716064281,
+      "pubRho": 470.79061685131325,
+      "time": 18026.02566288888,
+      "boughtVars": 138
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 0.563015378346937,
+      "pubRho": 473.4345419613979,
+      "time": 16905.63128888374,
+      "boughtVars": 132
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 0.5398000909217129,
+      "pubRho": 476.35996651959647,
+      "time": 19510.05304858738,
+      "boughtVars": 136
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 0.4992128867974908,
+      "pubRho": 478.9667947037889,
+      "time": 18798.75642493098,
+      "boughtVars": 132
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 0.48028537009650935,
+      "pubRho": 481.85977956868715,
+      "time": 21684.494598577934,
+      "boughtVars": 136
+     }
+    ],
+    "deltaTau": 181.85977956868715,
+    "averageRate": 1.8668220113548202,
+    "totalTime": 350700.38946676964
+   }
+  },
+  {
+   "mode": "step_chain",
+   "theory": "T3",
+   "strat": "Best Overall",
+   "sigma": 120,
+   "rho": 175,
+   "extra": [
+    260,
+    20,
+    false
+   ],
+   "expected": {
+    "results": [
+     {
+      "strat": "1 pub",
+      "tauH": 213.82349223612815,
+      "pubRho": 178.69376986902373,
+      "time": 62.18947875849266,
+      "boughtVars": 0
+     },
+     {
+      "strat": "1 pub",
+      "tauH": 148.57366043431867,
+      "pubRho": 199.1058608506462,
+      "time": 99.48667226153938,
+      "boughtVars": 0
+     },
+     {
+      "strat": "1 pub",
+      "tauH": 100.8689859683161,
+      "pubRho": 218.43910177231626,
+      "time": 122.74106120415905,
+      "boughtVars": 0
+     },
+     {
+      "strat": "1 pub",
+      "tauH": 69.01960954699926,
+      "pubRho": 238.56014381332514,
+      "time": 185.69386022450666,
+      "boughtVars": 0
+     }
+    ]
+   }
+  },
+  {
+   "mode": "comparison",
+   "theory": "T3",
+   "strat": null,
+   "sigma": 150,
+   "rho": 300,
+   "extra": [],
+   "expected": {
+    "results": [
+     {
+      "strat": "T3Play",
+      "tauH": 31.437307301942898,
+      "pubRho": 303.2551697445957,
+      "time": 372.7612854368208,
+      "boughtVars": 263
+     },
+     {
+      "strat": "T3Play2",
+      "tauH": 30.582064589222313,
+      "pubRho": 302.7008534463862,
+      "time": 317.9338130891555,
+      "boughtVars": 188
+     },
+     {
+      "strat": "T3noC11C13C33d",
+      "tauH": 29.949721468053458,
+      "pubRho": 303.5943981678846,
+      "time": 432.0518779510903,
+      "boughtVars": 275
+     },
+     {
+      "strat": "T3SnaxCoast b2: 2222 b3: 947",
+      "tauH": 29.5291938940072,
+      "pubRho": 302.616332566385,
+      "time": 318.96560647046437,
+      "boughtVars": 196
+     },
+     {
+      "strat": "T3noC13C33d",
+      "tauH": 28.4375363709087,
+      "pubRho": 303.1414358905374,
+      "time": 397.68456234851215,
+      "boughtVars": 269
+     },
+     {
+      "strat": "T3noC11C13C21C33d",
+      "tauH": 28.271948854258273,
+      "pubRho": 304.3488708775885,
+      "time": 553.7621491898185,
+      "boughtVars": 294
+     },
+     {
+      "strat": "T3Snax2",
+      "tauH": 27.686152414132607,
+      "pubRho": 302.2548963679657,
+      "time": 293.2016989306508,
+      "boughtVars": 191
+     },
+     {
+      "strat": "T3Snax",
+      "tauH": 27.673756872805505,
+      "pubRho": 302.833586826332,
+      "time": 368.6132179913557,
+      "boughtVars": 207
+     },
+     {
+      "strat": "T3P2C23d",
+      "tauH": 26.076819206167308,
+      "pubRho": 303.2127573824611,
+      "time": 443.53287436700214,
+      "boughtVars": 145
+     },
+     {
+      "strat": "T3SnaxdC12",
+      "tauH": 25.893419389221503,
+      "pubRho": 302.89031165425064,
+      "time": 401.84426007611705,
+      "boughtVars": 190
+     },
+     {
+      "strat": "T3noC13C32C33d",
+      "tauH": 25.731582288233046,
+      "pubRho": 303.1403716865515,
+      "time": 439.3565053617087,
+      "boughtVars": 264
+     },
+     {
+      "strat": "T3P2C23C33d",
+      "tauH": 24.70054888946834,
+      "pubRho": 303.2369184250531,
+      "time": 471.76710049385247,
+      "boughtVars": 157
+     },
+     {
+      "strat": "T3P2C23C33Coast b2: 2224 b3: 946",
+      "tauH": 23.558385600428856,
+      "pubRho": 302.7863997100106,
+      "time": 425.7948369711505,
+      "boughtVars": 138
+     },
+     {
+      "strat": "T3P2C23",
+      "tauH": 23.205059867693336,
+      "pubRho": 302.91281917138855,
+      "time": 451.8906254406115,
+      "boughtVars": 137
+     },
+     {
+      "strat": "T3P2C23C33",
+      "tauH": 22.642272064135327,
+      "pubRho": 302.94743385674747,
+      "time": 468.6261985650284,
+      "boughtVars": 151
+     },
+     {
+      "strat": "T3noC11C13C21C33",
+      "tauH": 22.45685046628755,
+      "pubRho": 302.5261781293376,
+      "time": 404.96512541986954,
+      "boughtVars": 249
+     },
+     {
+      "strat": "T3noC11C13C33",
+      "tauH": 22.28180055485783,
+      "pubRho": 303.0237300804528,
+      "time": 488.534499841259,
+      "boughtVars": 272
+     },
+     {
+      "strat": "T3noC13C33",
+      "tauH": 22.04866712727774,
+      "pubRho": 302.94714404332774,
+      "time": 481.1954616002134,
+      "boughtVars": 287
+     },
+     {
+      "strat": "T3",
+      "tauH": 19.949282551852445,
+      "pubRho": 303.0277329239038,
+      "time": 546.3774698524929,
+      "boughtVars": 317
+     },
+     {
+      "strat": "T3noC13C32C33",
+      "tauH": 19.675211309032928,
+      "pubRho": 302.9573256081334,
+      "time": 541.1058627051377,
+      "boughtVars": 272
+     },
+     {
+      "strat": "T3C11C12C21d",
+      "tauH": 2.5688794662251335,
+      "pubRho": 302.31226086438215,
+      "time": 3240.377456871398,
+      "boughtVars": 181
+     },
+     {
+      "strat": "T3C11C12C21",
+      "tauH": 1.7026461486590605,
+      "pubRho": 302.921231806257,
+      "time": 6176.523824875556,
+      "boughtVars": 199
+     }
+    ]
+   }
+  },
+  {
+   "mode": "pub_table",
+   "theory": "T3",
+   "strat": "Best Semi-Idle",
+   "sigma": 150,
+   "rho": 300,
+   "extra": [
+    312,
+    2
+   ],
+   "expected": {
+    "cap": 312,
+    "start": 300,
+    "step": 2,
+    "pub_table": [
+     [
+      0,
+      0
+     ],
+     [
+      327.22366884394484,
+      312
+     ],
+     [
+      638.9688878336733,
+      310
+     ],
+     [
+      935.2588560803474,
+      308
+     ],
+     [
+      1228.4605550109982,
+      306
+     ],
+     [
+      1501.097450424935,
+      304
+     ],
+     [
+      1761.4151904833157,
+      302
      ]
     ]
    }

@@ -54,7 +54,7 @@ npm run build
 
 | Path | What it is |
 |---|---|
-| `wasm/src/theories/` | Theory simulations. `traditional.rs` is the shared base (sim-3's `theory.ts` + `traditionalTheory.ts`); `t1.rs`, `t2.rs` are ported theories. |
+| `wasm/src/theories/` | Theory simulations. `traditional.rs` is the shared base (sim-3's `theory.ts` + `traditionalTheory.ts`); `t1.rs`, `t2.rs`, `t3.rs` are ported theories (`t3.rs` shows a theory with several currencies). |
 | `wasm/src/sim/mod.rs` | Sim modes (single, chain, step, all, step_chain, amount, time, comparison, pub_table), "Best ..." strat selection, and the list of ported theories (`PORTED_THEORIES`, `run_strat`). |
 | `wasm/src/api/` | JSON request/response types (`query.rs`, `response.rs`), `data.json` config (`config.rs`), and the parser for strat conditions (`condition.rs`). |
 | `wasm/src/utils/` | `LogNum`, cost/value models, `Variable`, and `fastmath.rs` (see "Exact results" below). |
@@ -162,7 +162,7 @@ variable gets bought and then the whole publication. To keep results identical:
 ## Porting a theory
 
 1. Read sim-3's `src/Theories/<group>/<Theory>.ts` and the base classes it uses.
-2. Create `wasm/src/theories/<theory>.rs` following `t1.rs` / `t2.rs`: a strat enum with
+2. Create `wasm/src/theories/<theory>.rs` following `t1.rs` / `t2.rs` / `t3.rs`: a strat enum with
    `name()` / `from_name()` matching `data.json`, a sim struct holding a `TraditionalCore`, and a
    `simulate_<theory>(strat, input)` function reproducing sim-3's top-level function (multi-pass
    coasting, forks, etc.).

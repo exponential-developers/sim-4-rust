@@ -94,7 +94,7 @@ pub fn l10(x: f64) -> f64 {
 pub fn add_log(a: f64, b: f64) -> f64 {
     let (max, min) = if a > b { (a, b) } else { (b, a) };
     if max != f64::NEG_INFINITY {
-        max + fastmath::log10(1. + fastmath::exp10(min - max))
+        max + fastmath::log10_1p_exp10(min - max)
     } else {
         max
     }
@@ -105,7 +105,7 @@ pub fn add_log(a: f64, b: f64) -> f64 {
 pub fn sub_log(a: f64, b: f64) -> f64 {
     let (max, min) = if a > b { (a, b) } else { (b, a) };
     if max != f64::NEG_INFINITY {
-        max + fastmath::log10(1. - fastmath::exp10(min - max))
+        max + fastmath::log10_1m_exp10(min - max)
     } else {
         max
     }
@@ -459,12 +459,17 @@ impl TraditionalCore {
     }
 
     pub fn record_purchase(&mut self, variable: &Variable) {
+        self.record_purchase_in(variable, "rho");
+    }
+
+    /** Records a purchase paid with the currency named `symbol` (e.g. "rho_2") */
+    pub fn record_purchase_in(&mut self, variable: &Variable, symbol: &str) {
         if self.max_rho + self.params.bought_vars_delta > self.last_pub_rho {
             self.bought_vars.push(VarBuy {
                 var_name: variable.name.clone(),
                 level: variable.level + 1,
                 cost: variable.cost,
-                symbol: "rho".to_owned(),
+                symbol: symbol.to_owned(),
                 timestamp: self.t,
             });
         }

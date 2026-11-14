@@ -48,3 +48,56 @@ pub use imp::{log2, log10, pow};
 pub fn exp10(x: f64) -> f64 {
     pow(10., x)
 }
+
+/**
+ * Below this exponent difference, adding or subtracting the smaller of two log10 values changes
+ * nothing: for d < -17, 10^d < 1e-17 is under half an ulp of 1 (1.1e-16 above, 5.5e-17 below),
+ * so `1 ± 10^d` rounds to exactly 1 and `log10(1)` is exactly 0. Callers can then return
+ * `max + 0.` without calling pow and log10 (two calls into JavaScript in the browser) and still
+ * get bit-identical results.
+ */
+pub const NEGLIGIBLE_EXP_DIFF: f64 = -17.;
+
+/** log10(1 + 10^d) for d = min - max <= 0, skipping the calls when the result is exactly 0 */
+#[inline]
+pub fn log10_1p_exp10(d: f64) -> f64 {
+    if d < NEGLIGIBLE_EXP_DIFF {
+        0.
+    } else {
+        log10(1. + exp10(d))
+    }
+}
+
+/** log10(1 - 10^d) for d = min - max <= 0, skipping the calls when the result is exactly 0 */
+#[inline]
+pub fn log10_1m_exp10(d: f64) -> f64 {
+    if d < NEGLIGIBLE_EXP_DIFF {
+        0.
+    } else {
+        log10(1. - exp10(d))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn skipping_negligible_differences_gives_the_same_bits() {
+        // the full formula gives exactly 0 wherever the shortcut is taken
+        let mut d = NEGLIGIBLE_EXP_DIFF - 1e-9;
+        while d > -400. {
+            assert_eq!(log10(1. + exp10(d)).to_bits(), 0f64.to_bits(), "{d}");
+            assert_eq!(log10(1. - exp10(d)).to_bits(), 0f64.to_bits(), "{d}");
+            assert_eq!(log10_1p_exp10(d).to_bits(), 0f64.to_bits());
+            d -= 0.0137;
+        }
+        assert_eq!(log10_1p_exp10(f64::NEG_INFINITY), 0.);
+        assert_eq!(log10_1m_exp10(f64::NEG_INFINITY), 0.);
+        // above the threshold the full formula is used
+        for d in [-16.9, -3., -0.5, 0.] {
+            assert_eq!(log10_1p_exp10(d), log10(1. + exp10(d)));
+            assert_eq!(log10_1m_exp10(d).to_bits(), log10(1. - exp10(d)).to_bits());
+        }
+    }
+}

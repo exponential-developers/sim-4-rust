@@ -217,7 +217,6 @@ export function getddtFromSlider(val: number): number {
 export function reverseMulti(theory: string, value: number, sigma: number) {
   const R9 = getR9multiplier(sigma);
   const divSigmaMulti = (exp: number, div: number) => (value - R9 + l10(div)) * (1 / exp);
-  const multSigmaMulti = (exp: number, mult: number) => (value - R9 - l10(mult)) * (1 / exp);
   const sigmaMulti = (exp: number) => (value - R9) * (1 / exp);
   // Ported theories use sim-3's exact formula and operation order (traditionalConverter:
   // (value - multFactor - r9) / multExponent), so results match sim-3 bit for bit.
@@ -228,7 +227,7 @@ export function reverseMulti(theory: string, value: number, sigma: number) {
     case "T2":
       return sim3Multi(0.198, -l10(100));
     case "T3":
-      return multSigmaMulti(0.147, 3);
+      return sim3Multi(0.147, l10(3));
     case "T4":
       return divSigmaMulti(0.165, 4);
     case "T5":

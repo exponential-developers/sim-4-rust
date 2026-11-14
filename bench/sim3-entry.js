@@ -2,9 +2,10 @@
 // selection (getStrats), for comparing against the Rust sim. Built by webpack.sim3.config.js.
 import T1 from "SIM3/Theories/T1-T8/T1";
 import T2 from "SIM3/Theories/T1-T8/T2";
+import T3 from "SIM3/Theories/T1-T8/T3";
 import { getStrats } from "SIM3/Sim/strats";
 
-const THEORIES = { T1, T2 };
+const THEORIES = { T1, T2, T3 };
 const SETTINGS = { dt: 1.5, ddt: 1.0001, boughtVarsDelta: 5 };
 const CATEGORIES = ["Best Active", "Best Overall", "Best Semi-Idle", "Best Idle"];
 

@@ -77,10 +77,11 @@ describe("multiplier inputs (reverseMulti)", () => {
   const sim3Mult = (rho: number, multExponent: number, multFactor: number, sigma: number) =>
     Math.max(0, rho * multExponent + multFactor + getR9multiplier(sigma));
 
-  it("inverts sim-3's T1 and T2 multiplier formulas", () => {
+  it("inverts sim-3's T1, T2 and T3 multiplier formulas", () => {
     for (const sigma of [30, 70, 200]) {
       expect(reverseMulti("T1", sim3Mult(150, 0.164, -Math.log10(3), sigma), sigma)).toBeCloseTo(150, 9);
       expect(reverseMulti("T2", sim3Mult(250, 0.198, -Math.log10(100), sigma), sigma)).toBeCloseTo(250, 9);
+      expect(reverseMulti("T3", sim3Mult(300, 0.147, Math.log10(3), sigma), sigma)).toBeCloseTo(300, 9);
     }
   });
 
@@ -89,6 +90,7 @@ describe("multiplier inputs (reverseMulti)", () => {
     const r9 = getR9multiplier(sigma);
     expect(reverseMulti("T1", value, sigma)).toBe((value - -Math.log10(3) - r9) / 0.164);
     expect(reverseMulti("T2", value, sigma)).toBe((value - -Math.log10(100) - r9) / 0.198);
+    expect(reverseMulti("T3", value, sigma)).toBe((value - Math.log10(3) - r9) / 0.147);
   });
 
   it("rejects unknown theories", () => {

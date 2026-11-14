@@ -144,9 +144,9 @@ fn run_all_saved_cases() {
     );
     let err: Value = serde_json::from_str(&wasm::run_query("not json")).unwrap();
     assert_eq!(err["response_type"], "failure");
-    let err: Value = serde_json::from_str(&wasm::sim_strat("T3", "T3", 100, 100.)).unwrap();
+    let err: Value = serde_json::from_str(&wasm::sim_strat("T4", "T4", 100, 100.)).unwrap();
     assert_eq!(err["response_type"], "failure");
     let err: Value = serde_json::from_str(&wasm::sim_strat("T99", "T1", 100, 100.)).unwrap();
     assert!(err["data"].as_str().unwrap().contains("Unknown theory"));
-    assert_eq!(wasm::ported_theories(), r#"["T1","T2"]"#);
+    assert_eq!(wasm::ported_theories(), r#"["T1","T2","T3"]"#);
 }
