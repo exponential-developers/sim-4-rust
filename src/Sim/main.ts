@@ -96,7 +96,13 @@ event(testPortedButton, "click", async () => {
   const theories = Object.keys(jsonData.theories);
   const lastPorted = Math.max(...ported.map((t) => theories.indexOf(t)));
   const values = theories.slice(0, lastPorted + 1).map((t) => (ported.includes(t) ? "500" : "0"));
+  // The test values are only used for this run: the user's own input is put back afterwards and
+  // never replaced in the saved inputs (setting .value from code fires no input event).
+  const userInput = simAllInputArea.value;
   simAllInputArea.value = ["500", ...values].join(" ");
-  simAllInputArea.dispatchEvent(new Event("input", { bubbles: true }));
-  await simCall();
+  try {
+    await simCall();
+  } finally {
+    simAllInputArea.value = userInput;
+  }
 });

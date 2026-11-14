@@ -1,5 +1,5 @@
 {
- "source": "sim-3.0 @ 4d2330c",
+ "source": "sim-3.0 @ 4d2330c, Node v26.12.1",
  "settings": {
   "dt": 1.5,
   "ddt": 1.0001,

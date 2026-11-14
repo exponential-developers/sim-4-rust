@@ -1,5 +1,6 @@
 import html2canvas from "html2canvas";
 import { qs, qsa, ce, event, removeAllChilds, downloadString, getTableHeaders } from "../Utils/DOMhelpers";
+import { saveInputs } from "./simState";
 
 //Buttons
 const clear = qs(".clear");
@@ -34,6 +35,8 @@ event(clearInput, "pointerdown", () => {
   capInput.value = "";
   simAllInputArea.value = "";
   modeInput.value = "";
+  // Setting values from code fires no input event, so save explicitly
+  saveInputs();
 })
 
 event(copyImage, "pointerdown", () => createImage(""));
@@ -169,6 +172,7 @@ event(saveDist, "pointerdown", () => {
 });
 event(getDist, "pointerdown", () => {
   simAllInputArea.value = localStorage.getItem("savedDistribution") ?? simAllInputArea.value;
+  saveInputs();
 });
 
 event(loadSave, "pointerdown", () => loadSaveFile());

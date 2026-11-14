@@ -123,6 +123,12 @@ node bench/make-fixtures.js                  # regenerate wasm/tests/fixtures/si
 Test cases live in `bench/cases.js`. After changing them, or when sim-3 changes, regenerate the
 fixtures and commit them.
 
+**Node version matters.** Results are bit-identical only within the same JavaScript engine: V8
+versions differ in the last digit of `Math.log10` / `Math.pow` (in the browser, the Rust sim uses
+the browser's `Math`, so it matches sim-3 *in that browser*). The fixtures record the Node version
+they were generated with (`source` field), and the parity tests must run on the same Node major
+version. CI pins it in `.github/workflows/tests.yml`; update both together.
+
 ## Exact results: rules for theory code
 
 A port is only correct if it matches sim-3 exactly. Tiny floating point differences change when a

@@ -22,10 +22,13 @@ jobs:
       - name: Install wasm-pack
         run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
+      # Must be the Node major version the parity fixtures were generated with (see the "source" field
+      # in wasm/tests/fixtures/sim3_results.json): JavaScript engines differ in the last digit of
+      # Math.log10/Math.pow, and the parity tests compare results bit for bit.
       - name: Setup node.js
         uses: actions/setup-node@v6
         with:
-          node-version: '22.x'
+          node-version: '26.x'
 
       - name: Install dependencies
         run: npm install
@@ -78,7 +81,7 @@ jobs:
           cargo llvm-cov report --release --summary-only
 
       - name: Upload coverage report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: coverage-lcov
           path: wasm/lcov.info

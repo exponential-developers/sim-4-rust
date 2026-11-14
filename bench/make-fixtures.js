@@ -15,7 +15,8 @@ try { commit = execSync("git rev-parse --short HEAD", { cwd: SIM3 }).toString().
 
 (async () => {
   const out = {
-    source: `sim-3.0 @ ${commit}`,
+    // The Node version matters: results are only bit-identical within the same JavaScript engine
+    source: `sim-3.0 @ ${commit}, Node ${process.version}`,
     settings: { dt: 1.5, ddt: 1.0001, bought_vars_delta: 5 },
     strats: [],
     best: [],
