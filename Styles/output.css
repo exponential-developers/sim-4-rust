@@ -1,77 +1,153 @@
+/* Status / error line (next to the Simulate button) */
+.output {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-left: 0.4rem;
+}
+
+/* Results section */
+.results {
+  margin-top: 1.75rem;
+}
+.results-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.5rem;
+  max-width: 72rem;
+}
+.results-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+.results-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.results-empty {
+  max-width: 72rem;
+  margin-top: 0.75rem;
+  padding: 2.25rem 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+}
+/* Before any result: show the hint, hide the toolbar. A pub table result (download button
+   shown) counts as a result. */
+.results:has(tbody tr) .results-empty,
+.results:has(.downloadPubTable:not([style*="none"])) .results-empty,
+.results:not(:has(tbody tr)):not(:has(.downloadPubTable:not([style*="none"]))) .results-toolbar {
+  display: none;
+}
+
+/* Results table */
+.table-wrapper {
+  width: fit-content;
+  max-width: 100%;
+  overflow-x: auto;
+  margin-top: 0.75rem;
+  border: 1px solid var(--table-border);
+  border-radius: var(--radius);
+  background-color: var(--table-bg);
+  box-shadow: var(--shadow);
+}
+/* Hide the empty table frame before the first simulation */
+.table-wrapper:not(:has(tbody tr)) {
+  display: none;
+}
+
+.simTable {
+  border-collapse: collapse;
+  margin: 0;
+}
 .simTable,
 .simTable th,
 .simTable td {
   background-color: var(--table-bg);
-  color: var(--table-f-clr);
-  border: var(--sim-table-border) solid var(--table-f-clr);
-  transition: background-color 100ms ease-in-out, color 100ms ease-in-out;
-  position: relative;
-  height: fit-content;
-  white-space: nowrap;
+  color: var(--table-text);
   text-align: left;
+  white-space: nowrap;
+  position: relative;
 }
-.simTable td.varBuyCell {
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
+.simTable th,
+.simTable td {
+  border: var(--table-border-w) solid var(--table-border);
+  padding: 0.45rem 0.75rem;
 }
-.simTable td.varBuyCell div,
-.simTable td.varBuyCell a {
-  cursor: pointer;
-  display: flex;
-  align-items: center;
+.simTable thead th,
+.simTable thead td {
+  background-color: var(--table-head-bg);
+  font-weight: 600;
+  border-bottom: 1px solid var(--table-border);
 }
-.simTable td.varBuyCell svg {
-  height: 0.9rem;
+.simTable td {
+  font-variant-numeric: tabular-nums;
 }
 .simTable tr {
   background-color: transparent;
 }
+.simTable tbody tr:hover td {
+  background-color: var(--accent-soft);
+}
 
+/* Keep this a table cell so it lines up with the grid. buttonEvents.ts hides it with an inline
+   display: none for Copy/Download Image and then sets display: flex; this rule overrides the
+   flex but leaves the "none" alone. */
+.simTable td.varBuyCell:not([style*="none"]) {
+  display: table-cell !important;
+  text-align: center;
+  vertical-align: middle;
+}
+.simTable td.varBuyCell div,
+.simTable td.varBuyCell a {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  margin-inline: 0.3rem;
+  color: var(--accent);
+}
+.simTable td.varBuyCell svg {
+  height: 0.95rem;
+}
 
+.small th {
+  font-size: 0.82rem;
+}
 .small td {
-  padding-inline: 0.2rem;
   font-size: 0.8rem;
 }
-.small th {
-  padding-inline: 0.9rem;
-  font-size: 0.85rem;
-}
 .small tbody tr:nth-child(2n+1) td {
-  background-color: var(--table-bg-alt);
+  background-color: var(--table-alt);
 }
 .big th {
-  padding-inline: 0.3em;
   font-size: 0.8rem;
 }
 .big td {
-  padding-inline: 0.3em;
-  font-size: 0.75rem;
+  font-size: 0.76rem;
 }
 .big tbody tr:nth-child(2n+1) td:not([rowspan]) {
-  background-color: var(--table-bg-alt);
+  background-color: var(--table-alt);
+}
+.small tbody tr:hover td,
+.big tbody tr:hover td:not([rowspan]) {
+  background-color: var(--accent-soft);
 }
 
-.simTable {
-  margin-block-start: 2.5rem;
-}
-
+/* Bought variables dialog */
 .boughtVars {
-  padding: 5rem 0 5rem 1rem;
-  background-color: var(--dialog-bg);
-  color: var(--dialog-f-clr);
-  border: 0.1rem solid var(--dialog-f-clr);
-  border-radius: 0.5rem;
-  top: 50%;
-  left: 50%;
-  translate: -50% -50%;
-  max-height: 70vh;
+  padding: 3.5rem 1rem 1.25rem 1.25rem;
+  max-height: 75vh;
   overflow: hidden;
-  position: relative;
 }
-
+.boughtVars thead {
+  background-color: var(--surface);
+}
 .boughtVars table tr td.highlighted {
-  background-color: var(--highlight-clr-1);
+  background-color: var(--highlight);
 }
 
 .boughtVars table,
@@ -81,48 +157,34 @@
 .timeDiffTable tr,
 .timeDiffTable td {
   border-collapse: collapse;
-  padding: 0.3rem;
+  padding: 0.35rem 0.6rem;
   text-align: center;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+.boughtVars thead td {
+  font-weight: 600;
+  color: var(--text-muted);
 }
 .boughtVars thead tr,
 .timeDiffTable thead tr {
-  border-bottom: 2px solid var(--dialog-f-clr);
+  border-bottom: 1px solid var(--border);
 }
 .boughtVars tbody tr,
 .timeDiffTable tbody tr {
-  border-top: 2px solid var(--dialog-f-clr);
+  border-top: 1px solid var(--border);
 }
 .boughtVars td ~ td,
 .timeDiffTable td ~ td {
-  border-left: 1px solid var(--dialog-f-clr);
-}
-.boughtVarsCloseBtn {
-  border-radius: 50%;
-  width: 1.5rem;
-  aspect-ratio: 1;
-  background-color: var(--close-btn-bg);
-  color: var(--close-btn-fg);
-  font-weight: bold;
-  font-size: 0.8rem;
-  font-style: italic;
-  font-family: "Luicida Handwriting";
-  cursor: pointer;
-  transition: scale 100ms;
-  position: fixed;
-  right: 10%;
-  top: 5%;
-  outline: 0.1em solid var(--close-btn-fg);
+  border-left: 1px solid var(--border);
 }
 .boughtVars > div::-webkit-scrollbar {
-  width: 1rem;
+  width: 0.6rem;
 }
 .boughtVars > div::-webkit-scrollbar-thumb {
-  background-color: var(--scrollbar-thumb-bg);
-  border: 1px solid var(--scrollbar-thumb-border);
-  border-radius: 0.5rem;
+  background-color: var(--scroll-thumb);
+  border-radius: 999px;
 }
 .boughtVars > div::-webkit-scrollbar-track {
-  background-color: var(--scrollbar-track-bg);
-  border-radius: 0.5rem;
+  background-color: var(--scroll-track);
 }

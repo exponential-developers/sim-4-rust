@@ -171,10 +171,16 @@ event(getDist, "pointerdown", () => {
   simAllInputArea.value = localStorage.getItem("savedDistribution") ?? simAllInputArea.value;
 });
 
-event(loadSave, "pointerdown", () => {
-  let presumedSaveFile = simAllInputArea.value;
+event(loadSave, "pointerdown", () => loadSaveFile());
 
-  fetch("https://ex-save-loader.hotab.pw/load",{
+/**
+ * Replaces a game save pasted in the "All" input with the theory values it contains
+ * (decoded by the ex-save-loader service, like sim-3).
+ */
+export function loadSaveFile(): Promise<void> {
+  let presumedSaveFile = simAllInputArea.value.trim();
+
+  return fetch("https://ex-save-loader.hotab.pw/load",{
     method: "POST",
     headers: {
       'Accept': 'application/json',
@@ -186,8 +192,9 @@ event(loadSave, "pointerdown", () => {
       output.textContent = "Error loading save file.";
     } else {
       simAllInputArea.value = r[1];
+      simAllInputArea.dispatchEvent(new Event("input", { bubbles: true }));
     }
   }).catch(e => {
     output.textContent = "Error loading save file.";
   })
-})
+}

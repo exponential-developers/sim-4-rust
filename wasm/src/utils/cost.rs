@@ -232,3 +232,34 @@ impl Cost {
         }
     }
 }
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn close(a: f64, b: f64) -> bool {
+        (a - b).abs() < 1e-12 || a == b
+    }
+
+    #[test]
+    fn exponential_cost_grows_by_the_base_each_level() {
+        // cost to go from level L to L+1 = 100 * 10^L
+        let c = Cost::new_exponential(100., 10.);
+        assert!(close(c.get_cost(0).value, 2.));
+        assert!(close(c.get_cost(7).value, 9.));
+    }
+
+    #[test]
+    fn first_free_cost_makes_the_first_level_free() {
+        let c = Cost::new(FirstFreeCost::new(ExponentialCost::new(5., 2.)));
+        assert_eq!(c.get_cost(0).value, f64::NEG_INFINITY); // level 0 -> 1 costs nothing
+        assert!(close(c.get_cost(1).value, 5f64.log10()));
+        assert!(close(c.get_cost(3).value, 5f64.log10() + 2. * 2f64.log10()));
+    }
+
+    #[test]
+    fn constant_cost_never_changes() {
+        let c = Cost::new_constant(1e6);
+        assert!(close(c.get_cost(0).value, 6.));
+        assert!(close(c.get_cost(500).value, 6.));
+    }
+}

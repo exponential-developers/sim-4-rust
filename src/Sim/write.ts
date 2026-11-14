@@ -287,7 +287,36 @@ function writeSimAllResponse(response: SimAllResponse) {
     })
 }
 
+// Pub table mode: the result is a file to download (same format as sim-3)
+const downloadPubTableButton = qs<HTMLButtonElement>(".downloadPubTable");
+let lastPubTable: PubTableResponse | null = null;
+
+/** JSON pub table: for each rho (log10) from cap down, the next pub target and the time to reach cap */
+function makePubTableJson(response: PubTableResponse): string {
+    const table: Record<string, Record<string, string | number>> = {};
+    let current = response.cap;
+    for (const [time, next] of response.pub_table) {
+        table[current.toFixed(4)] = { next: next.toFixed(4), time };
+        current -= response.step;
+    }
+    return JSON.stringify(table, null, 2);
+}
+
+event(downloadPubTableButton, "pointerdown", () => {
+    if (lastPubTable) downloadString(makePubTableJson(lastPubTable), "table.json");
+});
+
 export function writeSimResponse(response: SimResponse) {
+    if (response.responseType === "pub_table") {
+        lastPubTable = response;
+        downloadPubTableButton.style.display = "";
+        const total = response.pub_table[response.pub_table.length - 1][0];
+        const output = qs(".output");
+        // Shown after main.ts clears the status line
+        setTimeout(() => output.textContent = `Pub table ready (${response.pub_table.length} rows, ${convertTime(total)} from start to cap). Use "Download Pub Table".`);
+        return;
+    }
+    downloadPubTableButton.style.display = "none";
     const mode = response.responseType;
 
     if (mode != "single" || getTableMode() != mode) {

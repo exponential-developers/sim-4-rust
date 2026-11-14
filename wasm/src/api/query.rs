@@ -52,11 +52,74 @@ pub struct SimAllQuery {
     pub settings: SimSettings
 }
 
+/** Chain of a fixed number of publications */
+#[derive(Debug, Deserialize)]
+pub struct AmountSimQuery {
+    pub theory: TheoryType,
+    pub strat: String,
+    pub sigma: i64,
+    pub rho: LogNum,
+    pub amount: u32,
+    pub settings: SimSettings
+}
+
+/** Chain until the total time (in seconds) is reached */
+#[derive(Debug, Deserialize)]
+pub struct TimeSimQuery {
+    pub theory: TheoryType,
+    pub strat: String,
+    pub sigma: i64,
+    pub rho: LogNum,
+    pub time: f64,
+    pub settings: SimSettings
+}
+
+/** For each step from rho to cap, the best number of pubs to chain towards cap */
+#[derive(Debug, Deserialize)]
+pub struct StepChainSimQuery {
+    pub theory: TheoryType,
+    pub strat: String,
+    pub sigma: i64,
+    pub rho: LogNum,
+    pub cap: LogNum,
+    pub step: LogNum,
+    pub hard_cap: bool,
+    pub settings: SimSettings
+}
+
+/** Every strat of a theory, sorted by tau/h */
+#[derive(Debug, Deserialize)]
+pub struct ComparisonSimQuery {
+    pub theory: TheoryType,
+    pub sigma: i64,
+    pub rho: LogNum,
+    pub settings: SimSettings
+}
+
+/** Table of the fastest way to reach cap from each step between rho and cap */
+#[derive(Debug, Deserialize)]
+pub struct PubTableSimQuery {
+    pub theory: TheoryType,
+    pub strat: String,
+    pub sigma: i64,
+    pub rho: LogNum,
+    pub cap: LogNum,
+    pub step: f64,
+    pub settings: SimSettings
+}
+
 #[derive(Debug, Deserialize)]
 #[serde(tag = "type", content = "data", rename_all = "lowercase")]
 pub enum SimQuery {
     Single(SingleSimQuery),
     Chain(ChainSimQuery),
     Step(StepSimQuery),
-    All(SimAllQuery)
+    All(SimAllQuery),
+    #[serde(rename = "step_chain")]
+    StepChain(StepChainSimQuery),
+    Amount(AmountSimQuery),
+    Time(TimeSimQuery),
+    Comparison(ComparisonSimQuery),
+    #[serde(rename = "pub_table")]
+    PubTable(PubTableSimQuery)
 }

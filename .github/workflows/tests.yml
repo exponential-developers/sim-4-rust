@@ -1,0 +1,35 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  rust:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
+      - name: Setup node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22.x'
+
+      - name: Unit tests
+        run: cargo test --release --manifest-path wasm/Cargo.toml
+
+      # Compares the Rust sim with results saved from sim-3 (wasm/tests/fixtures/sim3_results.json).
+      # Runs as WebAssembly in Node, where results must match sim-3 bit for bit.
+      - name: sim-3 parity tests
+        run: wasm-pack test --node --release wasm --test sim3_parity

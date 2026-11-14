@@ -1,84 +1,87 @@
+/* Tablets: let the input rows wrap */
+@media screen and (max-width: 900px) {
+  .controls {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+    width: 100%;
+  }
+  textarea.simAllInputArea {
+    width: 100%;
+  }
+  .controls select {
+    min-width: 0;
+    width: 100%;
+  }
+  .controls .sigma,
+  .controls .input,
+  .controls .cap {
+    width: 100%;
+  }
+  .extraInputs {
+    grid-column: 1 / -1;
+    flex-wrap: wrap;
+  }
+}
+
+/* Phones */
 @media screen and (max-width: 500px) {
-  :root {
-    font-size: calc(0.5vw + 0.8rem + 0.5vh);
+  .nav {
+    padding-block: 0.6rem;
   }
-  .controls:nth-of-type(1) {
-    display: grid;
-    grid-template-columns: repeat(3, auto);
-    gap: 0.5rem 1rem;
+  .nav-title {
+    font-size: 1.35rem;
   }
-  .button-wrapper {
-    display: grid;
-    grid-template-columns: repeat(2, auto);
-    gap: 0.5rem 1rem;
+  .nav-actions {
+    width: 100%;
   }
-  .settings {
-    width: 95%;
-    --inline-padding: 1.2rem;
+  .theme-picker {
+    margin-left: auto;
   }
-  .settingsButtons {
-    font-size: 0.8rem;
+  .panel {
+    padding: 0.9rem;
   }
-  .settings input[type="range"] {
-    appearance: none;
-    width: 5rem;
+  .controls {
+    grid-template-columns: repeat(2, 1fr);
   }
-  .settings input[type="range"]::-webkit-slider-runnable-track {
-    height: 0.4rem;
-  }
-  .settings input[type="range"]::-webkit-slider-thumb {
-    appearance: none;
-    height: 0.8rem;
-    width: 0.45rem;
-    margin-top: -0.2rem;
-    background-color: red;
-    outline: 1px solid green;
-  }
-  .content-wrapper {
-    padding: 1rem;
-  }
-  .controls:nth-of-type(2) {
-    display: flex;
+  .extraInputs {
     flex-direction: column;
-    gap: 1rem;
-    white-space: nowrap;
+    align-items: stretch;
   }
-  .description {
-    display: block;
+  .simAllInputs {
+    width: max-content;
   }
-  .simAllInputs button {
-    font-size: 0.6rem;
-  }
-  .simAllInputs input {
-    width: 0.7rem;
-    height: 0.7rem;
+  .panel-footer .simulate {
+    flex: 1 1 100%;
   }
   .output {
-    min-width: 80vw;
+    margin-left: 0;
+  }
+  .sliderContainer {
+    grid-template-columns: 1fr 4rem;
+  }
+  .sliderContainer label {
+    grid-column: 1 / -1;
+    margin-bottom: -0.3rem;
+  }
+  .settings-row {
+    flex-wrap: wrap;
+  }
+  .settings-row select {
+    max-width: 100%;
   }
   .saveDist::before {
     content: "Saved!";
     position: absolute;
     inset: 0;
     transition: opacity 500ms;
-    color: var(--font-clr);
+    color: var(--text);
     font-size: 0.7rem;
     opacity: 0;
     top: -90%;
   }
-  .extraInputs {
-    flex-direction: column;
-    gap: 1rem;
-  }
-  .simAllInputs {
-    width: max-content;
-  }
   .boughtVars table,
   .boughtVars tr,
   .boughtVars td {
-    border-collapse: collapse;
-    padding: 0.3rem;
-    text-align: center;
-    font-size: 0.63rem;
+    font-size: 0.7rem;
   }
 }

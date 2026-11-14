@@ -1,7 +1,7 @@
 import data from "../Data/data.json" assert { type: "json" };
 import { findIndex, getIndexFromTheory } from "../Utils/helpers";
 import { qs, qsa, event, ce, removeAllChilds } from "../Utils/DOMhelpers";
-import { getSimState } from "./simState";
+import { getSimState, setSimState, restoreInputs, saveInputs, savedInputElements } from "./simState";
 
 //Inputs
 const theorySelector = qs<HTMLSelectElement>(".theory");
@@ -22,6 +22,8 @@ const timeDiffWrapper = qs(".timeDiffWrapper");
 const singleInput = qsa(".controls")[0];
 const simAllInputs = qs(".simAllInputs");
 const modeInputDescription = qs(".extraInputDescription");
+const testPortedButton = qs<HTMLButtonElement>(".testPorted");
+const stratSelectorWrapper = stratSelector.parentElement as HTMLElement;
 
 
 const theories = Object.keys(data.theories) as theoryType[];
@@ -44,6 +46,10 @@ function populateTheoryList(showUnofficials: boolean) {
 //Renders theories, strats and modes options on page load
 
 populateSelectElement(themeSelector, data.themes);
+// Show readable names ("solarized-light" -> "Solarized Light"); values stay the theme ids
+for (const option of Array.from(themeSelector.options)) {
+  option.textContent = option.value.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+}
 event(themeSelector, "change", themeUpdate);
 
 getSimState();
@@ -60,6 +66,13 @@ event(showUnofficials, "click", () => {
     populateTheoryList(showUnofficials.checked);
     theoryUpdate();
 });
+
+// Restore the inputs from the last visit, then save them whenever they change
+restoreInputs(modeUpdate, theoryUpdate);
+for (const elem of savedInputElements) {
+  event(elem, "change", saveInputs);
+  event(elem, "input", saveInputs);
+}
 
 function populateSingleSimFields(rewriteCurrency: boolean = false): void {
   // Sigma field
@@ -103,13 +116,16 @@ function modeUpdate(): void {
 
   // Displays the single-theory inputs
   if (newMode !== "All" && newMode !== "Time diff.") singleInput.style.display = "grid";
-  // Displays the cap input for chain/steps mode
-  if (newMode === "Chain" || newMode === "Steps" || newMode === "StepChain") capInputWrapper.style.display = "inline";
+  // Displays the strat selector (Comparison simulates every strat)
+  stratSelectorWrapper.style.display = newMode === "Comparison" ? "none" : "";
+  // Displays the cap input for chain/steps/pub table mode
+  if (newMode === "Chain" || newMode === "Steps" || newMode === "StepChain" || newMode === "Pub Table") capInputWrapper.style.display = "inline";
   // Displays the hard cap input
   if (newMode === "Chain" || newMode == "StepChain") hardCapWrapper.style.display = "block";
 
   // Extra Inputs
-  if (newMode !== "Single sim" && newMode !== "Time diff." && newMode !== "Chain") extraInputs.style.display = "flex";
+  if (newMode !== "Single sim" && newMode !== "Comparison" && newMode !== "Time diff." && newMode !== "Chain") extraInputs.style.display = "flex";
+  testPortedButton.style.display = newMode === "All" ? "block" : "none";
   if (newMode === "All") {
     simAllInputs.style.display = "grid";
     modeInputDescription.style.display = "none";
@@ -139,4 +155,6 @@ function theoryUpdate() {
 function themeUpdate() {
   const root = document.documentElement;
   root.setAttribute("theme", themeSelector.value);
+  // The picker is no longer inside the settings dialog (which saves on close), so save now
+  setSimState();
 }

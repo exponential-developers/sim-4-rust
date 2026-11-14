@@ -14,7 +14,8 @@
     <link rel="stylesheet" href="./Styles/narrow.css" />
     <link rel="stylesheet" href="./Styles/themes.css" />
     <script>
-      const defaultTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? "dark" : "classic";
+      // Keep in sync with defaultTheme in src/UI/simState.ts
+      const defaultTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? "dark" : "light";
       const state = JSON.parse(localStorage.getItem("simState") ?? `{}`);
       const theme = (state && state.settings && state.settings.theme) ? state.settings.theme : defaultTheme
       document.documentElement.setAttribute("theme", theme);
@@ -22,23 +23,35 @@
     <script defer type="module" src="./build/bundle.js"></script>
   </head>
   <body>
-    <div class="nav">
-      <div style="margin-top: auto; margin-bottom: 0.2rem">
-        <span style="font-size: 0.9rem">v3.0.0 (Alpha)</span>
-        <button style="margin-left: 1rem; cursor: pointer" class="settingsButtons">Changelog</button>
-        <button style="margin-left: 1rem; cursor: pointer" class="settingsButtons instructionsBtn">Instructions</button>
-        <button style="margin-left: 0.8rem" class="settingsBtn"></button>
+    <header class="nav">
+      <h1 class="nav-title">e<sup>x</sup> Theory simulator</h1>
+      <div class="nav-actions">
+        <span class="version">v4.0.0 (Alpha)</span>
+        <button class="settingsButtons changelogBtn">Changelog</button>
+        <button class="settingsButtons instructionsBtn">Instructions</button>
+        <label class="theme-picker">
+          <span>Theme</span>
+          <select class="themeSelector" aria-label="Theme"></select>
+        </label>
+        <button class="settingsBtn" aria-label="Sim settings" title="Sim settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
       </div>
-      <h1 class="nav-title" style="font-family: Computer Modern Concrete; font-weight: 600">e<sup>x</sup> Theory simulator</h1>
-    </div>
-    <div class="content-wrapper">
+    </header>
+    <main class="content-wrapper">
+      <!-- Keep the two .controls rows in this order: render.ts uses the first one for the theory inputs.
+           CSS shows the mode row first. -->
+      <section class="panel">
       <div class="controls">
         <div>
-          <span class="description">Theory: </span>
+          <span class="description">Theory</span>
           <select class="theory"></select>
         </div>
         <div>
-          <span class="description">Strat: </span>
+          <span class="description">Strat</span>
           <select class="strat">
             <option value="Best Overall">Best Overall</option>
             <option value="Best Active">Best Active</option>
@@ -47,36 +60,37 @@
           </select>
         </div>
         <div>
-          <span class="description">Sigma: </span>
-          <input type="text" class="sigma" style="width: 3.5rem" placeholder="<number>" spellcheck="false" />
+          <span class="description">Sigma</span>
+          <input type="text" class="sigma" placeholder="<number>" spellcheck="false" />
         </div>
         <div>
-          <span class="description">Input: </span>
-          <input type="text" class="input" style="width: 5rem" placeholder="<rho>[r/t/m]>" spellcheck="false" />
+          <span class="description">Input</span>
+          <input type="text" class="input" placeholder="<rho>[r/t/m]" spellcheck="false" />
         </div>
         <div class="capWrapper">
-          <span class="description">Cap: </span>
-          <input type="text" class="cap" style="width: 5rem" placeholder="<rho>[r/t/m]>" spellcheck="false" />
+          <span class="description">Cap</span>
+          <input type="text" class="cap" placeholder="<rho>[r/t/m]" spellcheck="false" />
         </div>
       </div>
-      <div class="controls">
+      <div class="controls controls-mode">
         <div>
-          <span class="description">Mode: </span>
+          <span class="description">Mode</span>
           <select class="mode"></select>
+          <button class="testPorted" title="Fills in sigma 500 and 500 for every theory the Rust sim supports, then simulates">Test all supported theories</button>
         </div>
         <div class="hardCapWrapper" style="display: none">
-          <span class="description">Hard cap? </span>
-          <input style="position: relative; width: min(1rem, 5vw); outline: none" type="checkbox" class="hardCap" />
+          <span class="description">Hard cap?</span>
+          <input type="checkbox" class="hardCap" />
         </div>
         <div class="extraInputs">
-          <span class="extraInputDescription" style="margin-right: 0.8rem">mode inputs</span>
+          <span class="extraInputDescription">mode inputs</span>
           <div class="simAllInputs">
             <button class="saveDist">Save distribution</button>
-            <span style="font-size: 0.75rem">Semi-Idle: </span>
-            <input type="checkbox" class="semi-idle" style="position: relative" checked="true" />
+            <span>Semi-Idle</span>
+            <input type="checkbox" class="semi-idle" checked="true" />
             <button class="getDist">Get distribution</button>
-            <span style="font-size: 0.75rem">Hard Active: </span>
-            <input type="checkbox" class="hard-active" style="position: relative" />
+            <span>Hard Active</span>
+            <input type="checkbox" class="hard-active" />
             <button class="loadSave">Load save</button>
           </div>
           <textarea class="simAllInputArea" cols="30" spellcheck="false"></textarea>
@@ -89,65 +103,89 @@
           <table class="timeDiffTable"></table>
         </div>
       </div>
-      <div class="button-wrapper">
-        <button class="imageC">Copy Image</button>
-        <button class="imageD">Download Image</button>
-        <button class="csvD">Download CSV</button>
-        <button class="clear">Clear all results</button>
-        <button class="clearInput">Clear all inputs</button>
+      <div class="panel-footer">
         <button class="simulate">Simulate</button>
+        <button class="clearInput">Clear all inputs</button>
+        <span class="output"></span>
       </div>
-      <span class="output" style="display: block"></span>
-      <table class="simTable">
-        <thead><tr></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
+      </section>
+      <section class="results">
+        <div class="results-header">
+          <h2 class="results-title">Results</h2>
+          <div class="results-toolbar">
+            <button class="imageC">Copy Image</button>
+            <button class="imageD">Download Image</button>
+            <button class="csvD">Download CSV</button>
+            <button class="clear">Clear all results</button>
+            <button class="downloadPubTable" style="display: none">Download Pub Table</button>
+          </div>
+        </div>
+        <p class="results-empty">Run a simulation to see results here.</p>
+        <div class="table-wrapper">
+          <table class="simTable">
+            <thead><tr></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
     <dialog class="settings">
-      <h1 style="margin-bottom: 1.5rem">Sim settings</h1>
-      <button class="settingsCloseBtn">X</button>
-      <div class="sliderContainer" style="margin-bottom: 2rem">
-        <label for="dtSlider">dt:</label><br />
-        <input type="range" class="dt" step="0.1" max="10" min="0" value="8.1943" id="dtSlider" />
-        <span class="sliderOtp dtOtp">1.5</span> <br />
-        
-        <label for="ddtSlider">&Delta;dt:</label><br />
-        <input type="range" class="ddt" step="0.1" max="10" min="0" value="2.71233" id="ddtSlider" />
-        <span class="sliderOtp ddtOtp">1.0001</span><br />
+      <h1>Sim settings</h1>
+      <button class="settingsCloseBtn" aria-label="Close">&times;</button>
+      <section class="settings-section">
+        <h2 class="settings-section-title">Simulation</h2>
+        <div class="sliderContainer">
+          <label for="dtSlider">dt</label>
+          <input type="range" class="dt" step="0.1" max="10" min="0" value="8.1943" id="dtSlider" />
+          <span class="sliderOtp dtOtp">1.5</span>
 
-        <label for="mfDepthSlider">MF reset depth:</label><br />
-        <input type="range" class="mfDepth" step="1" max="5" min="0" value="0" id="mfDepthSlider" />
-        <span class="sliderOtp mfDepthOtp">0</span><br />
+          <label for="ddtSlider">&Delta;dt</label>
+          <input type="range" class="ddt" step="0.1" max="10" min="0" value="2.71233" id="ddtSlider" />
+          <span class="sliderOtp ddtOtp">1.0001</span>
 
-        <label for="boughtVarsDeltaSlider">Show bought vars in recovery:</label><br />
-        <input type="range" class="boughtVarsDelta" step="1" min="5" max="30" value="5" id="boughtVarsDeltaSlider" />
-        <span class="sliderOtp boughtVarsDeltaOtp">e5ρ</span><br />
+          <label for="mfDepthSlider">MF reset depth</label>
+          <input type="range" class="mfDepth" step="1" max="5" min="0" value="0" id="mfDepthSlider" />
+          <span class="sliderOtp mfDepthOtp">0</span>
 
-        <button class="resetSettings settingsButtons">Reset</button>
-      </div>
-      <span>Theme: </span> <select class="themeSelector"></select><br /><br />
-      <span>Strats simmed in "all" mode: </span> 
-      <select class="simallstrats">
-        <option value="all">Active and Idle</option>
-        <option value="active">Active only</option>
-        <option value="idle">Idle only</option>
-      </select><br /><br />
-      <span>Simulate completed CTs in all mode: </span> 
-      <select class="completedcts">
-        <option value="in">Alongside other CTs</option>
-        <option value="end">After other CTs</option>
-        <option value="no">Don't sim</option>
-      </select><br /><br />
-      <!--span>Skip completed CTs in "all" mode: </span> <input type="checkbox" class="skipcompletedcts" /><br /><br /-->
-      <span>Show a2 and a3 lvl in EFAI strat output: </span> <input type="checkbox" class="a23" /><br /><br />
-      <span>Show unofficial CTs: </span> <input type="checkbox" class="unofficials" /><br /><br />
-      <span>Generate a total purchase list: </span> <input type="checkbox" class="total_purchase_list" /><br /><br />
+          <label for="boughtVarsDeltaSlider">Bought vars in recovery</label>
+          <input type="range" class="boughtVarsDelta" step="1" min="5" max="30" value="5" id="boughtVarsDeltaSlider" />
+          <span class="sliderOtp boughtVarsDeltaOtp">e5ρ</span>
+
+          <button class="resetSettings settingsButtons">Reset</button>
+        </div>
+      </section>
+      <section class="settings-section">
+        <h2 class="settings-section-title">"All" mode</h2>
+        <label class="settings-row">
+          <span>Strats simmed</span>
+          <select class="simallstrats">
+            <option value="all">Active and Idle</option>
+            <option value="active">Active only</option>
+            <option value="idle">Idle only</option>
+          </select>
+        </label>
+        <label class="settings-row">
+          <span>Completed CTs</span>
+          <select class="completedcts">
+            <option value="in">Alongside other CTs</option>
+            <option value="end">After other CTs</option>
+            <option value="no">Don't sim</option>
+          </select>
+        </label>
+      </section>
+      <section class="settings-section">
+        <h2 class="settings-section-title">Display</h2>
+        <!--span>Skip completed CTs in "all" mode: </span> <input type="checkbox" class="skipcompletedcts" /><br /><br /-->
+        <label class="settings-row"><span>Show a2 and a3 lvl in EFAI strat output</span> <input type="checkbox" class="a23" /></label>
+        <label class="settings-row"><span>Show unofficial CTs</span> <input type="checkbox" class="unofficials" /></label>
+        <label class="settings-row"><span>Generate a total purchase list</span> <input type="checkbox" class="total_purchase_list" /></label>
+      </section>
     </dialog>
     <dialog class="boughtVars">
-      <button class="boughtVarsCloseBtn">X</button>
-      <div style="overflow: auto; max-height: 55vh; position: relative; padding-right: 1rem">
+      <button class="boughtVarsCloseBtn" aria-label="Close">&times;</button>
+      <div style="overflow: auto; max-height: 60vh; position: relative; padding-right: 1rem">
         <table style="margin: 0">
-          <thead style="position: sticky; top: 0%; background-color: var(--dialog-bg)">
+          <thead style="position: sticky; top: 0">
             <td>Variable</td>
             <td>Lvl</td>
             <td>Cost</td>
@@ -170,9 +208,22 @@
         </table>
       </div>
     </dialog>
+    <dialog class="changelog">
+      <h1>Changelog</h1>
+      <button class="changelogCloseBtn" aria-label="Close">&times;</button>
+      <h2>v4.0.0 (Alpha)</h2>
+      <ul>
+        <li><strong>New simulation engine:</strong> simulations now run in Rust, compiled to WebAssembly. Theories are being ported one by one; each one is checked to give exactly the same results as sim 3.0.</li>
+        <li><strong>Ported theories:</strong> T1 and T2. Other theories are not available in this version yet.</li>
+        <li><strong>Modes:</strong> All, Single sim, Chain, Steps, Comparison, StepChain, Amount, Time and Pub Table, including the "Best Overall / Active / Semi-Idle / Idle" strategy selection. "Test all supported theories" (All mode) runs every ported theory at e500 with sigma 500.</li>
+        <li><strong>No more freezing:</strong> simulations run in the background, with progress shown while they run, and the "Stop simulating" button works again.</li>
+        <li><strong>New look:</strong> redesigned layout, 14 themes (8 new), and the theme picker moved to the header.</li>
+        <li><strong>Remembers your inputs:</strong> mode, theory, strategy, sigma and inputs are restored when you come back. In All mode, theories whose input didn't change reuse their previous result.</li>
+      </ul>
+    </dialog>
     <dialog class="instructions">
-      <h1 style="margin-bottom: 1.5rem">Instructions</h1>
-      <button class="instructionsCloseBtn">X</button>
+      <h1>Instructions</h1>
+      <button class="instructionsCloseBtn" aria-label="Close">&times;</button>
       <h2>About the sim:</h2>
       <br>&nbsp;
       <ul>

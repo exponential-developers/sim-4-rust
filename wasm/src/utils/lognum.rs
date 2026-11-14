@@ -8,6 +8,8 @@ use serde::{Deserialize, Serialize, de};
 
 use num::{Float, Num, NumCast, One, ToPrimitive, Zero};
 
+use crate::utils::fastmath;
+
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct LogNum {
     pub value: f64,
@@ -23,7 +25,7 @@ pub const ONE: LogNum = LogNum { value: 0., sign: 1 };
 impl LogNum {
     pub fn from_f64(value: f64) -> Self {
         LogNum {
-            value: value.abs().log10(),
+            value: fastmath::log10(value.abs()),
             sign: value.signum() as i8,
         }
     }
@@ -125,12 +127,12 @@ impl Add for LogNum {
         }
         if self.sign == rhs.sign {
             LogNum::new(
-                max.value + (1. + 10f64.powf(min.value - max.value)).log10(),
+                max.value + fastmath::log10(1. + fastmath::exp10(min.value - max.value)),
                 max.sign,
             )
         } else {
             LogNum::new(
-                max.value + (1. - 10f64.powf(min.value - max.value)).log10(),
+                max.value + fastmath::log10(1. - fastmath::exp10(min.value - max.value)),
                 max.sign,
             )
         }

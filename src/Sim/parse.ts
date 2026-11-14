@@ -147,7 +147,82 @@ function parseStepChainSim(): StepChainQuery {
         rho: parseCurrency(currencyInput.value, theory, sigma),
         cap: parseCurrency(capInput.value, theory, sigma),
         step: parseExponentialValue(modeInput.value),
-        hardCap: hardCap.checked,
+        hard_cap: hardCap.checked,
+        settings: parseSettings()
+    }
+}
+
+function parseAmountSim(): AmountSimQuery {
+    const theory = theorySelector.value as theoryType;
+    const sigma = parseSigma(isMainTheory(theory));
+    const amount = parseInt(modeInput.value);
+    if (!(amount > 0)) throw "Invalid amount of pubs. It must be a whole number greater than 0.";
+
+    return {
+        queryType: "amount",
+        theory: theory,
+        strat: stratSelector.value,
+        sigma: sigma,
+        rho: parseCurrency(currencyInput.value, theory, sigma),
+        amount: amount,
+        settings: parseSettings()
+    }
+}
+
+/** Parses a duration like "1d12h30m" (y, d, h, m) to seconds, like sim-3 */
+function parseDuration(str: string): number {
+    const units: Record<string, number> = { y: 3600 * 24 * 365, d: 3600 * 24, h: 3600, m: 60 };
+    const regex = /(\d+)([ydhm])/g;
+    let time = 0;
+    let component: RegExpExecArray | null;
+    while ((component = regex.exec(str)) !== null) {
+        time += parseInt(component[1]) * units[component[2]];
+    }
+    return time;
+}
+
+function parseTimeSim(): TimeSimQuery {
+    const theory = theorySelector.value as theoryType;
+    const sigma = parseSigma(isMainTheory(theory));
+    const time = parseDuration(modeInput.value);
+    if (time <= 0) throw "Invalid total time. Use a duration like 12h, 3d or 1d12h30m.";
+
+    return {
+        queryType: "time",
+        theory: theory,
+        strat: stratSelector.value,
+        sigma: sigma,
+        rho: parseCurrency(currencyInput.value, theory, sigma),
+        time: time,
+        settings: parseSettings()
+    }
+}
+
+function parseComparisonSim(): ComparisonSimQuery {
+    const theory = theorySelector.value as theoryType;
+    const sigma = parseSigma(isMainTheory(theory));
+
+    return {
+        queryType: "comparison",
+        theory: theory,
+        sigma: sigma,
+        rho: parseCurrency(currencyInput.value, theory, sigma),
+        settings: parseSettings()
+    }
+}
+
+function parsePubTableSim(): PubTableSimQuery {
+    const theory = theorySelector.value as theoryType;
+    const sigma = parseSigma(isMainTheory(theory));
+
+    return {
+        queryType: "pub_table",
+        theory: theory,
+        strat: stratSelector.value,
+        sigma: sigma,
+        rho: parseCurrency(currencyInput.value, theory, sigma),
+        cap: parseCurrency(capInput.value, theory, sigma),
+        step: parseExponentialValue(modeInput.value),
         settings: parseSettings()
     }
 }
@@ -196,6 +271,10 @@ export function parseQuery(): SimQuery {
         case "Chain": return parseChainSim();
         case "Steps": return parseStepSim();
         case "StepChain": return parseStepChainSim();
+        case "Amount": return parseAmountSim();
+        case "Time": return parseTimeSim();
+        case "Comparison": return parseComparisonSim();
+        case "Pub Table": return parsePubTableSim();
         default: throw "This mode is not supported.";
     }
 }

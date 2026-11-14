@@ -1,63 +1,84 @@
+/* Input panel: one card holding the mode row, the theory row and the Simulate button.
+   DOM order is theory row, mode row (render.ts relies on it); the mode row is shown first. */
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 72rem;
+  padding: 1.1rem 1.25rem;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+/* Rows. The theory row is shown/hidden by render.ts (display: grid). */
 .controls {
   display: grid;
-  grid-template-columns: repeat(5, auto);
-  width: fit-content;
-  gap: min(2vw, 2rem);
+  grid-auto-flow: column;
+  grid-auto-columns: max-content;
+  align-items: end;
+  gap: 1rem 1.25rem;
+  max-width: 100%;
 }
-.controls ~ .controls {
-  margin-top: 1.5rem;
+.controls-mode {
+  order: -1;
+  align-items: start;
 }
-.controls input,
+.panel > .controls:first-child {
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.description,
+.extraInputDescription {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 0.35rem;
+}
+.extraInputDescription:empty {
+  display: none;
+}
+
 .controls select {
-  font-size: 0.75rem;
-  background-color: var(--input-bg);
-  color: var(--input-f-clr);
-  border-color: var(--btn-border-clr);
+  min-width: 9rem;
+}
+.controls .sigma {
+  width: 5rem;
+}
+.controls .input,
+.controls .cap {
+  width: 7rem;
 }
 
-.controls input[type="text"] {
-  border: none;
-  outline: 1px solid var(--btn-border-clr);
+.testPorted {
+  display: block;
+  width: 100%;
+  margin-top: 0.6rem;
 }
 
-.button-wrapper {
-  display: grid;
-  grid-template-columns: repeat(6, auto);
+.hardCapWrapper input[type="checkbox"] {
+  display: block;
+  margin-block: calc((var(--control-h) - 1.05rem) / 2);
+}
+
+.extraInputs {
+  align-items: flex-end;
   gap: 1rem;
-  width: fit-content;
-  margin-block: 2rem 1rem;
-}
-.button-wrapper button {
-  font-size: 0.8rem;
-  padding: 0.1em 0.2em;
-  cursor: pointer;
-}
-.button-wrapper button:hover {
-  transform: scale(1.1);
-}
-
-.timeDiffWrapper {
-  flex-direction: column;
-  gap: 0.3rem;
-}
-.timeDiffWrapper input {
-  width: 20rem;
 }
 
 .simAllInputs {
   display: grid;
-  grid-template-columns: 1fr auto auto;
-  gap: 1rem 0.5rem;
-  margin-right: 2rem;
-  place-items: center;
+  grid-template-columns: auto auto auto;
+  align-items: center;
+  gap: 0.5rem 0.6rem;
 }
-.simAllInputs button:hover {
-  cursor: pointer;
-  transform: scale(1.1);
-}
-.simAllInputs input[type="checkbox"] {
-  width: 0.8rem;
-  height: 0.8rem;
+.simAllInputs span {
+  font-size: 0.8rem;
+  color: var(--text-muted);
 }
 
 .saveDist {
@@ -65,21 +86,51 @@
 }
 
 textarea {
-  resize: none;
-  margin-block: auto;
-  padding: 0.2em;
-  font-size: 0.7rem;
-  background-color: var(--input-bg);
-  color: var(--input-f-clr)
+  resize: vertical;
+  padding: 0.45rem 0.6rem;
+  font-size: 0.8rem;
+  line-height: 1.4;
 }
 textarea.simAllInputArea {
-  width: 20rem;
-  height: 4rem;
+  width: min(36rem, 70vw);
+  height: 7rem;
 }
 textarea.modeInput {
-  width: 6rem;
-  height: 1.8em;
+  width: 7rem;
+  height: var(--control-h);
+  resize: none;
 }
 textarea::placeholder {
-  font-size: 0.6rem;
+  font-size: 0.75rem;
+}
+
+.timeDiffWrapper {
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.timeDiffWrapper input {
+  width: min(20rem, 80vw);
+}
+
+/* Simulate / clear inputs / status */
+.panel-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+.simulate {
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.55em 1.8em;
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
+  box-shadow: 0 4px 14px var(--accent-soft);
+}
+.simulate:hover {
+  background-color: var(--accent-hover);
+  border-color: var(--accent-hover);
 }

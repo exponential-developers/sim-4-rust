@@ -4,10 +4,10 @@
       "tau_factor": 1,
       "strats": {
         "T1": {
-          "stratFilterCondition": "(Idle || Semi-Idle) && rho < 25 || rho < 25"
+          "stratFilterCondition": "(Idle || Semi-Idle) && rho < 210 || rho < 25"
         },
         "T1Coast": {
-          "stratFilterCondition": "Semi-Idle && rho < 25 || rho < 25"
+          "stratFilterCondition": "Semi-Idle && rho < 180 || !Idle && rho < 25"
         },
         "T1C34": {
           "stratFilterCondition": "(Idle || Semi-Idle) && rho < 850",
@@ -68,6 +68,12 @@
         },
         "T2Haxolotl":  {
           "stratFilterCondition": "false"
+        },
+        "T2ROI": {
+          "stratFilterCondition": "(Active || Very-Active) && rho >= 250"
+        },
+        "T2ROIMS": {
+          "stratFilterCondition": "(Active || Very-Active) && rho >= 25 && rho < 250"
         }
       }
     },
@@ -801,26 +807,36 @@
     }
   },
   "strat_categories": ["Best Overall", "Best Active", "Best Semi-Idle", "Best Idle"],
-  "modes": ["All", "Single sim", "Chain", "Steps", "StepChain", "Amount", "Time", "Time diff."],
-  "modeInputDescriptions": ["", "", "", "Step length: ", "Step length: ", "Amount of pubs (Chain): ", "Total Time: "],
+  "modes": ["All", "Single sim", "Chain", "Steps", "Comparison", "StepChain", "Amount", "Time", "Time diff.", "Pub Table"],
+  "modeInputDescriptions": ["", "", "", "Step length: ", "", "Step length: ", "Amount of pubs (Chain): ", "Total Time: ", "", "Step length: "],
   "modeInputPlaceholder": [
     "<sigma> <t1>* [t2]* ... [wsp]* ... [bap]* \n\n*[r/t/m] = rho/tau/total multiplier | default tau\n\nOr: input your save here and click \"Load save\"",
     "",
     "",
     "",
+    "",
     "<Number>",
     "<Number>",
-    "<Hours>",
+    "<Number>[ydhm]+",
     "<t1> [t1], ... , <t8> [t8] or <wsp> [wsp], ... , <bap> [bap]",
-    "<t1> [t1], ... , <t8> [t8] or <wsp> [wsp], ... , <bap> [bap]",
-    "<sigma 1> <sigma 2> [ct y/n] [idle strats only y/n]"
+    "",
+    "<sigma 1> <sigma 2> [ct y/n] [idle strats only y/n]",
+    "<Number>"
   ],
   "themes": [
     "classic",
-    "dark",
     "classic-borders",
+    "light",
+    "dark",
     "ocean",
     "math-criminal",
-    "zalut-sky"
+    "zalut-sky",
+    "nord",
+    "dracula",
+    "solarized-light",
+    "solarized-dark",
+    "forest",
+    "sunset",
+    "high-contrast"
   ]
 }

@@ -69,10 +69,43 @@ declare global {
     rho: number
     cap: number
     step: number
-    hardCap: boolean
+    hard_cap: boolean
   }
 
-  type SimQuery = SingleSimQuery | ChainSimQuery | StepSimQuery | SimAllQuery | StepChainQuery;
+  type AmountSimQuery = BaseSimQuery & {
+    queryType: "amount";
+    theory: theoryType;
+    strat: string;
+    rho: number;
+    amount: number;
+  }
+
+  type TimeSimQuery = BaseSimQuery & {
+    queryType: "time";
+    theory: theoryType;
+    strat: string;
+    rho: number;
+    /** Total time in seconds */
+    time: number;
+  }
+
+  type ComparisonSimQuery = BaseSimQuery & {
+    queryType: "comparison";
+    theory: theoryType;
+    rho: number;
+  }
+
+  type PubTableSimQuery = BaseSimQuery & {
+    queryType: "pub_table";
+    theory: theoryType;
+    strat: string;
+    rho: number;
+    cap: number;
+    step: number;
+  }
+
+  type SimQuery = SingleSimQuery | ChainSimQuery | StepSimQuery | SimAllQuery | StepChainQuery
+    | AmountSimQuery | TimeSimQuery | ComparisonSimQuery | PubTableSimQuery;
 
   type SingleSimResponse = {
     responseType: "single";
@@ -100,7 +133,17 @@ declare global {
     results: simAllResult[];
   }
 
-  type SimResponse = SingleSimResponse | ChainSimResponse | StepSimResponse | SimAllResponse;
+  type PubTableResponse = {
+    responseType: "pub_table";
+    /** log10 rho values */
+    cap: number;
+    start: number;
+    step: number;
+    /** [time to reach cap, next pub target] for cap, cap - step, cap - 2*step, ... */
+    pub_table: [number, number][];
+  }
+
+  type SimResponse = SingleSimResponse | ChainSimResponse | StepSimResponse | SimAllResponse | PubTableResponse;
 
   interface varBuy {
     var_name: string;
@@ -163,4 +206,13 @@ declare global {
     // Removing this any is a bit annoying, will do it later -Mathis
     data: any
   };
+
+  /** Message sent to the sim worker (src/Sim/worker.ts) */
+  type WorkerRequest = { type: "query"; id: number; query: string };
+
+  /** Messages sent by the sim worker */
+  type WorkerResponse =
+    | { type: "ready"; portedTheories: string[] }
+    | { type: "progress"; id: number; message: string }
+    | { type: "result"; id: number; response: string };
 }

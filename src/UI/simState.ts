@@ -26,7 +26,85 @@ const showA23 = qs<HTMLInputElement>(".a23");
 const showUnofficials = qs<HTMLInputElement>(".unofficials");
 
 const defaultState = `{"settings":{"dt":"1.5","ddt":"1.0001","showA23":false,"showUnofficials":false}}`;
-const defaultTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? "dark" : "classic";
+// Keep in sync with the inline script in index.html
+const defaultTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? "dark" : "light";
+
+// Main inputs, remembered between visits
+const modeSelector = qs<HTMLSelectElement>(".mode");
+const theorySelector = qs<HTMLSelectElement>(".theory");
+const stratSelector = qs<HTMLSelectElement>(".strat");
+const sigmaInput = qs<HTMLInputElement>(".sigma");
+const currencyInput = qs<HTMLInputElement>(".input");
+const capInput = qs<HTMLInputElement>(".cap");
+const hardCapInput = qs<HTMLInputElement>(".hardCap");
+const modeInput = qs<HTMLTextAreaElement>(".modeInput");
+const simAllInputArea = qs<HTMLTextAreaElement>(".simAllInputArea");
+
+/** Elements whose values are saved by `saveInputs` */
+export const savedInputElements: HTMLElement[] = [
+  modeSelector, theorySelector, stratSelector, sigmaInput, currencyInput,
+  capInput, hardCapInput, modeInput, simAllInputArea
+];
+
+interface SavedInputs {
+  mode?: string;
+  theory?: string;
+  strat?: string;
+  sigma?: string;
+  input?: string;
+  cap?: string;
+  hardCap?: boolean;
+  modeInput?: string;
+  simAllInput?: string;
+}
+
+/** Saves the main inputs to localStorage */
+export function saveInputs() {
+  const inputs: SavedInputs = {
+    mode: modeSelector.value,
+    theory: theorySelector.value,
+    strat: stratSelector.value,
+    sigma: sigmaInput.value,
+    input: currencyInput.value,
+    cap: capInput.value,
+    hardCap: hardCapInput.checked,
+    modeInput: modeInput.value,
+    simAllInput: simAllInputArea.value,
+  };
+  localStorage.setItem("simInputs", JSON.stringify(inputs));
+}
+
+/**
+ * Restores the saved main inputs.
+ * `onModeChange`/`onTheoryChange` repopulate the dependent fields (render.ts modeUpdate/theoryUpdate).
+ */
+export function restoreInputs(onModeChange: () => void, onTheoryChange: () => void) {
+  let inputs: SavedInputs;
+  try {
+    inputs = JSON.parse(localStorage.getItem("simInputs") ?? "{}");
+  } catch {
+    return;
+  }
+  const hasOption = (select: HTMLSelectElement, value?: string) =>
+    value !== undefined && Array.from(select.options).some((o) => o.value === value);
+
+  // The "All" text area feeds sigma/input autofill in render.ts, so restore it first
+  if (inputs.simAllInput !== undefined) simAllInputArea.value = inputs.simAllInput;
+  if (hasOption(modeSelector, inputs.mode)) {
+    modeSelector.value = inputs.mode!;
+    onModeChange();
+  }
+  if (hasOption(theorySelector, inputs.theory)) {
+    theorySelector.value = inputs.theory!;
+    onTheoryChange();
+  }
+  if (hasOption(stratSelector, inputs.strat)) stratSelector.value = inputs.strat!;
+  if (inputs.sigma !== undefined) sigmaInput.value = inputs.sigma;
+  if (inputs.input !== undefined) currencyInput.value = inputs.input;
+  if (inputs.cap !== undefined) capInput.value = inputs.cap;
+  if (inputs.hardCap !== undefined) hardCapInput.checked = inputs.hardCap;
+  if (inputs.modeInput !== undefined) modeInput.value = inputs.modeInput;
+}
 
 export function setSimState() {
   localStorage.setItem("simAllSettings", JSON.stringify([semiIdle.checked, hardActive.checked]));

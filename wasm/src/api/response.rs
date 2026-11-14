@@ -38,10 +38,22 @@ pub struct SimAllResponse {
 }
 
 #[derive(Debug, Serialize)]
+pub struct PubTableResponse {
+    /** log10 rho values */
+    pub cap: f64,
+    pub start: f64,
+    pub step: f64,
+    /** [time to reach cap, next pub target] for cap, cap - step, cap - 2*step, ... */
+    pub pub_table: Vec<[f64; 2]>
+}
+
+#[derive(Debug, Serialize)]
 #[serde(tag = "type", content = "data", rename_all = "lowercase")]
 pub enum SimResponse {
     Single(SingleSimResponse),
     Chain(ChainSimResponse),
     Step(StepSimResponse),
-    All(SimAllResponse)
+    All(SimAllResponse),
+    #[serde(rename = "pub_table")]
+    PubTable(PubTableResponse)
 }

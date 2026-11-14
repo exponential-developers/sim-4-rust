@@ -156,6 +156,10 @@ class t2Sim extends theoryClass<theory> {
       ],
       T2MS: new Array(8).fill(true),
       T2QS: new Array(8).fill(true),
+      // Old TypeScript sim, no longer used (the Rust sim implements T2ROI/T2ROIMS); kept so the
+      // strat names from data.json type-check.
+      T2ROI: new Array(8).fill(true),
+      T2ROIMS: new Array(8).fill(true),
     };
     return toCallables(conditions[this.strat]);
   }

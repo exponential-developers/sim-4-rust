@@ -35,6 +35,21 @@ event(instructionsCloseBtn, "pointerdown", () => instructionsModal.close());
 
 event(instructionsModal, "close", () => document.body.style.overflow = "auto");
 
+// Changelog
+
+const changelogBtn = qs<HTMLButtonElement>(".changelogBtn");
+const changelogCloseBtn = qs<HTMLButtonElement>(".changelogCloseBtn");
+const changelogModal = qs<HTMLDialogElement>(".changelog");
+
+event(changelogBtn, "pointerdown", () => {
+  changelogModal.showModal();
+  document.body.style.overflow = "hidden";
+});
+
+event(changelogCloseBtn, "pointerdown", () => changelogModal.close());
+
+event(changelogModal, "close", () => document.body.style.overflow = "auto");
+
 // Settings inputs
 
 const dtSlider = qs<HTMLInputElement>(".dt");
