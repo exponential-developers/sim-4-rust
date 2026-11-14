@@ -60,7 +60,11 @@ jobs:
       - name: TypeScript tests (Vitest)
         run: npm test
 
-      # Builds the wasm module and the website (webpack type-checks all TypeScript)
+      # Type-checks all TypeScript, tests included (the webpack build leaves the tests out)
+      - name: Type check
+        run: npm run typecheck
+
+      # Builds the wasm module and the website (webpack type-checks the website code)
       - name: Build
         run: npm run build
 

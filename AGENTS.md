@@ -18,6 +18,7 @@ cargo test --release --manifest-path wasm/Cargo.toml
 wasm-pack test --node --release wasm --test sim3_parity
 npm run lint
 npm test
+npm run typecheck
 npm run build
 ```
 
@@ -64,7 +65,8 @@ npm run build
 | `src/Sim/simulate.ts`, `src/Theories/` | The old TypeScript simulator. **Not used by the page** (kept as a reference); it is still type-checked, so it must keep compiling. |
 | `bench/` | Node scripts that compare the Rust sim with sim-3 and time both, and generate the parity fixtures. |
 | `Styles/` | CSS. Every color is a token defined per theme in `themes.css`. |
-| `eslint.config.mjs`, `eslint-suppressions.json` | ESLint setup, and the list of errors that predate it (see "Rules for every change"). |
+| `eslint.config.mjs`, `eslint-suppressions.json` | ESLint setup (type-aware rules), and the list of errors that predate it (see "Rules for every change"). |
+| `tsconfig.json`, `tsconfig.test.json` | TypeScript for the webpack build (tests left out, since deploys install no dev dependencies), and for type-checking the tests and type-aware ESLint. |
 | `src/**/*.test.ts`, `src/test/setup.ts`, `vitest.config.mjs` | Website tests (Vitest + jsdom). The setup loads `index.html` into the test DOM, so page modules can be imported as-is. |
 
 ## Build and run
@@ -94,6 +96,7 @@ cargo clippy --release --all-targets --manifest-path wasm/Cargo.toml -- -D warni
 cargo fmt --manifest-path wasm/Cargo.toml                     # format Rust
 npm run lint                                                  # ESLint (eslint.config.mjs)
 npm test                                                      # website tests (Vitest, src/**/*.test.ts)
+npm run typecheck                                             # tsc over src, tests included (tsconfig.test.json)
 ```
 
 All of these run in CI (`.github/workflows/tests.yml`), along with `npm run build`.

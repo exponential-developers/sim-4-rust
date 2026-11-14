@@ -49,7 +49,7 @@ function parseExponentialValue(str: string): number {
         return parseLog10String(str);
     }
     else {
-        throw `Invalid currency value ${str}. Currency value must be in formats <number>, <exxxx> or <xexxxx>.`;
+        throw new Error(`Invalid currency value ${str}. Currency value must be in formats <number>, <exxxx> or <xexxxx>.`);
     }
 }
 
@@ -82,7 +82,7 @@ function parseSigma(required: boolean): number {
     }
     else {
         if (required) {
-            throw "Invalid sigma value. Sigma must be an integer that's >= 0";
+            throw new Error("Invalid sigma value. Sigma must be an integer that's >= 0");
         }
         return 0;
     }
@@ -155,7 +155,7 @@ function parseAmountSim(): AmountSimQuery {
     const theory = theorySelector.value as theoryType;
     const sigma = parseSigma(isMainTheory(theory));
     const amount = parseInt(modeInput.value);
-    if (!(amount > 0)) throw "Invalid amount of pubs. It must be a whole number greater than 0.";
+    if (!(amount > 0)) throw new Error("Invalid amount of pubs. It must be a whole number greater than 0.");
 
     return {
         queryType: "amount",
@@ -184,7 +184,7 @@ function parseTimeSim(): TimeSimQuery {
     const theory = theorySelector.value as theoryType;
     const sigma = parseSigma(isMainTheory(theory));
     const time = parseDuration(modeInput.value);
-    if (time <= 0) throw "Invalid total time. Use a duration like 12h, 3d or 1d12h30m.";
+    if (time <= 0) throw new Error("Invalid total time. Use a duration like 12h, 3d or 1d12h30m.");
 
     return {
         queryType: "time",
@@ -232,13 +232,13 @@ function parseSimAll(): SimAllQuery {
     const split = str.split(" ").map(s => s.replace("\n", "")).filter(s => s != "");
     
     const sigmaStr = split.shift() ?? "";
-    if (split.length < 1) throw "Student count and at least one theory value that is not 0 is required.";
+    if (split.length < 1) throw new Error("Student count and at least one theory value that is not 0 is required.");
     if (split.length > Object.keys(jsonData.theories).length) {
-        throw `Invalid value ${split[Object.keys(jsonData.theories).length]} does not match any theory.`;
+        throw new Error(`Invalid value ${split[Object.keys(jsonData.theories).length]} does not match any theory.`);
     }
 
     const sigmaMatch = sigmaStr.match(/^\d+$/);
-    if (!sigmaMatch) throw "Invalid sigma value. Sigma must be an integer that's >= 0";
+    if (!sigmaMatch) throw new Error("Invalid sigma value. Sigma must be an integer that's >= 0");
     const sigma = parseInt(sigmaMatch[0]);
 
     let values = split.map((val, i) => parseCurrency(val, getTheoryFromIndex(i), sigma, 't'));
@@ -250,7 +250,7 @@ function parseSimAll(): SimAllQuery {
         return val;
     })
 
-    if (values.length - values.filter(val => val <= 0).length < 1) throw "Student count and at least one theory value that is not 0 is required.";
+    if (values.length - values.filter(val => val <= 0).length < 1) throw new Error("Student count and at least one theory value that is not 0 is required.");
 
     return {
         queryType: "all",
@@ -274,6 +274,6 @@ export function parseQuery(): SimQuery {
         case "Time": return parseTimeSim();
         case "Comparison": return parseComparisonSim();
         case "Pub Table": return parsePubTableSim();
-        default: throw "This mode is not supported.";
+        default: throw new Error("This mode is not supported.");
     }
 }

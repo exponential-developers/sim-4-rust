@@ -130,14 +130,24 @@
   text-align: center;
   vertical-align: middle;
 }
-.simTable td.varBuyCell div,
-.simTable td.varBuyCell a {
+.simTable td.varBuyCell button {
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   vertical-align: middle;
-  margin-inline: 0.3rem;
+  margin-inline: 0.2rem;
+  padding: 0.1rem;
+  border: none;
+  border-radius: 4px;
+  background: none;
   color: var(--accent);
+}
+.simTable td.varBuyCell button:hover {
+  background-color: var(--accent-soft);
+}
+.simTable td.varBuyCell button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
 }
 .simTable td.varBuyCell svg {
   height: 0.95rem;

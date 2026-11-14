@@ -19,4 +19,4 @@ self.onmessage = (event: MessageEvent<WorkerRequest>) => {
 };
 
 // Tells the page the module is loaded and which theories it supports
-post({ type: "ready", portedTheories: JSON.parse(ported_theories()) });
+post({ type: "ready", portedTheories: JSON.parse(ported_theories()) as string[] });

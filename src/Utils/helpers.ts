@@ -257,7 +257,7 @@ export function reverseMulti(theory: string, value: number, sigma: number) {
     case "BaP":
       return (value - l10(5)) / 0.132075 * 2.5;
   }
-  throw `Failed parsing multiplier. Please contact the author of the sim.`;
+  throw new Error(`Failed parsing multiplier. Please contact the author of the sim.`);
 }
 
 /** Checks if a string corresponds to a main theory */

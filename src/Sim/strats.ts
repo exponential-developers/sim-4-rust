@@ -34,10 +34,13 @@ function convertConditions(theoryData: TheoryDataStructure): StratsDataType {
       strats: {}
     };
     for (const strat of Object.keys(theoryData[theory].strats)) {
+      // The strat conditions in data.json are expressions, compiled to functions on purpose (as in sim-3)
+      /* eslint-disable @typescript-eslint/no-implied-eval */
       currentTheory.strats[strat] = {
         stratFilterCondition: Function(...stratConditionArgs, parseExpression(theoryData[theory].strats[strat].stratFilterCondition)) as stratConditionFunction,
         forcedCondition: Function(...stratConditionArgs, parseExpression(theoryData[theory].strats[strat].forcedCondition ?? "")) as stratConditionFunction
       }
+      /* eslint-enable @typescript-eslint/no-implied-eval */
     }
     returnedData[theory] = currentTheory;
   }

@@ -1,7 +1,7 @@
 import { parseLog10String, l10 } from "./helpers";
 
 export function parseValue(val: string) {
-    if (val === "Infinity") throw "Variable value reached Infinity";
+    if (val === "Infinity") throw new Error("Variable value reached Infinity");
     if (val === "0") return -Infinity;
     if (/[e]/.test(val)) return parseLog10String(val);
     return l10(Number(val));

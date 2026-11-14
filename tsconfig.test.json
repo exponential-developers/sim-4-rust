@@ -1,0 +1,11 @@
+// Type-checks the website tests (src/**/*.test.ts and src/test), which the main tsconfig.json leaves
+// out of the webpack build. Run with: npx tsc -p tsconfig.test.json
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["node"]
+  },
+  "include": ["src"],
+  "exclude": []
+}

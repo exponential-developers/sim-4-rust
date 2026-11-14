@@ -92,11 +92,18 @@ function addVarBuyCell(row: HTMLTableRowElement, buys: varBuy[], addToTotal = tr
     const cell = ce("td");
     cell.classList.add("varBuyCell");
 
-    const viewBtn = ce("div");
+    // Real buttons, so the icons can be reached with Tab and pressed with Enter or Space
+    const viewBtn = ce<HTMLButtonElement>("button");
+    viewBtn.type = "button";
+    viewBtn.title = "View variable purchases";
+    viewBtn.setAttribute("aria-label", "View variable purchases");
     viewBtn.innerHTML = eyeIcon;
     viewBtn.onclick = () => openVarModal(buys);
 
-    const downloadBtn = ce("a");
+    const downloadBtn = ce<HTMLButtonElement>("button");
+    downloadBtn.type = "button";
+    downloadBtn.title = "Download variable purchases as CSV";
+    downloadBtn.setAttribute("aria-label", "Download variable purchases as CSV");
     downloadBtn.innerHTML = downloadIcon;
     downloadBtn.onclick = () => {
         const csvOut = makeVarBuyCsv(buys);

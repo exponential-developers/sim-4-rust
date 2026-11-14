@@ -76,7 +76,7 @@
   align-items: center;
   gap: 0.5rem 0.6rem;
 }
-.simAllInputs span {
+.simAllInputs label {
   font-size: 0.8rem;
   color: var(--text-muted);
 }

@@ -76,10 +76,13 @@ impl FromStr for LogNum {
 
         match parts.len() {
             0 => Err(LogNumParseError {}),
+            // A plain number is a log10 value ("100" = 1e100); a leading '-' makes the number
+            // negative ("-100" = -1e100), like "-e100" and "-2e5"
             1 => match parts[0].parse::<f64>() {
-                Ok(value) => Ok(LogNum::new(value, sign)),
+                Ok(value) => Ok(LogNum::new(value.abs(), sign)),
                 Err(_) => Err(LogNumParseError {}),
             },
+            3.. => Err(LogNumParseError {}),
             _ => match parts[1].parse::<f64>() {
                 // The sign is already taken from the leading '-': use the mantissa's magnitude
                 Ok(rhs) => match parts[0].parse::<f64>() {
@@ -94,6 +97,16 @@ impl FromStr for LogNum {
 
 impl Display for LogNum {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let minus = if self.sign < 0 { "-" } else { "" };
+        if self.value.is_nan() {
+            return write!(f, "NaN");
+        }
+        if self.value == f64::NEG_INFINITY {
+            return write!(f, "0");
+        }
+        if self.value == f64::INFINITY {
+            return write!(f, "{minus}inf");
+        }
         let floor = self.value.floor();
         let frac = self.value - floor;
         write!(f, "{:.2}e{}", 10f64.powf(frac) * self.sign as f64, floor)
@@ -622,13 +635,21 @@ mod tests {
         // a plain number is read as a log10 value, like inputs elsewhere in the sim
         let plain: LogNum = "100".parse().unwrap();
         assert_eq!((plain.value, plain.sign), (100., 1));
+        // and a leading '-' makes it negative, as with the other formats
+        let negative: LogNum = "-100".parse().unwrap();
+        assert_eq!((negative.value, negative.sign), (100., -1));
         assert!("".parse::<LogNum>().is_err());
         assert!("2e".parse::<LogNum>().is_err());
         assert!("abc".parse::<LogNum>().is_err());
+        assert!("1e2e3".parse::<LogNum>().is_err());
         assert_real(LogNum::from_str_radix("3e2", 10).unwrap(), 300.);
 
         assert_eq!(n(2e5).to_string(), "2.00e5");
         assert_eq!(n(-31400.).to_string(), "-3.14e4");
+        assert_eq!(ZERO.to_string(), "0");
+        assert_eq!(<LogNum as Float>::nan().to_string(), "NaN");
+        assert_eq!(<LogNum as Float>::infinity().to_string(), "inf");
+        assert_eq!(<LogNum as Float>::neg_infinity().to_string(), "-inf");
     }
 
     #[test]

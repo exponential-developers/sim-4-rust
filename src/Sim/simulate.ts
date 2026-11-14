@@ -274,6 +274,6 @@ export async function simulate(query: SimQuery): Promise<SimResponse> {
         case "all": return await simAll(query);
         case "step_chain": return await stepChainSim(query);
         // Old TypeScript sim (no longer used by the page, see simWorker.ts); newer modes exist only in Rust
-        default: throw "This mode is only implemented in the Rust sim";
+        default: throw new Error("This mode is only implemented in the Rust sim");
     }
 }

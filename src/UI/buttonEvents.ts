@@ -68,7 +68,7 @@ function createImage(mode: string) {
         a.download = "output.png";
         a.click();
       } else {
-        if (blob == null) throw "blob is null";
+        if (blob == null) throw new Error("blob is null");
         navigator.clipboard
           .write([new ClipboardItem({ "image/png": blob })])
           .then(() => {
@@ -175,7 +175,7 @@ event(getDist, "pointerdown", () => {
   saveInputs();
 });
 
-event(loadSave, "pointerdown", () => loadSaveFile());
+event(loadSave, "pointerdown", () => void loadSaveFile());
 
 /**
  * Replaces a game save pasted in the "All" input with the theory values it contains
@@ -191,7 +191,7 @@ export function loadSaveFile(): Promise<void> {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({savefile: presumedSaveFile})
-  }).then(res => res.json()).then(r => {
+  }).then(res => res.json() as Promise<string[]>).then(r => {
     if(!r[1] || r[1] == "Not a savefile") {
       output.textContent = "Error loading save file.";
     } else {

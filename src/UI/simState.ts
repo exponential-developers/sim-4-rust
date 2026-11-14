@@ -26,6 +26,22 @@ const showA23 = qs<HTMLInputElement>(".a23");
 const showUnofficials = qs<HTMLInputElement>(".unofficials");
 
 const defaultState = `{"settings":{"dt":"1.5","ddt":"1.0001","showA23":false,"showUnofficials":false}}`;
+
+/** What setSimState saves under "simState" (older saves may lack fields, or have skipCompletedCTs) */
+type SavedSimState = {
+  settings: {
+    dt: string;
+    ddt: string;
+    mfResetDepth?: string;
+    boughtVarsDelta?: string | number;
+    simAllStrats?: string;
+    completedCTs?: string;
+    skipCompletedCTs?: boolean;
+    showA23?: boolean;
+    showUnofficials?: boolean;
+    theme?: string;
+  };
+};
 // Keep in sync with the inline script in index.html
 const defaultTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? "dark" : "light";
 
@@ -81,7 +97,7 @@ export function saveInputs() {
 export function restoreInputs(onModeChange: () => void, onTheoryChange: () => void) {
   let inputs: SavedInputs;
   try {
-    inputs = JSON.parse(localStorage.getItem("simInputs") ?? "{}");
+    inputs = JSON.parse(localStorage.getItem("simInputs") ?? "{}") as SavedInputs;
   } catch {
     return;
   }
@@ -127,27 +143,26 @@ export function setSimState() {
 }
 export function getSimState() {
   //Sim All Settings
-  const simAllSettings: [boolean, boolean] = JSON.parse(localStorage.getItem("simAllSettings") ?? "[true, false]");
+  const simAllSettings = JSON.parse(localStorage.getItem("simAllSettings") ?? "[true, false]") as [boolean, boolean];
   semiIdle.checked = simAllSettings[0];
   hardActive.checked = simAllSettings[1];
 
   // Sim Settings
-  const state = JSON.parse(localStorage.getItem("simState") ?? defaultState);
+  const { settings } = JSON.parse(localStorage.getItem("simState") ?? defaultState) as SavedSimState;
 
-  dtOtp.textContent = state.settings.dt;
-  ddtOtp.textContent = state.settings.ddt;
-  mfDepthOtp.textContent = state.settings.mfResetDepth ?? "0";
-  boughtVarsDeltaOtp.textContent = `e${state.settings.boughtVarsDelta ?? 5}ρ`;
+  dtOtp.textContent = settings.dt;
+  ddtOtp.textContent = settings.ddt;
+  mfDepthOtp.textContent = settings.mfResetDepth ?? "0";
+  boughtVarsDeltaOtp.textContent = `e${settings.boughtVarsDelta ?? 5}ρ`;
   // Determines the slider position based on the stored value (see helpers.ts)
-  dtSlider.value = String(round(Math.log2((state.settings.dt - 0.15) / (4.9 / (1 + 2 ** parseFloat(dtSlider.max)))), 4));
-  ddtSlider.value = String(round(Math.log((state.settings.ddt - 1) / (0.3 / 3 ** parseFloat(ddtSlider.max))) / Math.log(3), 4));
+  dtSlider.value = String(round(Math.log2((Number(settings.dt) - 0.15) / (4.9 / (1 + 2 ** parseFloat(dtSlider.max)))), 4));
+  ddtSlider.value = String(round(Math.log((Number(settings.ddt) - 1) / (0.3 / 3 ** parseFloat(ddtSlider.max))) / Math.log(3), 4));
   mfDepthSlider.value = mfDepthOtp.textContent ?? "0";
-  boughtVarsDeltaSlider.value = state.settings.boughtVarsDelta ?? 5;
+  boughtVarsDeltaSlider.value = String(settings.boughtVarsDelta ?? 5);
 
-  themeSelector.value = state.settings.theme ?? defaultTheme;
-  simAllStrats.value = state.settings.simAllStrats ?? "all";
-  completedCTs.value = state.settings.completedCTs ?? (state.settings.skipCompletedCTs === true ? "no" : "in");
-  //skipCompletedCTs.checked = state.settings.skipCompletedCTs ?? false;
-  showA23.checked = state.settings.showA23;
-  showUnofficials.checked = state.settings.showUnofficials ?? false;
+  themeSelector.value = settings.theme ?? defaultTheme;
+  simAllStrats.value = settings.simAllStrats ?? "all";
+  completedCTs.value = settings.completedCTs ?? (settings.skipCompletedCTs === true ? "no" : "in");
+  showA23.checked = settings.showA23 ?? false;
+  showUnofficials.checked = settings.showUnofficials ?? false;
 }

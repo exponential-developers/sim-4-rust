@@ -74,9 +74,9 @@ export async function simCall() {
       setStatus("Sim stopped.");
     }
     else {
-      const parsed_response: API_response = JSON.parse(APIresponse)
+      const parsed_response = JSON.parse(APIresponse) as API_response;
       if (parsed_response.response_type == "failure") {
-        throw parsed_response.data
+        throw new Error(parsed_response.data);
       }
       const response = cacheFilterResponse(filteredQuery, cached, formatSimResponse(parsed_response.data));
       setCache(query, response);
@@ -85,7 +85,7 @@ export async function simCall() {
     }
   }
   catch (err) {
-    setStatus(String(err), "error");
+    setStatus(err instanceof Error ? err.message : String(err), "error");
   }
 
   global.simulating = false;
@@ -93,12 +93,13 @@ export async function simCall() {
   setSimState();
 }
 
-event(simulateButton, "click", simCall);
+// Handlers return nothing: simCall shows its own errors in the status line
+event(simulateButton, "click", () => void simCall());
 
 // "Test all supported theories" (All mode): sigma 500 and 500 for every theory the Rust sim supports
 const testPortedButton = qs<HTMLButtonElement>(".testPorted");
 
-event(testPortedButton, "click", async () => {
+async function testPortedTheories() {
   if (global.simulating) return;
   const ported = await getPortedTheories();
   // "All" input order: sigma, then every theory in data.json order (0 = don't simulate)
@@ -114,4 +115,6 @@ event(testPortedButton, "click", async () => {
   } finally {
     simAllInputArea.value = userInput;
   }
-});
+}
+
+event(testPortedButton, "click", () => void testPortedTheories());

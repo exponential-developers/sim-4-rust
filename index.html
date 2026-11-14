@@ -47,12 +47,12 @@
       <section class="panel">
       <div class="controls">
         <div>
-          <span class="description">Theory</span>
-          <select class="theory"></select>
+          <label class="description" for="theoryInput">Theory</label>
+          <select class="theory" id="theoryInput"></select>
         </div>
         <div>
-          <span class="description">Strat</span>
-          <select class="strat">
+          <label class="description" for="stratInput">Strat</label>
+          <select class="strat" id="stratInput">
             <option value="Best Overall">Best Overall</option>
             <option value="Best Active">Best Active</option>
             <option value="Best Semi-Idle">Best Semi-Idle</option>
@@ -60,41 +60,41 @@
           </select>
         </div>
         <div>
-          <span class="description">Sigma</span>
-          <input type="text" class="sigma" placeholder="<number>" spellcheck="false" />
+          <label class="description" for="sigmaInput">Sigma</label>
+          <input type="text" class="sigma" id="sigmaInput" placeholder="<number>" spellcheck="false" />
         </div>
         <div>
-          <span class="description">Input</span>
-          <input type="text" class="input" placeholder="<rho>[r/t/m]" spellcheck="false" />
+          <label class="description" for="rhoInput">Input</label>
+          <input type="text" class="input" id="rhoInput" placeholder="<rho>[r/t/m]" spellcheck="false" />
         </div>
         <div class="capWrapper">
-          <span class="description">Cap</span>
-          <input type="text" class="cap" placeholder="<rho>[r/t/m]" spellcheck="false" />
+          <label class="description" for="capInput">Cap</label>
+          <input type="text" class="cap" id="capInput" placeholder="<rho>[r/t/m]" spellcheck="false" />
         </div>
       </div>
       <div class="controls controls-mode">
         <div>
-          <span class="description">Mode</span>
-          <select class="mode"></select>
+          <label class="description" for="modeSelect">Mode</label>
+          <select class="mode" id="modeSelect"></select>
           <button class="testPorted" title="Fills in sigma 500 and 500 for every theory the Rust sim supports, then simulates">Test all supported theories</button>
         </div>
         <div class="hardCapWrapper" style="display: none">
-          <span class="description">Hard cap?</span>
-          <input type="checkbox" class="hardCap" />
+          <label class="description" for="hardCapInput">Hard cap?</label>
+          <input type="checkbox" class="hardCap" id="hardCapInput" />
         </div>
         <div class="extraInputs">
-          <span class="extraInputDescription">mode inputs</span>
+          <span class="extraInputDescription" id="modeInputsCaption">mode inputs</span>
           <div class="simAllInputs">
             <button class="saveDist">Save distribution</button>
-            <span>Semi-Idle</span>
-            <input type="checkbox" class="semi-idle" checked="true" />
+            <label for="semiIdleInput">Semi-Idle</label>
+            <input type="checkbox" class="semi-idle" id="semiIdleInput" checked="true" />
             <button class="getDist">Get distribution</button>
-            <span>Hard Active</span>
-            <input type="checkbox" class="hard-active" />
+            <label for="hardActiveInput">Hard Active</label>
+            <input type="checkbox" class="hard-active" id="hardActiveInput" />
             <button class="loadSave">Load save</button>
           </div>
-          <textarea class="simAllInputArea" cols="30" spellcheck="false"></textarea>
-          <textarea class="modeInput" cols="30" spellcheck="false"></textarea>
+          <textarea class="simAllInputArea" aria-labelledby="modeInputsCaption" cols="30" spellcheck="false"></textarea>
+          <textarea class="modeInput" aria-labelledby="modeInputsCaption" cols="30" spellcheck="false"></textarea>
         </div>
         <div class="timeDiffWrapper" style="display: none">
           <input type="text" class="timeDiffInput" />

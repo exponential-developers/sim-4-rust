@@ -1,7 +1,120 @@
 {
+  "src/Theories/CTs/BaP.ts": {
+    "@typescript-eslint/no-unsafe-assignment": {
+      "count": 9
+    },
+    "@typescript-eslint/no-unsafe-return": {
+      "count": 1
+    }
+  },
+  "src/Theories/CTs/CSR2.ts": {
+    "@typescript-eslint/no-unsafe-assignment": {
+      "count": 1
+    }
+  },
+  "src/Theories/CTs/EF.ts": {
+    "@typescript-eslint/no-unsafe-assignment": {
+      "count": 6
+    },
+    "@typescript-eslint/only-throw-error": {
+      "count": 1
+    }
+  },
+  "src/Theories/CTs/FI.ts": {
+    "@typescript-eslint/no-unsafe-assignment": {
+      "count": 9
+    },
+    "@typescript-eslint/only-throw-error": {
+      "count": 1
+    }
+  },
+  "src/Theories/CTs/FP.ts": {
+    "@typescript-eslint/no-unsafe-assignment": {
+      "count": 6
+    }
+  },
+  "src/Theories/CTs/MF.ts": {
+    "@typescript-eslint/no-unsafe-assignment": {
+      "count": 52
+    }
+  },
+  "src/Theories/CTs/RZ.ts": {
+    "@typescript-eslint/require-await": {
+      "count": 1
+    }
+  },
+  "src/Theories/CTs/SL.ts": {
+    "@typescript-eslint/no-unsafe-assignment": {
+      "count": 1
+    }
+  },
   "src/Theories/CTs/helpers/RZ.ts": {
     "no-loss-of-precision": {
       "count": 32
+    }
+  },
+  "src/Theories/T1-T8/T1.ts": {
+    "@typescript-eslint/no-unsafe-assignment": {
+      "count": 2
+    }
+  },
+  "src/Theories/T1-T8/T2.ts": {
+    "@typescript-eslint/no-unsafe-assignment": {
+      "count": 5
+    },
+    "@typescript-eslint/require-await": {
+      "count": 1
+    }
+  },
+  "src/Theories/T1-T8/T3.ts": {
+    "@typescript-eslint/no-unsafe-assignment": {
+      "count": 2
+    }
+  },
+  "src/Theories/T1-T8/T4.ts": {
+    "@typescript-eslint/no-unsafe-assignment": {
+      "count": 22
+    }
+  },
+  "src/Theories/T1-T8/T5.ts": {
+    "@typescript-eslint/no-unsafe-assignment": {
+      "count": 1
+    }
+  },
+  "src/Theories/T1-T8/T6.ts": {
+    "@typescript-eslint/no-unsafe-assignment": {
+      "count": 1
+    }
+  },
+  "src/Theories/T1-T8/T7.ts": {
+    "@typescript-eslint/no-unsafe-assignment": {
+      "count": 1
+    }
+  },
+  "src/Theories/T1-T8/T8.ts": {
+    "@typescript-eslint/no-unsafe-assignment": {
+      "count": 1
+    }
+  },
+  "src/Theories/Unofficial-CTs/BT.ts": {
+    "@typescript-eslint/require-await": {
+      "count": 1
+    }
+  },
+  "src/Theories/Unofficial-CTs/TC.ts": {
+    "@typescript-eslint/no-unsafe-assignment": {
+      "count": 3
+    },
+    "@typescript-eslint/require-await": {
+      "count": 1
+    }
+  },
+  "src/Theories/theory.ts": {
+    "@typescript-eslint/no-unsafe-assignment": {
+      "count": 2
+    },
+    "@typescript-eslint/only-throw-error": {
+      "count": 2
     }
   }
 }

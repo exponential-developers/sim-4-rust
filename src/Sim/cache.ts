@@ -11,7 +11,7 @@ const RESPONSE_KEY = "cacheResponse";
 function load<T>(key: string): T | null {
   try {
     const json = localStorage.getItem(key);
-    return json === null ? null : JSON.parse(json);
+    return json === null ? null : (JSON.parse(json) as T);
   } catch {
     return null;
   }

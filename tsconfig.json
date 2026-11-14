@@ -99,5 +99,9 @@
     /* Completeness */
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
     "skipLibCheck": true /* Skip type checking all .d.ts files. */
-  }
+  },
+  /* The website build (webpack) type-checks src without the tests: deploys install only runtime
+     dependencies, and the tests import vitest and Node modules. tsconfig.test.json checks them. */
+  "include": ["src"],
+  "exclude": ["src/**/*.test.ts", "src/test"]
 }
