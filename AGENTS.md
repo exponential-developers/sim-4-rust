@@ -54,7 +54,7 @@ npm run build
 
 | Path | What it is |
 |---|---|
-| `wasm/src/theories/` | Theory simulations. `traditional.rs` is the shared base (sim-3's `theory.ts` + `traditionalTheory.ts`); `t1.rs`, `t2.rs`, `t3.rs` are ported theories (`t3.rs` shows a theory with several currencies). |
+| `wasm/src/theories/` | Theory simulations. `traditional.rs` is the shared base (sim-3's `theory.ts` + `traditionalTheory.ts`); `t1.rs` to `t5.rs` are ported theories (`t3.rs` shows a theory with several currencies, `t5.rs` one with a pub table). `data/` holds data files copied unchanged from sim-3 (e.g. T5's pub table). |
 | `wasm/src/sim/mod.rs` | Sim modes (single, chain, step, all, step_chain, amount, time, comparison, pub_table), "Best ..." strat selection, and the list of ported theories (`PORTED_THEORIES`, `run_strat`). |
 | `wasm/src/api/` | JSON request/response types (`query.rs`, `response.rs`), `data.json` config (`config.rs`), and the parser for strat conditions (`condition.rs`). |
 | `wasm/src/utils/` | `LogNum`, cost/value models, `Variable`, and `fastmath.rs` (see "Exact results" below). |
@@ -162,7 +162,7 @@ variable gets bought and then the whole publication. To keep results identical:
 ## Porting a theory
 
 1. Read sim-3's `src/Theories/<group>/<Theory>.ts` and the base classes it uses.
-2. Create `wasm/src/theories/<theory>.rs` following `t1.rs` / `t2.rs` / `t3.rs`: a strat enum with
+2. Create `wasm/src/theories/<theory>.rs` following the ported theories (`t1.rs` to `t5.rs`): a strat enum with
    `name()` / `from_name()` matching `data.json`, a sim struct holding a `TraditionalCore`, and a
    `simulate_<theory>(strat, input)` function reproducing sim-3's top-level function (multi-pass
    coasting, forks, etc.).
@@ -173,6 +173,11 @@ variable gets bought and then the whole publication. To keep results identical:
 5. Add the theory to `bench/sim3-entry.js` (`THEORIES`) and `bench/cases.js`, check it with
    `bench/run.js` and `bench/compare-modes.js`, then regenerate the fixtures.
 6. Very slow strats (many sims per result, e.g. T2Haxolotl) go in `SLOW` in `bench/cases.js`.
+7. Check the speed in `bench/run.js`. In the browser every log10/pow is a call into JavaScript, so
+   the number of calls per tick decides the speed: cache values that only change when a variable
+   is bought (T2's ROI baseline, T5's `gamma_cache`), turn off `track_cur_mult` when the strats
+   never read the multiplier, and use the `fastmath` helpers that skip calls whose result is
+   exactly known. Keep results bit-identical: a test should compare against sim-3's formula.
 
 ## Website notes
 

@@ -8,6 +8,8 @@ use crate::theories::{
     t1::{T1Strat, simulate_t1},
     t2::{T2Strat, simulate_t2},
     t3::{T3Strat, simulate_t3},
+    t4::{T4Strat, simulate_t4},
+    t5::{T5Strat, simulate_t5},
     traditional::{
         PubTableCollector, SimParams, TheoryInput, default_result, log_to_exp,
         set_current_collector,
@@ -38,7 +40,13 @@ fn theory_config(theory: TheoryType) -> Result<&'static ConfigTheories, String> 
 }
 
 /** Theories that have been ported to the Rust sim, in data.json order */
-pub const PORTED_THEORIES: [TheoryType; 3] = [TheoryType::T1, TheoryType::T2, TheoryType::T3];
+pub const PORTED_THEORIES: [TheoryType; 5] = [
+    TheoryType::T1,
+    TheoryType::T2,
+    TheoryType::T3,
+    TheoryType::T4,
+    TheoryType::T5,
+];
 
 /** Whether a theory has been ported to the Rust sim */
 pub fn is_ported(theory: TheoryType) -> bool {
@@ -66,6 +74,16 @@ pub fn run_strat(
             let strat =
                 T3Strat::from_name(strat).ok_or_else(|| format!("Unknown T3 strat \"{strat}\""))?;
             Ok(simulate_t3(strat, input))
+        }
+        TheoryType::T4 => {
+            let strat =
+                T4Strat::from_name(strat).ok_or_else(|| format!("Unknown T4 strat \"{strat}\""))?;
+            Ok(simulate_t4(strat, input))
+        }
+        TheoryType::T5 => {
+            let strat =
+                T5Strat::from_name(strat).ok_or_else(|| format!("Unknown T5 strat \"{strat}\""))?;
+            Ok(simulate_t5(strat, input))
         }
         _ => Err(format!(
             "{theory:?} has not been ported to the Rust sim yet"
@@ -730,8 +748,8 @@ mod tests {
                 "{theory:?}: {res:?}"
             );
         }
-        assert!(!is_ported(TheoryType::T4));
-        assert!(run_strat(TheoryType::T4, "T4", &input).is_err());
+        assert!(!is_ported(TheoryType::T6));
+        assert!(run_strat(TheoryType::T6, "T6", &input).is_err());
         assert!(run_strat(TheoryType::T1, "NotAStrat", &input).is_err());
     }
 }

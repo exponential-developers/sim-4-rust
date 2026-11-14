@@ -33,12 +33,12 @@ mod tests {
     use super::*;
     use crate::utils::lognum::LogNum;
 
-    fn buy(var_name: &str, level: i32) -> VarBuy {
+    fn buy(var_name: &'static str, level: i32) -> VarBuy {
         VarBuy {
-            var_name: var_name.to_owned(),
+            var_name,
             level,
             cost: LogNum::from(10.),
-            symbol: "rho".to_owned(),
+            symbol: "rho",
             timestamp: 0.,
         }
     }

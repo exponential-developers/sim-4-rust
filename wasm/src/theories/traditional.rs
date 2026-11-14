@@ -463,13 +463,13 @@ impl TraditionalCore {
     }
 
     /** Records a purchase paid with the currency named `symbol` (e.g. "rho_2") */
-    pub fn record_purchase_in(&mut self, variable: &Variable, symbol: &str) {
+    pub fn record_purchase_in(&mut self, variable: &Variable, symbol: &'static str) {
         if self.max_rho + self.params.bought_vars_delta > self.last_pub_rho {
             self.bought_vars.push(VarBuy {
-                var_name: variable.name.clone(),
+                var_name: variable.name,
                 level: variable.level + 1,
                 cost: variable.cost,
-                symbol: symbol.to_owned(),
+                symbol,
                 timestamp: self.t,
             });
         }

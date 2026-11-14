@@ -529,7 +529,7 @@ mod tests {
         let res = simulate_t3(T3Strat::T3, &input(150., 90));
         assert!(!res.bought_vars.is_empty());
         for b in &res.bought_vars {
-            let expected = match b.var_name.as_str() {
+            let expected = match b.var_name {
                 "b1" | "c11" | "c21" | "c31" => "rho_1",
                 "b2" | "c12" | "c22" | "c32" => "rho_2",
                 _ => "rho_3",
@@ -593,7 +593,7 @@ mod tests {
         assert!(
             res.bought_vars
                 .iter()
-                .all(|b| ["b1", "b2", "c11", "c12", "c21"].contains(&b.var_name.as_str())),
+                .all(|b| ["b1", "b2", "c11", "c12", "c21"].contains(&b.var_name)),
         );
     }
 }

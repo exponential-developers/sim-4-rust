@@ -8,7 +8,7 @@ use crate::utils::{
 /** Holds a representation of a upgradable variable */
 #[derive(Debug, Clone)]
 pub struct Variable {
-    pub name: String,
+    pub name: &'static str,
     pub cost_model: Cost,
     pub value_model: Value,
     // may or may not be implemented
@@ -30,9 +30,9 @@ pub struct Variable {
 
 impl Variable {
     /** Creates a new variable */
-    pub fn new(name: &str, cost_model: Cost, value_model: Value) -> Self {
+    pub fn new(name: &'static str, cost_model: Cost, value_model: Value) -> Self {
         let mut var = Variable {
-            name: name.to_owned(),
+            name,
             cost_model,
             value_model,
             level: 0,

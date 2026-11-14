@@ -73,7 +73,7 @@
   },
   "src/Theories/T1-T8/T4.ts": {
     "@typescript-eslint/no-unsafe-assignment": {
-      "count": 22
+      "count": 11
     }
   },
   "src/Theories/T1-T8/T5.ts": {

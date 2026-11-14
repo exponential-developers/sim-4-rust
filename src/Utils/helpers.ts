@@ -229,9 +229,9 @@ export function reverseMulti(theory: string, value: number, sigma: number) {
     case "T3":
       return sim3Multi(0.147, l10(3));
     case "T4":
-      return divSigmaMulti(0.165, 4);
+      return sim3Multi(0.165, -l10(4));
     case "T5":
-      return sigmaMulti(0.159);
+      return sim3Multi(0.159, 0);
     case "T6":
       return divSigmaMulti(0.196, 50);
     case "T7":

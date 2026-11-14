@@ -57,7 +57,8 @@ class t5Sim extends theoryClass<theory> {
   nc3: number;
 
   getBuyingConditions(): conditionFunction[] {
-    const conditions: Record<stratType[theory], conditionFunction[]> = {
+    // Strats added to data.json after this old TypeScript sim was retired exist only in the Rust sim
+    const conditions: Partial<Record<stratType[theory], conditionFunction[]>> = {
       T5: [trueFunc, trueFunc, trueFunc, trueFunc, trueFunc],
       T5Idle: [
         trueFunc,
@@ -97,7 +98,9 @@ class t5Sim extends theoryClass<theory> {
         trueFunc,
       ],
     };
-    return conditions[this.strat];
+    const stratConditions = conditions[this.strat];
+    if (!stratConditions) throw new Error(`${this.strat} is only implemented in the Rust sim`);
+    return stratConditions;
   }
   getVariableAvailability(): conditionFunction[] {
     return [

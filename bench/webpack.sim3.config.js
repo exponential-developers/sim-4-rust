@@ -32,5 +32,7 @@ module.exports = {
   plugins: [
     // T1.ts imports `global` from Sim/main.ts, which pulls in the DOM UI. Replace it with a stub.
     new webpack.NormalModuleReplacementPlugin(/[\\/]Sim[\\/]main$/, path.join(__dirname, "sim3-main-stub.js")),
+    // T5 loads its pub table with a dynamic import: keep everything in one file
+    new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 1 }),
   ],
 };

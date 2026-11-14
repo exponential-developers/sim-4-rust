@@ -15,13 +15,13 @@ import {
 
 export default async function t4(data: theoryData): Promise<simResult> {
   let res;
-  if(!data.strat.includes("coast2")) {
+  if(!data.strat.includes("Coast")) {
     const sim = new t4Sim(data);
     res = await sim.simulate();
   }
   else {
     const data2: theoryData = JSON.parse(JSON.stringify(data));
-    data2.strat = data2.strat.replace("coast2", "");
+    data2.strat = data2.strat.replace("Coast", "");
     const sim1 = new t4Sim(data2);
     const res1 = await sim1.simulate();
     const lastQ1 = getLastLevel("q1", res1.bought_vars);
@@ -53,7 +53,8 @@ class t4Sim extends theoryClass<theory> {
   q: number;
 
   getBuyingConditions(): conditionFunction[] {
-    const conditions: Record<stratType[theory], (boolean | conditionFunction)[]> = {
+    // Strats added to data.json after this old TypeScript sim was retired exist only in the Rust sim
+    const conditions: Partial<Record<stratType[theory], (boolean | conditionFunction)[]>> = {
       T4C3d: [
         false,
         false,
@@ -63,7 +64,7 @@ class t4Sim extends theoryClass<theory> {
             this.variables[6].cost + l10(10 + (this.variables[6].level % 10)) <= Math.min(this.variables[7].cost, this.variables[2].cost),
         () => this.curMult < 1 || this.variables[7].cost + l10(1.5) <= this.variables[2].cost,
       ],
-      T4C3dcoast2: [
+      T4C3dCoast: [
         false,
         false,
         () => this.variables[2].shouldBuy,
@@ -72,7 +73,7 @@ class t4Sim extends theoryClass<theory> {
             (this.variables[6].cost + l10(10 + (this.variables[6].level % 10)) <= Math.min(this.variables[7].cost, this.variables[2].cost)),
         () => this.variables[7].shouldBuy && (this.curMult < 1 || this.variables[7].cost + l10(1.5) <= this.variables[2].cost),
       ],
-      T4C3coast2: [
+      T4C3Coast: [
         false,
         false,
         () => this.variables[2].shouldBuy,
@@ -118,7 +119,9 @@ class t4Sim extends theoryClass<theory> {
       T4C5: [...new Array(4).fill(false), true, false, true, true],
       T4: new Array(8).fill(true),
     };
-    return toCallables(conditions[this.strat]);
+    const stratConditions = conditions[this.strat];
+    if (!stratConditions) throw new Error(`${this.strat} is only implemented in the Rust sim`);
+    return toCallables(stratConditions);
   }
   getVariableAvailability() {
     const conditions: conditionFunction[] = [
@@ -139,8 +142,8 @@ class t4Sim extends theoryClass<theory> {
   getMilestonePriority(): number[] {
     switch (this.strat) {
       case "T4C3d": return [2];
-      case "T4C3coast2": return [2];
-      case "T4C3dcoast2": return [2];
+      case "T4C3Coast": return [2];
+      case "T4C3dCoast": return [2];
       case "T4C3": return [2];
       case "T4C3dC12rcv": return [1, 2];
       case "T4C356dC12rcv": return [1, 2, 0];
@@ -163,6 +166,7 @@ class t4Sim extends theoryClass<theory> {
         return [0, 2];
       }
       case "T4": return [0, 2, 1];
+      default: throw new Error(`${this.strat} is only implemented in the Rust sim`);
     }
   }
   constructor(data: theoryData) {
@@ -197,7 +201,7 @@ class t4Sim extends theoryClass<theory> {
     }
     this.trimBoughtVars();
     let stratExtra = '';
-    if(this.strat.includes("coast2")) {
+    if(this.strat.includes("Coast")) {
       stratExtra = this.variables[6].prepareExtraForCap(getLastLevel("q1", this.boughtVars)) +
           this.variables[7].prepareExtraForCap(getLastLevel("q2", this.boughtVars)) +
           this.variables[2].prepareExtraForCap(getLastLevel("c3", this.boughtVars));
@@ -226,7 +230,7 @@ class t4Sim extends theoryClass<theory> {
   onVariablePurchased(id: number) {
     if(
         [2, 6, 7].includes(id) &&
-        this.strat.includes("coast2") &&
+        this.strat.includes("Coast") &&
         this.variables[id].shouldBuy &&
         this.variables[id].coastingCapReached() &&
         // For this strat, there is almost never use to get levels above cap. We can skip simming that for faster sim:

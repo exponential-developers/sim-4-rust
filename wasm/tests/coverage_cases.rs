@@ -129,7 +129,7 @@ fn run_all_saved_cases() {
     // "All" mode, plus errors for unported theories and bad input
     let all = api(
         "all",
-        json!({ "values": [500.0, 500.0, 0.0, 500.0], "sigma": 500, "very_active": false, "semi_idle": true }),
+        json!({ "values": [500.0, 500.0, 0.0, 0.0, 0.0, 500.0], "sigma": 500, "very_active": false, "semi_idle": true }),
     );
     let theories: Vec<&str> = all["results"]
         .as_array()
@@ -144,9 +144,9 @@ fn run_all_saved_cases() {
     );
     let err: Value = serde_json::from_str(&wasm::run_query("not json")).unwrap();
     assert_eq!(err["response_type"], "failure");
-    let err: Value = serde_json::from_str(&wasm::sim_strat("T4", "T4", 100, 100.)).unwrap();
+    let err: Value = serde_json::from_str(&wasm::sim_strat("T6", "T6", 100, 100.)).unwrap();
     assert_eq!(err["response_type"], "failure");
     let err: Value = serde_json::from_str(&wasm::sim_strat("T99", "T1", 100, 100.)).unwrap();
     assert!(err["data"].as_str().unwrap().contains("Unknown theory"));
-    assert_eq!(wasm::ported_theories(), r#"["T1","T2","T3"]"#);
+    assert_eq!(wasm::ported_theories(), r#"["T1","T2","T3","T4","T5"]"#);
 }

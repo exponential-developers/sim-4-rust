@@ -68,6 +68,15 @@ pub fn log10_1p_exp10(d: f64) -> f64 {
     }
 }
 
+/**
+ * log10(1 + x) for x >= 0, skipping the call when the result is exactly 0: below 1e-17, x is
+ * under half an ulp of 1, so `1 + x` rounds to exactly 1 (see `NEGLIGIBLE_EXP_DIFF`).
+ */
+#[inline]
+pub fn log10_1p(x: f64) -> f64 {
+    if x < 1e-17 { 0. } else { log10(1. + x) }
+}
+
 /** log10(1 - 10^d) for d = min - max <= 0, skipping the calls when the result is exactly 0 */
 #[inline]
 pub fn log10_1m_exp10(d: f64) -> f64 {
@@ -94,6 +103,14 @@ mod tests {
         }
         assert_eq!(log10_1p_exp10(f64::NEG_INFINITY), 0.);
         assert_eq!(log10_1m_exp10(f64::NEG_INFINITY), 0.);
+        // log10(1 + x) for x below half an ulp of 1 is exactly 0
+        for x in [0., 1e-300, 1e-18, 9.99e-18] {
+            assert_eq!(log10(1. + x).to_bits(), 0f64.to_bits());
+            assert_eq!(log10_1p(x).to_bits(), 0f64.to_bits());
+        }
+        for x in [1e-17, 1e-10, 0.5, 9.] {
+            assert_eq!(log10_1p(x), log10(1. + x));
+        }
         // above the threshold the full formula is used
         for d in [-16.9, -3., -0.5, 0.] {
             assert_eq!(log10_1p_exp10(d), log10(1. + exp10(d)));
