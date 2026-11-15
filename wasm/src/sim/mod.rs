@@ -10,6 +10,9 @@ use crate::theories::{
     t3::{T3Strat, simulate_t3},
     t4::{T4Strat, simulate_t4},
     t5::{T5Strat, simulate_t5},
+    t6::{T6Strat, simulate_t6},
+    t7::{T7Strat, simulate_t7},
+    t8::{T8Strat, simulate_t8},
     traditional::{
         PubTableCollector, SimParams, TheoryInput, default_result, log_to_exp,
         set_current_collector,
@@ -40,12 +43,15 @@ fn theory_config(theory: TheoryType) -> Result<&'static ConfigTheories, String> 
 }
 
 /** Theories that have been ported to the Rust sim, in data.json order */
-pub const PORTED_THEORIES: [TheoryType; 5] = [
+pub const PORTED_THEORIES: [TheoryType; 8] = [
     TheoryType::T1,
     TheoryType::T2,
     TheoryType::T3,
     TheoryType::T4,
     TheoryType::T5,
+    TheoryType::T6,
+    TheoryType::T7,
+    TheoryType::T8,
 ];
 
 /** Whether a theory has been ported to the Rust sim */
@@ -84,6 +90,21 @@ pub fn run_strat(
             let strat =
                 T5Strat::from_name(strat).ok_or_else(|| format!("Unknown T5 strat \"{strat}\""))?;
             Ok(simulate_t5(strat, input))
+        }
+        TheoryType::T6 => {
+            let strat =
+                T6Strat::from_name(strat).ok_or_else(|| format!("Unknown T6 strat \"{strat}\""))?;
+            Ok(simulate_t6(strat, input))
+        }
+        TheoryType::T7 => {
+            let strat =
+                T7Strat::from_name(strat).ok_or_else(|| format!("Unknown T7 strat \"{strat}\""))?;
+            Ok(simulate_t7(strat, input))
+        }
+        TheoryType::T8 => {
+            let strat =
+                T8Strat::from_name(strat).ok_or_else(|| format!("Unknown T8 strat \"{strat}\""))?;
+            Ok(simulate_t8(strat, input))
         }
         _ => Err(format!(
             "{theory:?} has not been ported to the Rust sim yet"
@@ -748,8 +769,8 @@ mod tests {
                 "{theory:?}: {res:?}"
             );
         }
-        assert!(!is_ported(TheoryType::T6));
-        assert!(run_strat(TheoryType::T6, "T6", &input).is_err());
+        assert!(!is_ported(TheoryType::WSP));
+        assert!(run_strat(TheoryType::WSP, "WSP", &input).is_err());
         assert!(run_strat(TheoryType::T1, "NotAStrat", &input).is_err());
     }
 }

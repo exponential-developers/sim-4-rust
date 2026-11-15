@@ -62,8 +62,20 @@ fn run_all_saved_cases() {
         ))
         .unwrap();
         let label = format!("{theory} {strat} e{rho}");
+        // T8's SingleMS strats have nothing to simulate when no swap point is near the last pub
+        if r["strat"] == "Result undefined" {
+            assert!(strat.contains("SingleMS"), "{label}: no result");
+            assert_eq!(r["tauH"].as_f64().unwrap(), 0., "{label}");
+            continue;
+        }
+        // sim-3 names T6's idle recovery stops "...IdleRecoveryCoastM3": the stop comes after the
+        // strat name, and here it is part of the requested name (T6SnaxIdleRecoveryM3Coast)
+        let expected_name = match strat.split_once("IdleRecoveryM") {
+            Some((head, rest)) => format!("{head}IdleRecovery{}", &rest[1..]),
+            None => strat.to_owned(),
+        };
         assert!(
-            r["strat"].as_str().unwrap().starts_with(strat),
+            r["strat"].as_str().unwrap().starts_with(&expected_name),
             "{label}: result strat {}",
             r["strat"]
         );
@@ -129,7 +141,7 @@ fn run_all_saved_cases() {
     // "All" mode, plus errors for unported theories and bad input
     let all = api(
         "all",
-        json!({ "values": [500.0, 500.0, 0.0, 0.0, 0.0, 500.0], "sigma": 500, "very_active": false, "semi_idle": true }),
+        json!({ "values": [500.0, 500.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 500.0], "sigma": 500, "very_active": false, "semi_idle": true }),
     );
     let theories: Vec<&str> = all["results"]
         .as_array()
@@ -144,9 +156,12 @@ fn run_all_saved_cases() {
     );
     let err: Value = serde_json::from_str(&wasm::run_query("not json")).unwrap();
     assert_eq!(err["response_type"], "failure");
-    let err: Value = serde_json::from_str(&wasm::sim_strat("T6", "T6", 100, 100.)).unwrap();
+    let err: Value = serde_json::from_str(&wasm::sim_strat("WSP", "WSP", 100, 100.)).unwrap();
     assert_eq!(err["response_type"], "failure");
     let err: Value = serde_json::from_str(&wasm::sim_strat("T99", "T1", 100, 100.)).unwrap();
     assert!(err["data"].as_str().unwrap().contains("Unknown theory"));
-    assert_eq!(wasm::ported_theories(), r#"["T1","T2","T3","T4","T5"]"#);
+    assert_eq!(
+        wasm::ported_theories(),
+        r#"["T1","T2","T3","T4","T5","T6","T7","T8"]"#
+    );
 }

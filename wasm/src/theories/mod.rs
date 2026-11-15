@@ -1,10 +1,40 @@
 /*! Theory implementations */
 
+/**
+ * Declares a strat enum with `ALL` (in the order listed, which is data.json order), `name()` and
+ * `from_name()`; the names are the variant names.
+ */
+macro_rules! strat_enum {
+    ($(#[$meta:meta])* $vis:vis enum $name:ident { $($variant:ident),+ $(,)? }) => {
+        $(#[$meta])*
+        $vis enum $name {
+            $($variant),+
+        }
+
+        impl $name {
+            pub const ALL: &'static [$name] = &[$($name::$variant),+];
+
+            pub fn name(self) -> &'static str {
+                match self {
+                    $($name::$variant => stringify!($variant)),+
+                }
+            }
+
+            pub fn from_name(name: &str) -> Option<$name> {
+                $name::ALL.iter().copied().find(|s| s.name() == name)
+            }
+        }
+    };
+}
+
 pub mod t1;
 pub mod t2;
 pub mod t3;
 pub mod t4;
 pub mod t5;
+pub mod t6;
+pub mod t7;
+pub mod t8;
 pub mod traditional;
 
 #[cfg(test)]
@@ -52,6 +82,38 @@ mod tests {
             .map(|s| s.name().to_owned())
             .collect();
         assert_eq!(t5, data_json_strats("T5"));
+        let names = |all: &[&str]| {
+            all.iter()
+                .map(|s| s.to_string())
+                .collect::<BTreeSet<String>>()
+        };
+        assert_eq!(
+            names(
+                &super::t6::T6Strat::ALL
+                    .iter()
+                    .map(|s| s.name())
+                    .collect::<Vec<_>>()
+            ),
+            data_json_strats("T6")
+        );
+        assert_eq!(
+            names(
+                &super::t7::T7Strat::ALL
+                    .iter()
+                    .map(|s| s.name())
+                    .collect::<Vec<_>>()
+            ),
+            data_json_strats("T7")
+        );
+        assert_eq!(
+            names(
+                &super::t8::T8Strat::ALL
+                    .iter()
+                    .map(|s| s.name())
+                    .collect::<Vec<_>>()
+            ),
+            data_json_strats("T8")
+        );
     }
 
     #[test]
@@ -70,6 +132,15 @@ mod tests {
         }
         for s in super::t5::T5Strat::ALL {
             assert_eq!(super::t5::T5Strat::from_name(s.name()), Some(s));
+        }
+        for &s in super::t6::T6Strat::ALL {
+            assert_eq!(super::t6::T6Strat::from_name(s.name()), Some(s));
+        }
+        for &s in super::t7::T7Strat::ALL {
+            assert_eq!(super::t7::T7Strat::from_name(s.name()), Some(s));
+        }
+        for &s in super::t8::T8Strat::ALL {
+            assert_eq!(super::t8::T8Strat::from_name(s.name()), Some(s));
         }
         assert_eq!(super::t1::T1Strat::from_name("T2"), None);
     }

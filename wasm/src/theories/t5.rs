@@ -224,15 +224,6 @@ impl T5Consts {
     }
 }
 
-/** JavaScript `Math.min` semantics: NaN if any argument is NaN */
-fn js_min(a: f64, b: f64) -> f64 {
-    if a.is_nan() || b.is_nan() {
-        f64::NAN
-    } else {
-        a.min(b)
-    }
-}
-
 #[derive(Debug, Clone)]
 struct T5Sim {
     core: TraditionalCore,

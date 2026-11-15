@@ -5,17 +5,28 @@ import T2 from "SIM3/Theories/T1-T8/T2";
 import T3 from "SIM3/Theories/T1-T8/T3";
 import T4 from "SIM3/Theories/T1-T8/T4";
 import T5 from "SIM3/Theories/T1-T8/T5";
+import T6 from "SIM3/Theories/T1-T8/T6";
+import T7 from "SIM3/Theories/T1-T8/T7";
+import T8 from "SIM3/Theories/T1-T8/T8";
 import { getStrats } from "SIM3/Sim/strats";
 
-const THEORIES = { T1, T2, T3, T4, T5 };
+const THEORIES = { T1, T2, T3, T4, T5, T6, T7, T8 };
 const SETTINGS = { dt: 1.5, ddt: 1.0001, boughtVarsDelta: 5 };
 const CATEGORIES = ["Best Active", "Best Overall", "Best Semi-Idle", "Best Idle"];
 
 function run(theory, strat, sigma, rho, cap) {
+  // The Rust sim names T6's idle recovery stops in the strat (T6SnaxIdleRecoveryM3Coast): sim-3
+  // takes the stop as a strat specific input
+  const stop = /^(T6\w*IdleRecovery)M(\d)(Coast)?$/.exec(strat);
+  const stratSpecificInputs = {};
+  if (stop) {
+    strat = stop[1] + (stop[3] ?? "");
+    stratSpecificInputs.idleRcvStop = stop[2];
+  }
   return THEORIES[theory].simulate({
     theory,
     specificInputs: {},
-    stratSpecificInputs: {},
+    stratSpecificInputs,
     sigma,
     input: { valueType: "rho", value: rho },
     strat,
@@ -28,7 +39,8 @@ function run(theory, strat, sigma, rho, cap) {
 const summary = (res) => ({
   strat: res.strat,
   tauH: res.tauH,
-  pubRho: res.pubPointRho,
+  // sim-3's "Result undefined" (no strat could run) has no pub rho; the Rust sim reports 0
+  pubRho: res.pubPointRho ?? 0,
   time: res.time,
   boughtVars: res.boughtVars.length,
 });

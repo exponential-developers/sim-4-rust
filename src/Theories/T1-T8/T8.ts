@@ -46,7 +46,8 @@ class t8Sim extends theoryClass<theory> {
   msTimer: number;
 
   getBuyingConditions(): conditionFunction[] {
-    const conditions: Record<stratType[theory], (boolean | conditionFunction)[]> = {
+    // Strats changed in data.json after this old TypeScript sim was retired exist only in the Rust sim
+    const conditions: Partial<Record<string, (boolean | conditionFunction)[]>> = {
       T8: [true, true, true, true, true],
       T8noC3: [true, true, false, true, true],
       T8noC5: [true, true, true, true, false],
@@ -92,7 +93,9 @@ class t8Sim extends theoryClass<theory> {
         () => this.variables[4].shouldBuy && (this.variables[4].cost + l10(2.5) < Math.min(this.variables[1].cost, this.variables[3].cost)),
       ]
     };
-    return toCallables(conditions[this.strat]);
+    const stratConditions = conditions[this.strat];
+    if (!stratConditions) throw new Error(`${this.strat} is only implemented in the Rust sim`);
+    return toCallables(stratConditions);
   }
   getVariableAvailability(): conditionFunction[] {
     const conditions: conditionFunction[] = [() => true, () => true, () => true, () => true, () => true];

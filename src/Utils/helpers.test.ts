@@ -84,6 +84,9 @@ describe("multiplier inputs (reverseMulti)", () => {
       expect(reverseMulti("T3", sim3Mult(300, 0.147, Math.log10(3), sigma), sigma)).toBeCloseTo(300, 9);
       expect(reverseMulti("T4", sim3Mult(220, 0.165, -Math.log10(4), sigma), sigma)).toBeCloseTo(220, 9);
       expect(reverseMulti("T5", sim3Mult(180, 0.159, 0, sigma), sigma)).toBeCloseTo(180, 9);
+      expect(reverseMulti("T6", sim3Mult(250, 0.196, -Math.log10(50), sigma), sigma)).toBeCloseTo(250, 9);
+      expect(reverseMulti("T7", sim3Mult(210, 0.152, 0, sigma), sigma)).toBeCloseTo(210, 9);
+      expect(reverseMulti("T8", sim3Mult(190, 0.15, 0, sigma), sigma)).toBeCloseTo(190, 9);
     }
   });
 
@@ -95,6 +98,9 @@ describe("multiplier inputs (reverseMulti)", () => {
     expect(reverseMulti("T3", value, sigma)).toBe((value - Math.log10(3) - r9) / 0.147);
     expect(reverseMulti("T4", value, sigma)).toBe((value - -Math.log10(4) - r9) / 0.165);
     expect(reverseMulti("T5", value, sigma)).toBe((value - 0 - r9) / 0.159);
+    expect(reverseMulti("T6", value, sigma)).toBe((value - -Math.log10(50) - r9) / 0.196);
+    expect(reverseMulti("T7", value, sigma)).toBe((value - 0 - r9) / 0.152);
+    expect(reverseMulti("T8", value, sigma)).toBe((value - 0 - r9) / 0.15);
   });
 
   it("rejects unknown theories", () => {

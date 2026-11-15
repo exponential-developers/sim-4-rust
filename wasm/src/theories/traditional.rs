@@ -192,6 +192,33 @@ pub fn js_max(a: f64, b: f64) -> f64 {
     }
 }
 
+/** JavaScript `Math.min` semantics: NaN if any argument is NaN */
+#[inline]
+pub fn js_min(a: f64, b: f64) -> f64 {
+    if a.is_nan() || b.is_nan() {
+        f64::NAN
+    } else {
+        a.min(b)
+    }
+}
+
+/**
+ * Exponential cost from a base cost and a cost increase, parsed like sim-3's
+ * `ExponentialCost(base, costInc)` (`parseValue(String(x))`, which reads 1e25 as 25 + log10(1)).
+ */
+pub fn exp_cost_model(base: f64, increase: f64) -> crate::utils::cost::ExponentialCost {
+    let log = |x: f64| LogNum {
+        value: parse_value(x),
+        sign: 1,
+    };
+    crate::utils::cost::ExponentialCost::new(log(base), log(increase))
+}
+
+/** `exp_cost_model` as a cost */
+pub fn exp_cost(base: f64, increase: f64) -> crate::utils::cost::Cost {
+    crate::utils::cost::Cost::Exponential(exp_cost_model(base, increase))
+}
+
 /** sim-3 `logToExp`: formats a log10 value as "x.xxey" */
 pub fn log_to_exp(num: f64, dec: i32) -> String {
     let whole = num.floor();

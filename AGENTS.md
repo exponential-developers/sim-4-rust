@@ -54,7 +54,7 @@ npm run build
 
 | Path | What it is |
 |---|---|
-| `wasm/src/theories/` | Theory simulations. `traditional.rs` is the shared base (sim-3's `theory.ts` + `traditionalTheory.ts`); `t1.rs` to `t5.rs` are ported theories (`t3.rs` shows a theory with several currencies, `t5.rs` one with a pub table). `data/` holds data files copied unchanged from sim-3 (e.g. T5's pub table). |
+| `wasm/src/theories/` | Theory simulations. `traditional.rs` is the shared base (sim-3's `theory.ts` + `traditionalTheory.ts`); `t1.rs` to `t8.rs` are ported theories (`t3.rs` shows a theory with several currencies, `t5.rs` one with a pub table, `t6.rs` weighted buying and strat names that carry an input, `t8.rs` a numerically integrated attractor). `strat_enum!` (in `theories/mod.rs`) declares the strat enum of the newer theories. `data/` holds data files copied unchanged from sim-3 (e.g. T5's pub table). |
 | `wasm/src/sim/mod.rs` | Sim modes (single, chain, step, all, step_chain, amount, time, comparison, pub_table), "Best ..." strat selection, and the list of ported theories (`PORTED_THEORIES`, `run_strat`). |
 | `wasm/src/api/` | JSON request/response types (`query.rs`, `response.rs`), `data.json` config (`config.rs`), and the parser for strat conditions (`condition.rs`). |
 | `wasm/src/utils/` | `LogNum`, cost/value models, `Variable`, and `fastmath.rs` (see "Exact results" below). |
@@ -162,7 +162,7 @@ variable gets bought and then the whole publication. To keep results identical:
 ## Porting a theory
 
 1. Read sim-3's `src/Theories/<group>/<Theory>.ts` and the base classes it uses.
-2. Create `wasm/src/theories/<theory>.rs` following the ported theories (`t1.rs` to `t5.rs`): a strat enum with
+2. Create `wasm/src/theories/<theory>.rs` following the ported theories (`t1.rs` to `t8.rs`): a strat enum with
    `name()` / `from_name()` matching `data.json`, a sim struct holding a `TraditionalCore`, and a
    `simulate_<theory>(strat, input)` function reproducing sim-3's top-level function (multi-pass
    coasting, forks, etc.).
@@ -196,5 +196,10 @@ variable gets bought and then the whole publication. To keep results identical:
 
 - sim-3 lowercases strat conditions, including quoted names, so conditions like
   `lastStrat !== "T4C3"` never match a real strat name there. `condition.rs` keeps string case, so
-  once T4/T6 are ported their results can differ from sim-3 on those conditions.
+  T4 and T6 results can differ from sim-3 on those conditions (chains of T6 through e800 and above,
+  where `T6C125`/`T6C12` look at `lastStrat`). The bench keeps its T6 chain under e100 for this reason.
+- sim-3 takes T6's idle recovery stop as a strat specific input (`idleRcvStop`). Here the stop is
+  part of the strat name (`T6SnaxIdleRecoveryM1` to `M5`, with their `Coast` versions), which the
+  site already offered, and results are named like sim-3 names them (`T6SnaxIdleRecoveryCoastM3 ...`).
+  These strats are not in sim-3's data.json, so T6's comparison mode lists them and sim-3's doesn't.
 - Time and chain modes return an error instead of looping forever when no strat makes progress.

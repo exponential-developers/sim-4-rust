@@ -95,7 +95,8 @@ class t6Sim extends theoryClass<theory> {
                 true,
             ]
         }
-        const conditions: Record<stratType[theory], (boolean | conditionFunction)[]> = {
+        // Strats changed in data.json after this old TypeScript sim was retired exist only in the Rust sim
+        const conditions: Partial<Record<string, (boolean | conditionFunction)[]>> = {
             T6: [true, true, true, true, true, true, true, true, true],
             T6C3: [true, true, true, true, () => this.variables[6].level == 0, () => this.variables[6].level == 0, true, false, false],
             T6C4: [true, true, true, true, false, false, false, true, false],
@@ -253,7 +254,9 @@ class t6Sim extends theoryClass<theory> {
             T6AI: [],
             T6AICoast: [],
         };
-        return toCallables(conditions[this.strat]);
+        const stratConditions = conditions[this.strat];
+        if (!stratConditions) throw new Error(`${this.strat} is only implemented in the Rust sim`);
+        return toCallables(stratConditions);
     }
 
     getVariableAvailability(): conditionFunction[] {
@@ -336,6 +339,8 @@ class t6Sim extends theoryClass<theory> {
                 return [0, 2];
             case "T6C5dIdleRecoveryCoast":
                 return [0, 2];
+            default:
+                throw new Error(`${this.strat} is only implemented in the Rust sim`);
         }
     }
 
