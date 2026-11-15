@@ -35,7 +35,7 @@ mod tests {
 
     fn buy(var_name: &'static str, level: i32) -> VarBuy {
         VarBuy {
-            var_name,
+            var_name: var_name.into(),
             level,
             cost: LogNum::from(10.),
             symbol: "rho",

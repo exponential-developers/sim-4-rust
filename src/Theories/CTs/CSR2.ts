@@ -60,14 +60,17 @@ class csr2Sim extends theoryClass<theory> {
         true,
       ];
 
-    const conditions: Record<stratType[theory], (boolean | conditionFunction)[]> = {
+    // Strats added to data.json after this old TypeScript sim was retired exist only in the Rust sim
+    const conditions: Partial<Record<string, (boolean | conditionFunction)[]>> = {
       CSR2: idlestrat,
       CSR2PT: idlestrat,
       CSR2d: activeStrat,
       CSR2XL: activeXLstrat,
       CSR2XLPT: activeXLstrat
     };
-    return toCallables(conditions[this.strat]);
+    const stratConditions = conditions[this.strat];
+    if (!stratConditions) throw new Error(`${this.strat} is only implemented in the Rust sim`);
+    return toCallables(stratConditions);
   }
   getVariableAvailability(): conditionFunction[] {
     const conditions: conditionFunction[] = [

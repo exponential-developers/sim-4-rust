@@ -54,7 +54,7 @@ npm run build
 
 | Path | What it is |
 |---|---|
-| `wasm/src/theories/` | Theory simulations. `traditional.rs` is the shared base (sim-3's `theory.ts` + `traditionalTheory.ts`); `t1.rs` to `t8.rs` are ported theories (`t3.rs` shows a theory with several currencies, `t5.rs` one with a pub table, `t6.rs` weighted buying and strat names that carry an input, `t8.rs` a numerically integrated attractor). `strat_enum!` (in `theories/mod.rs`) declares the strat enum of the newer theories. `data/` holds data files copied unchanged from sim-3 (e.g. T5's pub table). |
+| `wasm/src/theories/` | Theory simulations. `traditional.rs` is the shared base (sim-3's `theory.ts` + `traditionalTheory.ts`); `t1.rs` to `t8.rs` and the custom theories (`wsp.rs`, `sl.rs`, `ef.rs`, `csr2.rs`, `fi.rs`, `fp.rs`, `rz.rs`, `mf.rs`, `bap.rs`, `tc.rs`, `bt.rs`) are the ported theories (`t3.rs` shows a theory with several currencies, `t5.rs` one with a pub table, `t6.rs` weighted buying and strat names that carry an input, `t8.rs` a numerically integrated attractor, `ef.rs`/`csr2.rs`/`fp.rs` forks that try stopping to buy near a forced publication point, `mf.rs` forks at resets, `rz.rs` the zeta function and black holes). `strat_enum!` (in `theories/mod.rs`) declares the strat enum of the newer theories. `pubtable.rs` decodes sim-3's pub tables. `data/` holds data files copied unchanged from sim-3 (pub tables, RZ's zeros). |
 | `wasm/src/sim/mod.rs` | Sim modes (single, chain, step, all, step_chain, amount, time, comparison, pub_table), "Best ..." strat selection, and the list of ported theories (`PORTED_THEORIES`, `run_strat`). |
 | `wasm/src/api/` | JSON request/response types (`query.rs`, `response.rs`), `data.json` config (`config.rs`), and the parser for strat conditions (`condition.rs`). |
 | `wasm/src/utils/` | `LogNum`, cost/value models, `Variable`, and `fastmath.rs` (see "Exact results" below). |
@@ -162,7 +162,7 @@ variable gets bought and then the whole publication. To keep results identical:
 ## Porting a theory
 
 1. Read sim-3's `src/Theories/<group>/<Theory>.ts` and the base classes it uses.
-2. Create `wasm/src/theories/<theory>.rs` following the ported theories (`t1.rs` to `t8.rs`): a strat enum with
+2. Create `wasm/src/theories/<theory>.rs` following a ported theory of the same kind: a strat enum with
    `name()` / `from_name()` matching `data.json`, a sim struct holding a `TraditionalCore`, and a
    `simulate_<theory>(strat, input)` function reproducing sim-3's top-level function (multi-pass
    coasting, forks, etc.).
@@ -202,4 +202,12 @@ variable gets bought and then the whole publication. To keep results identical:
   part of the strat name (`T6SnaxIdleRecoveryM1` to `M5`, with their `Coast` versions), which the
   site already offered, and results are named like sim-3 names them (`T6SnaxIdleRecoveryCoastM3 ...`).
   These strats are not in sim-3's data.json, so T6's comparison mode lists them and sim-3's doesn't.
+- Theories with a tau factor other than 1 (the custom theories) start every publication of a chain,
+  step or amount sim from the tau of the previous one, as sim-3 does (`TheoryInput::last_pub_tau`),
+  so their results match sim-3 bit for bit. A tau typed in the page is converted to rho before it
+  reaches Rust and back again, which can differ from the typed tau in the last bit.
+- EF stops forking at a depth of 100 instead of failing with sim-3's "Max coasting research depth
+  reached" error.
+- MF's reset depth comes from the "MF reset depth" setting (sim-3: a theory specific input). The
+  bench only checks depth 0 against sim-3.
 - Time and chain modes return an error instead of looping forever when no strat makes progress.

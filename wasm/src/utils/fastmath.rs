@@ -20,6 +20,12 @@ mod imp {
         pub fn log10(x: f64) -> f64;
         #[wasm_bindgen(js_namespace = Math, js_name = log2)]
         pub fn log2(x: f64) -> f64;
+        #[wasm_bindgen(js_namespace = Math, js_name = log)]
+        pub fn ln(x: f64) -> f64;
+        #[wasm_bindgen(js_namespace = Math, js_name = cos)]
+        pub fn cos(x: f64) -> f64;
+        #[wasm_bindgen(js_namespace = Math, js_name = sin)]
+        pub fn sin(x: f64) -> f64;
         #[wasm_bindgen(js_namespace = Math, js_name = pow)]
         pub fn pow(x: f64, y: f64) -> f64;
     }
@@ -36,12 +42,24 @@ mod imp {
         x.log2()
     }
     #[inline]
+    pub fn ln(x: f64) -> f64 {
+        x.ln()
+    }
+    #[inline]
+    pub fn cos(x: f64) -> f64 {
+        x.cos()
+    }
+    #[inline]
+    pub fn sin(x: f64) -> f64 {
+        x.sin()
+    }
+    #[inline]
     pub fn pow(x: f64, y: f64) -> f64 {
         x.powf(y)
     }
 }
 
-pub use imp::{log2, log10, pow};
+pub use imp::{cos, ln, log2, log10, pow, sin};
 
 /** 10^x */
 #[inline]

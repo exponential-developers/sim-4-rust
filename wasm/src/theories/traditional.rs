@@ -20,6 +20,10 @@ pub struct SimParams {
     pub dt: f64,
     pub ddt: f64,
     pub bought_vars_delta: f64,
+    /** Show the a2 and a3 levels in EF's strat column */
+    pub show_a23: bool,
+    /** MF: how many resets ahead the sim looks (0 to 5) */
+    pub mf_reset_depth: i32,
 }
 
 impl Default for SimParams {
@@ -29,6 +33,8 @@ impl Default for SimParams {
             dt: 1.5,
             ddt: 1.0001,
             bought_vars_delta: 5.,
+            show_a23: false,
+            mf_reset_depth: 0,
         }
     }
 }
@@ -39,6 +45,12 @@ pub struct TheoryInput {
     pub sigma: i64,
     /** log10 of the rho of the last publication */
     pub last_pub_rho: f64,
+    /**
+     * log10 tau of the last publication when the sim starts from a tau value (as sim-3's chains
+     * do); `tau / tau_factor` is then not exactly `last_pub_rho * tau_factor` again. None: the tau
+     * is `last_pub_rho * tau_factor`.
+     */
+    pub last_pub_tau: Option<f64>,
     /** log10 rho cap (f64::INFINITY for none) */
     pub rho_cap: f64,
     pub params: SimParams,
@@ -192,6 +204,46 @@ pub fn js_max(a: f64, b: f64) -> f64 {
     }
 }
 
+/** sim-3's `LinearValue(power, offset)`: `offset + power * level` as a plain number */
+#[derive(Debug, Clone, Copy)]
+pub struct PlainLinearValue {
+    pub power: f64,
+    pub offset: f64,
+}
+
+impl crate::utils::value::ValueTrait for PlainLinearValue {
+    fn compute_from_zero(&self, level: i32) -> LogNum {
+        LogNum {
+            value: self.offset + self.power * level as f64,
+            sign: 1,
+        }
+    }
+
+    fn compute_next(&self, _old_value: LogNum, current_level: i32) -> LogNum {
+        LogNum {
+            value: self.offset + self.power * (current_level + 1) as f64,
+            sign: 1,
+        }
+    }
+}
+
+/** Number of unlock points at or below `target` (sim-3 `binaryInsertionSearch`) */
+pub fn binary_insertion_search(unlocks: &[f64], target: f64) -> usize {
+    if target < unlocks[0] {
+        return 0;
+    }
+    let (mut l, mut r) = (0, unlocks.len() - 1);
+    while l < r {
+        let m = (l + r).div_ceil(2);
+        if unlocks[m] <= target {
+            l = m;
+        } else {
+            r = m - 1;
+        }
+    }
+    l + 1
+}
+
 /** JavaScript `Math.min` semantics: NaN if any argument is NaN */
 #[inline]
 pub fn js_min(a: f64, b: f64) -> f64 {
@@ -212,6 +264,29 @@ pub fn exp_cost_model(base: f64, increase: f64) -> crate::utils::cost::Exponenti
         sign: 1,
     };
     crate::utils::cost::ExponentialCost::new(log(base), log(increase))
+}
+
+/**
+ * sim-3 `ExponentialCost(base, increase, true)`: the cost increase is a power of 2
+ * (`l10(2) * 10 ** parseValue(String(increase))`)
+ */
+pub fn exp_cost_log2_model(base: f64, increase: f64) -> crate::utils::cost::ExponentialCost {
+    let increase_log = l10(2.) * fastmath::exp10(parse_value(increase));
+    crate::utils::cost::ExponentialCost::new(
+        LogNum {
+            value: parse_value(base),
+            sign: 1,
+        },
+        LogNum {
+            value: increase_log,
+            sign: 1,
+        },
+    )
+}
+
+/** `exp_cost_log2_model` as a cost */
+pub fn exp_cost_log2(base: f64, increase: f64) -> crate::utils::cost::Cost {
+    crate::utils::cost::Cost::Exponential(exp_cost_log2_model(base, increase))
 }
 
 /** `exp_cost_model` as a cost */
@@ -319,6 +394,8 @@ pub struct TraditionalCore {
 
     pub pub_unlock_rho: f64,
     pub last_pub_rho: f64,
+    /** Tau of the last publication */
+    pub start_tau: f64,
     pub rho_cap: f64,
     pub tot_mult: f64,
     pub cur_mult: f64,
@@ -341,6 +418,17 @@ pub struct TraditionalCore {
     pub milestones: Vec<i32>,
     pub milestones_max: Vec<i32>,
     pub milestone_unlock_steps: f64,
+    /** Rho at which each milestone is unlocked; used when `milestone_unlock_steps` is not set */
+    pub milestone_unlocks: Vec<f64>,
+
+    /** Extra forced pub condition: the pub rho must be at least this (sim-3 TC) */
+    pub forced_pub_min_rho: Option<f64>,
+
+    /** Extra pub condition: the pub multiplier reached this value (needs `track_cur_mult`) */
+    pub pub_end_cur_mult: Option<f64>,
+
+    /** Extra sim end condition: the pub multiplier reached this value (needs `track_cur_mult`) */
+    pub sim_end_cur_mult: Option<f64>,
 
     /** Whether the "t > 2 * pubT" sim end condition is checked */
     pub do_sim_end_conditions: bool,
@@ -376,6 +464,9 @@ impl TraditionalCore {
             converter,
             pub_unlock_rho,
             last_pub_rho: input.last_pub_rho,
+            start_tau: input
+                .last_pub_tau
+                .unwrap_or_else(|| converter.rho_to_tau(input.last_pub_rho)),
             rho_cap: input.rho_cap,
             tot_mult: 0.,
             cur_mult: 0.,
@@ -393,6 +484,10 @@ impl TraditionalCore {
             milestones: Vec::new(),
             milestones_max: Vec::new(),
             milestone_unlock_steps: -1.,
+            milestone_unlocks: Vec::new(),
+            sim_end_cur_mult: None,
+            forced_pub_min_rho: None,
+            pub_end_cur_mult: None,
             do_sim_end_conditions: true,
             pub_target: None,
             best_fork_res: None,
@@ -419,16 +514,19 @@ impl TraditionalCore {
     #[inline]
     pub fn forced_pub_conditions(&self) -> bool {
         self.pub_rho >= self.pub_unlock_rho
+            && self.forced_pub_min_rho.is_none_or(|m| self.pub_rho >= m)
     }
 
     #[inline]
     pub fn pub_conditions(&self) -> bool {
-        self.max_rho >= self.rho_cap || self.pub_target.is_some_and(|p| self.max_rho >= p)
+        self.max_rho >= self.rho_cap
+            || self.pub_target.is_some_and(|p| self.max_rho >= p)
+            || self.pub_end_cur_mult.is_some_and(|m| self.cur_mult > m)
     }
 
     #[inline]
     pub fn sim_end_conditions(&self) -> bool {
-        self.t > self.pub_t * 2.
+        self.t > self.pub_t * 2. || self.sim_end_cur_mult.is_some_and(|m| self.cur_mult > m)
     }
 
     /** True when the simulation loop should stop */
@@ -446,14 +544,21 @@ impl TraditionalCore {
 
     /** Updates max rho, time, tau/h and the publication point */
     pub fn update_sim_status(&mut self) {
+        self.update_max_rho();
+        self.update_t();
+        self.update_sim_status_after_t();
+    }
+
+    /** First part of `update_sim_status` */
+    pub fn update_max_rho(&mut self) {
         if self.rho.value > self.max_rho {
             self.max_rho = self.rho.value;
         }
-        self.update_t();
+    }
 
-        self.tau_h = (self.converter.rho_to_tau(self.max_rho)
-            - self.converter.rho_to_tau(self.last_pub_rho))
-            / (self.t / 3600.);
+    /** Last part of `update_sim_status`, for theories with their own time step (RZ) */
+    pub fn update_sim_status_after_t(&mut self) {
+        self.tau_h = (self.converter.rho_to_tau(self.max_rho) - self.start_tau) / (self.t / 3600.);
         if self.max_tau_h < self.tau_h || !self.forced_pub_conditions() || self.pub_conditions() {
             self.max_tau_h = self.tau_h;
             self.pub_t = self.t;
@@ -468,7 +573,11 @@ impl TraditionalCore {
 
     /** Distributes milestones for the given rho following `priority` */
     pub fn set_milestones_at(&mut self, rho: f64, priority: &[usize]) {
-        let mut count = (rho / self.milestone_unlock_steps).floor() as i64;
+        let mut count = if self.milestone_unlock_steps > 0. {
+            (rho / self.milestone_unlock_steps).floor() as i64
+        } else {
+            binary_insertion_search(&self.milestone_unlocks, rho) as i64
+        };
         self.milestones.clear();
         self.milestones.resize(self.milestones_max.len(), 0);
         for &p in priority {
@@ -493,7 +602,7 @@ impl TraditionalCore {
     pub fn record_purchase_in(&mut self, variable: &Variable, symbol: &'static str) {
         if self.max_rho + self.params.bought_vars_delta > self.last_pub_rho {
             self.bought_vars.push(VarBuy {
-                var_name: variable.name,
+                var_name: variable.name.into(),
                 level: variable.level + 1,
                 cost: variable.cost,
                 symbol,
@@ -523,7 +632,7 @@ impl TraditionalCore {
     }
 
     pub fn create_result(&self, strat: &str, strat_extra: &str) -> SimResult {
-        let start_tau = self.converter.rho_to_tau(self.last_pub_rho);
+        let start_tau = self.start_tau;
         let pub_tau = self.converter.rho_to_tau(self.pub_rho);
         SimResult {
             theory: self.theory,

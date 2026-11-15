@@ -219,6 +219,9 @@ export function reverseMulti(theory: string, value: number, sigma: number) {
   // Ported theories use sim-3's exact formula and operation order (traditionalConverter:
   // (value - multFactor - r9) / multExponent), so results match sim-3 bit for bit.
   const sim3Multi = (multExponent: number, multFactor: number) => (value - multFactor - R9) / multExponent;
+  // Custom theories: the multiplier to tau (no R9), then tau to rho (sim-3's tauToRho)
+  const sim3CtMulti = (multExponent: number, multFactor: number, tauFactor: number) =>
+    ((value - multFactor) / multExponent) / tauFactor;
   switch (theory) {
     case "T1":
       return sim3Multi(0.164, -l10(3));
@@ -238,21 +241,25 @@ export function reverseMulti(theory: string, value: number, sigma: number) {
       return sim3Multi(0.15, 0);
     case "WSP":
     case "SL":
-      return value / 0.15;
+      return sim3CtMulti(0.375, 0, 0.4);
     case "EF":
-      return value * (1 / 0.387) * 2.5;
+      return sim3CtMulti(0.09675, 0, 1.6);
     case "CSR2":
-      return (value + l10(200)) * (1 / 2.203) * 10;
+      return sim3CtMulti(0.55075, -l10(200), 0.4);
     case "FI":
-      return value * (1 / 0.1625) * 2.5;
+      return sim3CtMulti(0.1625, 0, 0.4);
     case "FP":
-      return (value - l10(5)) * (1 / 0.331) * (10 / 3);
+      return sim3CtMulti(0.331, l10(5), 0.3);
     case "RZ":
-      return (value - l10(2)) / 0.2102;
+      return sim3CtMulti(21.02 / 40, l10(2), 0.4);
     case "MF":
-      return value / 0.17;
+      return sim3CtMulti(0.17, 0, 1);
     case "BaP":
-      return (value - l10(5)) / 0.132075 * 2.5;
+      return sim3CtMulti(0.132075, l10(5), 0.4);
+    case "BT":
+      return sim3CtMulti(1.25, 0, 0.4);
+    case "TC":
+      return sim3CtMulti(0.2 / 0.45, -l10(2), 0.45);
   }
   throw new Error(`Failed parsing multiplier. Please contact the author of the sim.`);
 }

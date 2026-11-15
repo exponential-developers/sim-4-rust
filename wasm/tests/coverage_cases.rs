@@ -74,8 +74,11 @@ fn run_all_saved_cases() {
             Some((head, rest)) => format!("{head}IdleRecovery{}", &rest[1..]),
             None => strat.to_owned(),
         };
+        // FI's PT strats can return the result of the strat without PT (the continuity run)
+        let without_pt = expected_name.replacen("PT", "", 1);
+        let name = r["strat"].as_str().unwrap();
         assert!(
-            r["strat"].as_str().unwrap().starts_with(&expected_name),
+            name.starts_with(&expected_name) || name.starts_with(&without_pt),
             "{label}: result strat {}",
             r["strat"]
         );
@@ -138,10 +141,10 @@ fn run_all_saved_cases() {
         );
     }
 
-    // "All" mode, plus errors for unported theories and bad input
+    // "All" mode, plus errors for bad input
     let all = api(
         "all",
-        json!({ "values": [500.0, 500.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 500.0], "sigma": 500, "very_active": false, "semi_idle": true }),
+        json!({ "values": [500.0, 500.0], "sigma": 500, "very_active": false, "semi_idle": true }),
     );
     let theories: Vec<&str> = all["results"]
         .as_array()
@@ -149,19 +152,15 @@ fn run_all_saved_cases() {
         .iter()
         .map(|r| r["theory"].as_str().unwrap())
         .collect();
-    assert_eq!(
-        theories,
-        ["T1", "T2"],
-        "All mode should skip 0 values and unported theories"
-    );
+    assert_eq!(theories, ["T1", "T2"], "All mode should skip 0 values");
     let err: Value = serde_json::from_str(&wasm::run_query("not json")).unwrap();
     assert_eq!(err["response_type"], "failure");
-    let err: Value = serde_json::from_str(&wasm::sim_strat("WSP", "WSP", 100, 100.)).unwrap();
+    let err: Value = serde_json::from_str(&wasm::sim_strat("T1", "NotAStrat", 100, 100.)).unwrap();
     assert_eq!(err["response_type"], "failure");
     let err: Value = serde_json::from_str(&wasm::sim_strat("T99", "T1", 100, 100.)).unwrap();
     assert!(err["data"].as_str().unwrap().contains("Unknown theory"));
     assert_eq!(
         wasm::ported_theories(),
-        r#"["T1","T2","T3","T4","T5","T6","T7","T8"]"#
+        r#"["T1","T2","T3","T4","T5","T6","T7","T8","WSP","SL","EF","CSR2","FI","FP","RZ","MF","BaP","TC","BT"]"#
     );
 }

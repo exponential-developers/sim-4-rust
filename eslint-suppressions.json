@@ -22,7 +22,7 @@
   },
   "src/Theories/CTs/FI.ts": {
     "@typescript-eslint/no-unsafe-assignment": {
-      "count": 9
+      "count": 1
     },
     "@typescript-eslint/only-throw-error": {
       "count": 1
@@ -103,7 +103,7 @@
   },
   "src/Theories/Unofficial-CTs/TC.ts": {
     "@typescript-eslint/no-unsafe-assignment": {
-      "count": 3
+      "count": 1
     },
     "@typescript-eslint/require-await": {
       "count": 1

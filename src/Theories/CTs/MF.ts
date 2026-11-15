@@ -372,7 +372,8 @@ class mfSim extends theoryClass<theory> {
     ];
     // MFVariantd2d2d3RCCoast END
 
-    const conditions: Record<stratType[theory], conditionFunction[]> = {
+    // Strats added to data.json after this old TypeScript sim was retired exist only in the Rust sim
+    const conditions: Partial<Record<string, conditionFunction[]>> = {
       MF: idleStrat,
       MFd: activeStrat,
       MFd2: activeStrat2,
@@ -405,7 +406,9 @@ class mfSim extends theoryClass<theory> {
       MFVariantd2d2d1RCCoast: activeStrat221RC,
       MFVariantd2d2d3RCCoast: activeStrat223RC,
     };
-    return conditions[this.strat];
+    const stratConditions = conditions[this.strat];
+    if (!stratConditions) throw new Error(`${this.strat} is only implemented in the Rust sim`);
+    return stratConditions;
   }
   getVariableAvailability(): conditionFunction[] {
     return [

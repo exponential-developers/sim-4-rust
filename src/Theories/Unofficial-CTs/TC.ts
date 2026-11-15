@@ -34,7 +34,8 @@ class tcSim extends theoryClass<theory> {
   setPoint: number;
 
   getBuyingConditions(): conditionFunction[] {
-    const conditions: Record<stratType[theory], (boolean | conditionFunction)[]> = {
+    // Strats added to data.json after this old TypeScript sim was retired exist only in the Rust sim
+    const conditions: Partial<Record<string, (boolean | conditionFunction)[]>> = {
       TC: new Array(11).fill(true),
       TCd: [
         true, 
@@ -42,7 +43,9 @@ class tcSim extends theoryClass<theory> {
         ...new Array(9).fill(true)
       ]
     };
-    return toCallables(conditions[this.strat]);
+    const stratConditions = conditions[this.strat];
+    if (!stratConditions) throw new Error(`${this.strat} is only implemented in the Rust sim`);
+    return toCallables(stratConditions);
   }
 
   getVariableAvailability(): conditionFunction[] {

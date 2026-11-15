@@ -605,6 +605,7 @@ mod tests {
         TheoryInput {
             sigma,
             last_pub_rho: rho,
+            last_pub_tau: None,
             rho_cap: f64::INFINITY,
             params: SimParams::default(),
         }

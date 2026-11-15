@@ -59,6 +59,7 @@ pub fn sim_strat(theory: &str, strat: &str, sigma: u32, rho: f64) -> String {
     let input = TheoryInput {
         sigma: sigma as i64,
         last_pub_rho: rho,
+        last_pub_tau: None,
         rho_cap: f64::INFINITY,
         params: SimParams::default(),
     };

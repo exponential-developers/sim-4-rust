@@ -101,6 +101,11 @@ describe("multiplier inputs (reverseMulti)", () => {
     expect(reverseMulti("T6", value, sigma)).toBe((value - -Math.log10(50) - r9) / 0.196);
     expect(reverseMulti("T7", value, sigma)).toBe((value - 0 - r9) / 0.152);
     expect(reverseMulti("T8", value, sigma)).toBe((value - 0 - r9) / 0.15);
+    // custom theories: tau first, then rho (no R9)
+    expect(reverseMulti("WSP", value, sigma)).toBe((value / 0.375) / 0.4);
+    expect(reverseMulti("FP", value, sigma)).toBe(((value - Math.log10(5)) / 0.331) / 0.3);
+    expect(reverseMulti("TC", value, sigma)).toBe(((value - -Math.log10(2)) / (0.2 / 0.45)) / 0.45);
+    expect(reverseMulti("MF", value, sigma)).toBe((value / 0.17) / 1);
   });
 
   it("rejects unknown theories", () => {

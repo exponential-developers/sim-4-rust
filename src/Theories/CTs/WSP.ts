@@ -73,7 +73,8 @@ class wspSim extends theoryClass<theory> {
       true,
     ]);
 
-    const conditions: Record<stratType[theory], (boolean | conditionFunction)[]> = {
+    // Strats added to data.json after this old TypeScript sim was retired exist only in the Rust sim
+    const conditions: Partial<Record<string, (boolean | conditionFunction)[]>> = {
       WSP: [true, true, true, true, true],
       WSPStopC1: [true, true, true, () => this.lastPub < 450 || this.t < 15, true],
       WSPStopC1Coast: WSPStopC1CoastQ1,
@@ -97,7 +98,9 @@ class wspSim extends theoryClass<theory> {
       ],
       WSPdStopC1Coast: WSPdStopC1CoastQ1
     };
-    return toCallables(conditions[this.strat]);
+    const stratConditions = conditions[this.strat];
+    if (!stratConditions) throw new Error(`${this.strat} is only implemented in the Rust sim`);
+    return toCallables(stratConditions);
   }
   getVariableAvailability(): conditionFunction[] {
     return [() => true, () => true, () => true, () => true, () => this.milestones[1] > 0];

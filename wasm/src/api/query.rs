@@ -13,6 +13,12 @@ pub struct SingleSimQuery {
     pub strat: String,
     pub sigma: i64, // Type could change
     pub rho: LogNum,
+    /**
+     * log10 tau to start from, when the sim starts from a tau value like sim-3's chains do (then
+     * `rho` is `tau / tau_factor`). Not sent by the website: None means `rho * tau_factor`.
+     */
+    #[serde(default)]
+    pub tau: Option<f64>,
     pub cap: Option<LogNum>,
     pub last_strat: Option<String>,
     pub settings: SimSettings,

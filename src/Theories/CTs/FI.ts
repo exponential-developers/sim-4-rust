@@ -76,7 +76,8 @@ class fiSim extends theoryClass<theory> {
       //n mod 11 - 5
       () => this.variables[5].cost + l10((this.variables[5].level % 11) + 1) < Math.min(this.variables[2].cost, this.variables[3].cost, this.variables[4].cost) //n - 5
     ]
-    const conditions: Record<stratType[theory], (boolean | conditionFunction)[]> = {
+    // Strats added to data.json after this old TypeScript sim was retired exist only in the Rust sim
+    const conditions: Partial<Record<string, (boolean | conditionFunction)[]>> = {
       FI: idleStrat,
       FICoast: idleCoastStrat,
       FId: activeStrat2,
@@ -94,7 +95,9 @@ class fiSim extends theoryClass<theory> {
       FIMSdPermaSwap: activeStrat2,
       FIMSdPermaSwapCoast: activeCoastStrat2
     };
-    return toCallables(conditions[this.strat]);
+    const stratConditions = conditions[this.strat];
+    if (!stratConditions) throw new Error(`${this.strat} is only implemented in the Rust sim`);
+    return toCallables(stratConditions);
   }
   getVariableAvailability(): conditionFunction[] {
     return [

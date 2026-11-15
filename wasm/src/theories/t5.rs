@@ -9,6 +9,7 @@ use std::f64::consts::E;
 use std::sync::OnceLock;
 
 use crate::api::config::TheoryType;
+use crate::theories::pubtable::{CodedTable, decode_values, js_round};
 use crate::theories::traditional::*;
 use crate::utils::{
     cost::{Cost, ExponentialCost, FirstFreeCost},
@@ -133,60 +134,10 @@ pub fn simulate_t5(strat: T5Strat, input: &TheoryInput) -> SimResult {
  */
 const PUB_TABLE_JSON: &str = include_str!("data/table_t5_0_01_overall_coded.json");
 
-#[derive(serde::Deserialize)]
-struct CodedTable {
-    /** base64 of zlib-compressed big-endian numbers */
-    t: String,
-    /** bytes per number */
-    sz: usize,
-    /** added to every delta */
-    d: i64,
-    /** initial value */
-    i: i64,
-}
-
-fn base64_decode(s: &str) -> Vec<u8> {
-    const ALPHABET: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-    let mut out = Vec::with_capacity(s.len() * 3 / 4);
-    let (mut acc, mut bits) = (0u32, 0);
-    for &c in s.as_bytes().iter().take_while(|&&c| c != b'=') {
-        let v = ALPHABET
-            .iter()
-            .position(|&a| a == c)
-            .expect("base64 character") as u32;
-        acc = (acc << 6) | v;
-        bits += 6;
-        if bits >= 8 {
-            bits -= 8;
-            out.push((acc >> bits) as u8);
-        }
-    }
-    out
-}
-
 /** Decoded pub table: `data[k]` for k = 0, 1, ... (sim-3 `ptDecodeFormat1`) */
 fn pub_table() -> &'static [i64] {
     static TABLE: OnceLock<Vec<i64>> = OnceLock::new();
-    TABLE.get_or_init(|| {
-        let coded: CodedTable = serde_json::from_str(PUB_TABLE_JSON).expect("T5 pub table");
-        let bytes = miniz_oxide::inflate::decompress_to_vec_zlib(&base64_decode(&coded.t))
-            .expect("T5 pub table data");
-        let mut prev = coded.i;
-        bytes
-            .chunks(coded.sz)
-            .map(|chunk| {
-                let n = chunk.iter().fold(0i64, |acc, &b| (acc << 8) | b as i64);
-                prev += n + coded.d;
-                prev
-            })
-            .collect()
-    })
-}
-
-/** JavaScript `Math.round`: rounds halves up */
-fn js_round(x: f64) -> f64 {
-    let floor = x.floor();
-    if x - floor >= 0.5 { floor + 1. } else { floor }
+    TABLE.get_or_init(|| decode_values(&CodedTable::parse(PUB_TABLE_JSON)))
 }
 
 /** Publication rho given by the pub table for a last pub rho <= 1999, NaN if it has none */
@@ -484,6 +435,7 @@ mod tests {
         TheoryInput {
             sigma,
             last_pub_rho: rho,
+            last_pub_tau: None,
             rho_cap: f64::INFINITY,
             params: SimParams::default(),
         }
