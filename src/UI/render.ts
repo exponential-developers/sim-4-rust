@@ -2,6 +2,7 @@ import data from "../Data/data.json" assert { type: "json" };
 import { findIndex, getIndexFromTheory } from "../Utils/helpers";
 import { qs, qsa, event, ce, removeAllChilds } from "../Utils/DOMhelpers";
 import { getSimState, setSimState, restoreInputs, saveInputs, savedInputElements } from "./simState";
+import { renderTheoryInputs } from "./theoryInputs";
 
 //Inputs
 const theorySelector = qs<HTMLSelectElement>(".theory");
@@ -10,6 +11,7 @@ const capInputWrapper = qs(".capWrapper");
 const modeSelector = qs<HTMLSelectElement>(".mode");
 const sigmaInput = qs<HTMLInputElement>(".sigma");
 const currencyInput = qs<HTMLInputElement>(".input");
+const capInput = qs<HTMLInputElement>(".cap");
 const simAllInputArea = qs<HTMLTextAreaElement>(".simAllInputArea")
 const modeInput = qs<HTMLTextAreaElement>(".modeInput");
 const hardCapWrapper = qs(".hardCapWrapper");
@@ -24,6 +26,8 @@ const simAllInputs = qs(".simAllInputs");
 const modeInputDescription = qs(".extraInputDescription");
 const testPortedButton = qs<HTMLButtonElement>(".testPorted");
 const stratSelectorWrapper = stratSelector.parentElement as HTMLElement;
+const theoryInputsWrapper = qs(".theoryInputs");
+const theoryInputsBtn = qs<HTMLButtonElement>(".theoryInputsBtn");
 
 
 const theories = Object.keys(data.theories) as theoryType[];
@@ -126,6 +130,8 @@ function modeUpdate(): void {
   // Extra Inputs
   if (newMode !== "Single sim" && newMode !== "Comparison" && newMode !== "Time diff." && newMode !== "Chain") extraInputs.style.display = "flex";
   testPortedButton.style.display = newMode === "All" ? "block" : "none";
+  // "All" mode sets every theory's own inputs in a dialog
+  theoryInputsBtn.style.display = newMode === "All" ? "" : "none";
   if (newMode === "All") {
     simAllInputs.style.display = "grid";
     modeInputDescription.style.display = "none";
@@ -150,6 +156,11 @@ function theoryUpdate() {
   );
   populateSelectElement(stratSelector, data.strat_categories.concat(currentTheoryStrats));
   populateSingleSimFields(true);
+  renderTheoryInputs(theoryInputsWrapper, currentTheory);
+  // Theories without rho (NLI) take tau values
+  const placeholder = (data.theories as TheoryDataStructure)[currentTheory].supportsRho === false ? "<tau>[t/m]" : "<rho>[r/t/m]";
+  currencyInput.placeholder = placeholder;
+  capInput.placeholder = placeholder;
 }
 
 function themeUpdate() {

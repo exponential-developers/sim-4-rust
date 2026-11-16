@@ -60,6 +60,46 @@
   margin-top: 0.6rem;
 }
 
+/* A theory's own inputs: each one is a column of the theory row */
+.theoryInputs {
+  display: contents;
+}
+/* Not uppercase: "Lifetime α" would read "LIFETIME A" */
+.theoryInput .description {
+  text-transform: none;
+  letter-spacing: normal;
+}
+.theoryInputSlider {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: var(--control-h);
+}
+.theoryInputSlider .sliderOtp {
+  min-width: 1.5rem;
+}
+.theoryInputText {
+  width: 9rem;
+}
+.theoryInputsNote {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+.theoryInputsDialogContent {
+  display: grid;
+  gap: 0.9rem;
+}
+.theoryInputsDialogContent .theoryInputSlider {
+  max-width: 16rem;
+}
+.theoryInputsDialogContent .theoryInputSlider input {
+  flex: 1;
+}
+.theoryInputsDialogContent .description {
+  cursor: help;
+}
+
 .hardCapWrapper input[type="checkbox"] {
   display: block;
   margin-block: calc((var(--control-h) - 1.05rem) / 2);

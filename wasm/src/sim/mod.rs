@@ -6,12 +6,16 @@ use crate::api::{
 use crate::api::{config::TheoryType, query::*, response::*};
 use crate::theories::{
     bap::{BapStrat, simulate_bap},
+    bd::{BdStrat, simulate_bd},
     bt::{BtStrat, simulate_bt},
     csr2::{Csr2Strat, simulate_csr2},
     ef::{EfStrat, simulate_ef},
     fi::{FiStrat, simulate_fi},
     fp::{FpStrat, simulate_fp},
+    fs::{FsStrat, simulate_fs},
+    ilc::{IlcStrat, simulate_ilc},
     mf::{MfStrat, simulate_mf},
+    nli::{NliStrat, parse_exponential_value, simulate_nli},
     rz::{RzStrat, simulate_rz},
     sl::{SlStrat, simulate_sl},
     t1::{T1Strat, simulate_t1},
@@ -54,7 +58,7 @@ fn theory_config(theory: TheoryType) -> Result<&'static ConfigTheories, String> 
 }
 
 /** Theories that have been ported to the Rust sim, in data.json order */
-pub const PORTED_THEORIES: [TheoryType; 19] = [
+pub const PORTED_THEORIES: [TheoryType; 23] = [
     TheoryType::T1,
     TheoryType::T2,
     TheoryType::T3,
@@ -72,13 +76,31 @@ pub const PORTED_THEORIES: [TheoryType; 19] = [
     TheoryType::RZ,
     TheoryType::MF,
     TheoryType::BaP,
-    TheoryType::TC,
     TheoryType::BT,
+    TheoryType::TC,
+    TheoryType::FS,
+    TheoryType::BD,
+    TheoryType::ILC,
+    TheoryType::NLI,
 ];
 
 /** Whether a theory has been ported to the Rust sim */
 pub fn is_ported(theory: TheoryType) -> bool {
     PORTED_THEORIES.contains(&theory)
+}
+
+/** Reads the theory inputs that sims use (MF's reset depth, NLI's lifetime α) */
+pub fn apply_theory_inputs(params: &mut SimParams, inputs: &TheoryInputs) -> Result<(), String> {
+    // sim-3: parseInt(specificInputs["depth"] ?? "0")
+    params.mf_reset_depth = inputs
+        .get("depth")
+        .and_then(|d| d.trim().parse().ok())
+        .unwrap_or(0);
+    params.nli_lifetime_alpha = match inputs.get("lifetime_alpha") {
+        Some(alpha) if !alpha.is_empty() => Some(parse_exponential_value(alpha)?),
+        _ => None,
+    };
+    Ok(())
 }
 
 /** Runs one named strat of a theory */
@@ -183,6 +205,26 @@ pub fn run_strat(
                 RzStrat::from_name(strat).ok_or_else(|| format!("Unknown RZ strat \"{strat}\""))?;
             Ok(simulate_rz(strat, input))
         }
+        TheoryType::FS => {
+            let strat =
+                FsStrat::from_name(strat).ok_or_else(|| format!("Unknown FS strat \"{strat}\""))?;
+            Ok(simulate_fs(strat, input))
+        }
+        TheoryType::BD => {
+            let strat =
+                BdStrat::from_name(strat).ok_or_else(|| format!("Unknown BD strat \"{strat}\""))?;
+            Ok(simulate_bd(strat, input))
+        }
+        TheoryType::ILC => {
+            let strat = IlcStrat::from_name(strat)
+                .ok_or_else(|| format!("Unknown ILC strat \"{strat}\""))?;
+            Ok(simulate_ilc(strat, input))
+        }
+        TheoryType::NLI => {
+            let strat = NliStrat::from_name(strat)
+                .ok_or_else(|| format!("Unknown NLI strat \"{strat}\""))?;
+            simulate_nli(strat, input)
+        }
     }
 }
 
@@ -209,7 +251,12 @@ fn get_strats(
         rho,
         last_strat,
     };
-    Ok(theory_config(theory)?
+    let config = theory_config(theory)?;
+    let args = ConditionArgs {
+        rho: if config.supports_rho { rho } else { 0. },
+        ..args
+    };
+    Ok(config
         .strats
         .iter()
         .filter(|(_, s)| s.filter.eval(&args) && s.forced.eval(&args))
@@ -235,9 +282,11 @@ fn single_sim(query: SingleSimQuery) -> Result<SingleSimResponse, String> {
             ddt: query.settings.ddt,
             bought_vars_delta: query.settings.bought_vars_delta as f64,
             show_a23: query.settings.show_a23,
-            mf_reset_depth: query.settings.mf_reset_depth,
+            ..SimParams::default()
         },
     };
+    let mut input = input;
+    apply_theory_inputs(&mut input.params, &query.theory_inputs)?;
 
     let strats: Vec<&str> = if config()?.strat_categories.contains(&query.strat) {
         let tau = query
@@ -277,6 +326,7 @@ fn chain_sim(query: ChainSimQuery, progress: Progress) -> Result<ChainSimRespons
             cap: query.cap,
             hard_cap: query.hard_cap,
             settings: &query.settings,
+            theory_inputs: &query.theory_inputs,
         },
         progress,
     )
@@ -291,6 +341,7 @@ struct ChainFromTau<'a> {
     cap: LogNum,
     hard_cap: bool,
     settings: &'a SimSettings,
+    theory_inputs: &'a TheoryInputs,
 }
 
 /** sim-3 `chainSim`: simulates publications until tau reaches the cap */
@@ -303,6 +354,7 @@ fn chain_from_tau(query: ChainFromTau, progress: Progress) -> Result<ChainSimRes
     let mut last_strat = String::new();
 
     let mut results: Vec<SimResult> = Vec::new();
+    let mut theory_inputs = query.theory_inputs.clone();
 
     while tau < cap {
         let rho = LogNum {
@@ -317,6 +369,7 @@ fn chain_from_tau(query: ChainFromTau, progress: Progress) -> Result<ChainSimRes
         let res = single_sim(SingleSimQuery {
             theory: query.theory,
             strat: query.strat.to_owned(),
+            theory_inputs: theory_inputs.clone(),
             rho,
             tau: Some(tau),
             sigma: query.sigma,
@@ -342,6 +395,9 @@ fn chain_from_tau(query: ChainFromTau, progress: Progress) -> Result<ChainSimRes
         time += res.time;
         last_strat.clear();
         last_strat.push_str(res.strat.split(' ').next().unwrap_or(""));
+        if let Some(next_inputs) = &res.theory_inputs {
+            theory_inputs.extend(next_inputs.clone());
+        }
         results.push(res);
     }
 
@@ -370,6 +426,7 @@ fn step_sim(query: StepSimQuery, progress: Progress) -> Result<StepSimResponse, 
         let res = single_sim(SingleSimQuery {
             theory: query.theory,
             strat: query.strat.clone(),
+            theory_inputs: query.theory_inputs.clone(),
             rho,
             tau: Some(tau),
             sigma: query.sigma,
@@ -390,7 +447,7 @@ fn step_sim(query: StepSimQuery, progress: Progress) -> Result<StepSimResponse, 
 }
 
 /** sim-3 `convertTime`: "1y2d03h04m" style duration */
-fn convert_time(secs: f64) -> String {
+pub(crate) fn convert_time(secs: f64) -> String {
     let mins = ((secs / 60.) % 60.).floor();
     let hrs = ((secs / 3600.) % 24.).floor();
     let days = ((secs / 86400.) % 365.).floor();
@@ -428,6 +485,7 @@ fn amount_sim(query: AmountSimQuery, progress: Progress) -> Result<ChainSimRespo
         let res = single_sim(SingleSimQuery {
             theory: query.theory,
             strat: query.strat.clone(),
+            theory_inputs: query.theory_inputs.clone(),
             rho: LogNum {
                 value: tau / tau_factor,
                 sign: 1,
@@ -467,6 +525,7 @@ fn time_sim(query: TimeSimQuery, progress: Progress) -> Result<ChainSimResponse,
         let res = single_sim(SingleSimQuery {
             theory: query.theory,
             strat: query.strat.clone(),
+            theory_inputs: query.theory_inputs.clone(),
             rho,
             tau: Some(tau),
             sigma: query.sigma,
@@ -540,6 +599,7 @@ fn step_chain_sim(query: StepChainSimQuery, progress: Progress) -> Result<StepSi
                 cap: query.cap,
                 hard_cap: query.hard_cap,
                 settings: &query.settings,
+                theory_inputs: &query.theory_inputs,
             },
             &|_| {},
         )?;
@@ -564,6 +624,7 @@ fn step_chain_sim(query: StepChainSimQuery, progress: Progress) -> Result<StepSi
                 tau_h: tau_acc / (time_acc / 3600.),
                 time: time_acc,
                 bought_vars: Vec::new(),
+                theory_inputs: None,
             };
             // getBestResult(bestRes, curRes): the earlier result wins ties
             if candidate.tau_h > best.tau_h {
@@ -603,6 +664,7 @@ fn comparison_sim(query: ComparisonSimQuery) -> Result<StepSimResponse, String> 
             single_sim(SingleSimQuery {
                 theory: query.theory,
                 strat: strat.to_owned(),
+                theory_inputs: query.theory_inputs.clone(),
                 sigma: query.sigma,
                 tau: None,
                 rho: query.rho,
@@ -624,6 +686,9 @@ fn comparison_sim(query: ComparisonSimQuery) -> Result<StepSimResponse, String> 
 
 /** Fastest time to reach cap from each step below it (sim-3 `pubTableSim`) */
 fn pub_table_sim(query: PubTableSimQuery, progress: Progress) -> Result<PubTableResponse, String> {
+    if !theory_config(query.theory)?.supports_rho {
+        return Err("This mode is not supported for this theory".to_owned());
+    }
     let (start, cap, step) = (query.rho.value, query.cap.value, query.step);
     if !is_greater(step, 0.) {
         return Err("The step length must be greater than 0".to_owned());
@@ -647,6 +712,7 @@ fn pub_table_sim(query: PubTableSimQuery, progress: Progress) -> Result<PubTable
             let res = single_sim(SingleSimQuery {
                 theory: query.theory,
                 strat: query.strat.clone(),
+                theory_inputs: query.theory_inputs.clone(),
                 sigma: query.sigma,
                 tau: None,
                 rho: LogNum {
@@ -722,10 +788,16 @@ fn sim_all(query: SimAllQuery, progress: Progress) -> Result<SimAllResponse, Str
             continue;
         }
         progress(&format!("Simulating {theory:?}"));
+        let theory_inputs = query
+            .theory_inputs
+            .get(&theory)
+            .cloned()
+            .unwrap_or_default();
 
         let active_res = if query.settings.sim_all_strats != SimAllStrats::Idle {
             single_sim(SingleSimQuery {
                 theory,
+                theory_inputs: theory_inputs.clone(),
                 strat: if query.very_active {
                     "Best Overall".to_owned()
                 } else {
@@ -746,6 +818,7 @@ fn sim_all(query: SimAllQuery, progress: Progress) -> Result<SimAllResponse, Str
         let idle_res = if query.settings.sim_all_strats != SimAllStrats::Active {
             single_sim(SingleSimQuery {
                 theory,
+                theory_inputs: theory_inputs.clone(),
                 strat: if query.semi_idle {
                     "Best Semi-Idle".to_owned()
                 } else {
@@ -819,7 +892,7 @@ mod tests {
 
     fn settings(sim_all_strats: &str) -> serde_json::Value {
         serde_json::json!({
-            "dt": 1.5, "ddt": 1.0001, "mf_reset_depth": 0, "bought_vars_delta": 5,
+            "dt": 1.5, "ddt": 1.0001, "bought_vars_delta": 5,
             "sim_all_strats": sim_all_strats, "completed_cts": "no", "show_a23": false, "show_unofficials": false
         })
     }
@@ -842,11 +915,11 @@ mod tests {
     }
 
     fn all(very_active: bool, semi_idle: bool, strats: &str) -> SimAllResponse {
-        // 20 values: more than there are theories (the extra one is ignored); 0 = don't simulate
-        let mut values = vec![0.0; 20];
+        // One more value than there are theories (the extra one is ignored); 0 = don't simulate
+        let mut values = vec![0.0; PORTED_THEORIES.len() + 1];
         values[0] = 500.;
         values[1] = 500.;
-        values[19] = 500.;
+        values[PORTED_THEORIES.len()] = 500.;
         let q = query(
             "all",
             serde_json::json!({

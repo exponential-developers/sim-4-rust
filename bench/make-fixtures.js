@@ -24,41 +24,46 @@ try { commit = execSync("git rev-parse --short HEAD", { cwd: SIM3 }).toString().
     modes: [],
   };
 
+  // The theory's own inputs (e.g. MF's reset depth) are only saved when a case has some
+  const withInputs = (inputs) => (inputs && Object.keys(inputs).length > 0 ? { theory_inputs: inputs } : {});
+
   for (const theory of Object.keys(STRATS)) {
-    STRAT_CASES[theory].forEach(([rho, sigma], caseIndex) => {
+    STRAT_CASES[theory].forEach(([rho, sigma, inputs], caseIndex) => {
       for (const strat of STRATS[theory]) {
         // Slow strats are only recorded for the first case to keep the test fast
         if (SLOW.has(strat) && caseIndex > 0) continue;
-        out.strats.push({ theory, strat, sigma, rho });
+        out.strats.push({ theory, strat, sigma, rho, ...withInputs(inputs) });
       }
     });
   }
-  for (const c of out.strats) c.expected = await sim3.simStrat(c.theory, c.strat, c.sigma, c.rho);
+  for (const c of out.strats) c.expected = await sim3.simStrat(c.theory, c.strat, c.sigma, c.rho, c.theory_inputs);
 
   for (const theory of Object.keys(BEST_CASES)) {
     for (const strat of CATEGORIES) {
-      for (const [rho, sigma] of BEST_CASES[theory]) {
-        out.best.push({ theory, strat, sigma, rho, expected: await sim3.single(theory, strat, sigma, rho, "") });
+      for (const [rho, sigma, inputs] of BEST_CASES[theory]) {
+        out.best.push({ theory, strat, sigma, rho, ...withInputs(inputs), expected: await sim3.single(theory, strat, sigma, rho, "", inputs) });
       }
     }
   }
 
-  for (const [theory, strat, sigma, rho, cap, hardCap] of CHAINS) {
-    out.chains.push({ theory, strat, sigma, rho, cap, hard_cap: hardCap, expected: await sim3.chain(theory, strat, sigma, rho, cap, hardCap) });
+  for (const [theory, strat, sigma, rho, cap, hardCap, inputs] of CHAINS) {
+    out.chains.push({ theory, strat, sigma, rho, cap, hard_cap: hardCap, ...withInputs(inputs), expected: await sim3.chain(theory, strat, sigma, rho, cap, hardCap, inputs) });
   }
 
-  // Other modes, in the same reduced form bench/compare-modes.js compares
+  // Other modes, in the same reduced form bench/compare-modes.js compares. A case may end with
+  // the theory's own inputs.
   for (const [mode, theory, strat, sigma, rho, ...extra] of MODES) {
+    const inputs = typeof extra[extra.length - 1] === "object" ? extra.pop() : {};
     let expected;
     switch (mode) {
-      case "step": expected = await sim3.step(theory, strat, sigma, rho, ...extra); break;
-      case "amount": expected = await sim3.amount(theory, strat, sigma, rho, ...extra); break;
-      case "time": expected = await sim3.timeMode(theory, strat, sigma, rho, ...extra); break;
-      case "step_chain": expected = await sim3.stepChain(theory, strat, sigma, rho, ...extra); break;
-      case "comparison": expected = await sim3.comparison(theory, sigma, rho); break;
+      case "step": expected = await sim3.step(theory, strat, sigma, rho, ...extra, inputs); break;
+      case "amount": expected = await sim3.amount(theory, strat, sigma, rho, ...extra, inputs); break;
+      case "time": expected = await sim3.timeMode(theory, strat, sigma, rho, ...extra, inputs); break;
+      case "step_chain": expected = await sim3.stepChain(theory, strat, sigma, rho, ...extra, inputs); break;
+      case "comparison": expected = await sim3.comparison(theory, sigma, rho, inputs); break;
       case "pub_table": expected = await sim3.pubTable(theory, strat, sigma, rho, ...extra); break;
     }
-    out.modes.push({ mode, theory, strat, sigma, rho, extra, expected });
+    out.modes.push({ mode, theory, strat, sigma, rho, extra, ...withInputs(inputs), expected });
   }
 
   const file = path.join(__dirname, "..", "wasm", "tests", "fixtures", "sim3_results.json");

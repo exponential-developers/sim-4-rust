@@ -27,7 +27,6 @@ pub enum CompletedCTs {
 pub struct SimSettings {
     pub dt: f64,
     pub ddt: f64,
-    pub mf_reset_depth: i32,
     pub bought_vars_delta: i32,
     pub sim_all_strats: SimAllStrats,
     pub completed_cts: CompletedCTs,

@@ -1,6 +1,7 @@
 import jsonData from "../Data/data.json" assert { type: "json" };
 import { getTheoryFromIndex, isMainTheory, parseLog10String, reverseMulti } from "../Utils/helpers";
 import { qs } from "../Utils/DOMhelpers";
+import { readAllTheoryInputs, readTheoryInputs } from "../UI/theoryInputs";
 
 //Inputs
 const modeSelector = qs<HTMLSelectElement>(".mode");
@@ -18,7 +19,6 @@ const hard_active = qs<HTMLInputElement>(".hard-active");
 //Setting Inputs
 const dtOtp = qs(".dtOtp");
 const ddtOtp = qs(".ddtOtp");
-const mfDepthOtp = qs(".mfDepthOtp");
 const boughtVarsDeltaSlider = qs<HTMLInputElement>(".boughtVarsDelta");
 const themeSelector = qs<HTMLSelectElement>(".themeSelector");
 const simAllStrats = qs<HTMLSelectElement>(".simallstrats");
@@ -30,7 +30,6 @@ function parseSettings(): Settings {
     return {
         dt: parseFloat(dtOtp.textContent ?? "1.5"),
         ddt: parseFloat(ddtOtp.textContent ?? "1.0001"),
-        mf_reset_depth: parseInt(mfDepthOtp.textContent ?? "0"),
         bought_vars_delta: parseInt(boughtVarsDeltaSlider.value),
         theme: themeSelector.value,
         sim_all_strats: simAllStrats.value as SettingsSimAllStratsMode,
@@ -55,6 +54,9 @@ function parseExponentialValue(str: string): number {
 
 function parseCurrency(str: string, theory: theoryType, sigma: number, defaultType = "r") {
     str = str.replace(" ", "");
+    // Theories without rho (NLI) take tau values (sim-3 does the same)
+    const supportsRho = (jsonData.theories as TheoryDataStructure)[theory].supportsRho ?? true;
+    if (!supportsRho && defaultType === "r") defaultType = "t";
 
     const inputType = str.match(/[rtm]$/g);
     let type = defaultType;
@@ -62,6 +64,7 @@ function parseCurrency(str: string, theory: theoryType, sigma: number, defaultTy
         type = inputType[0];
         str = str.slice(0, str.length - 1);
     };
+    if (!supportsRho && type === "r") throw new Error(`Cannot use rho values for ${theory}: enter tau (t) or a multiplier (m).`);
 
     const value = parseExponentialValue(str);
 
@@ -98,7 +101,8 @@ function parseSingleSim(): SingleSimQuery {
         strat: stratSelector.value,
         sigma: sigma,
         rho: parseCurrency(currencyInput.value, theory, sigma),
-        settings: parseSettings()
+        settings: parseSettings(),
+        theory_inputs: readTheoryInputs(theory)
     }
 }
 
@@ -114,7 +118,8 @@ function parseChainSim(): ChainSimQuery {
         rho: parseCurrency(currencyInput.value, theory, sigma),
         cap: parseCurrency(capInput.value, theory, sigma),
         hard_cap: hardCap.checked,
-        settings: parseSettings()
+        settings: parseSettings(),
+        theory_inputs: readTheoryInputs(theory)
     }
 }
 
@@ -130,7 +135,8 @@ function parseStepSim(): StepSimQuery {
         rho: parseCurrency(currencyInput.value, theory, sigma),
         cap: parseCurrency(capInput.value, theory, sigma),
         step: parseExponentialValue(modeInput.value),
-        settings: parseSettings()
+        settings: parseSettings(),
+        theory_inputs: readTheoryInputs(theory)
     }
 }
 
@@ -147,7 +153,8 @@ function parseStepChainSim(): StepChainQuery {
         cap: parseCurrency(capInput.value, theory, sigma),
         step: parseExponentialValue(modeInput.value),
         hard_cap: hardCap.checked,
-        settings: parseSettings()
+        settings: parseSettings(),
+        theory_inputs: readTheoryInputs(theory)
     }
 }
 
@@ -164,7 +171,8 @@ function parseAmountSim(): AmountSimQuery {
         sigma: sigma,
         rho: parseCurrency(currencyInput.value, theory, sigma),
         amount: amount,
-        settings: parseSettings()
+        settings: parseSettings(),
+        theory_inputs: readTheoryInputs(theory)
     }
 }
 
@@ -193,7 +201,8 @@ function parseTimeSim(): TimeSimQuery {
         sigma: sigma,
         rho: parseCurrency(currencyInput.value, theory, sigma),
         time: time,
-        settings: parseSettings()
+        settings: parseSettings(),
+        theory_inputs: readTheoryInputs(theory)
     }
 }
 
@@ -206,7 +215,8 @@ function parseComparisonSim(): ComparisonSimQuery {
         theory: theory,
         sigma: sigma,
         rho: parseCurrency(currencyInput.value, theory, sigma),
-        settings: parseSettings()
+        settings: parseSettings(),
+        theory_inputs: readTheoryInputs(theory)
     }
 }
 
@@ -222,7 +232,8 @@ function parsePubTableSim(): PubTableSimQuery {
         rho: parseCurrency(currencyInput.value, theory, sigma),
         cap: parseCurrency(capInput.value, theory, sigma),
         step: parseExponentialValue(modeInput.value),
-        settings: parseSettings()
+        settings: parseSettings(),
+        theory_inputs: readTheoryInputs(theory)
     }
 }
 
@@ -259,7 +270,8 @@ function parseSimAll(): SimAllQuery {
         very_active: hard_active.checked,
         semi_idle: semi_idle.checked,
         strat_type: settings.sim_all_strats,
-        settings: settings
+        settings: settings,
+        theory_inputs: readAllTheoryInputs(Object.keys(jsonData.theories))
     }
 }
 

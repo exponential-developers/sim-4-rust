@@ -71,6 +71,8 @@
           <label class="description" for="capInput">Cap</label>
           <input type="text" class="cap" id="capInput" placeholder="<rho>[r/t/m]" spellcheck="false" />
         </div>
+        <!-- The selected theory's own inputs (render.ts / theoryInputs.ts) -->
+        <div class="theoryInputs"></div>
       </div>
       <div class="controls controls-mode">
         <div>
@@ -92,6 +94,7 @@
             <label for="hardActiveInput">Hard Active</label>
             <input type="checkbox" class="hard-active" id="hardActiveInput" />
             <button class="loadSave">Load save</button>
+            <button class="theoryInputsBtn" title="Inputs that only some theories have, such as MF's reset depth">Theory inputs</button>
           </div>
           <textarea class="simAllInputArea" aria-labelledby="modeInputsCaption" cols="30" spellcheck="false"></textarea>
           <textarea class="modeInput" aria-labelledby="modeInputsCaption" cols="30" spellcheck="false"></textarea>
@@ -143,10 +146,6 @@
           <input type="range" class="ddt" step="0.1" max="10" min="0" value="2.71233" id="ddtSlider" />
           <span class="sliderOtp ddtOtp">1.0001</span>
 
-          <label for="mfDepthSlider">MF reset depth</label>
-          <input type="range" class="mfDepth" step="1" max="5" min="0" value="0" id="mfDepthSlider" />
-          <span class="sliderOtp mfDepthOtp">0</span>
-
           <label for="boughtVarsDeltaSlider">Bought vars in recovery</label>
           <input type="range" class="boughtVarsDelta" step="1" min="5" max="30" value="5" id="boughtVarsDeltaSlider" />
           <span class="sliderOtp boughtVarsDeltaOtp">e5ρ</span>
@@ -180,6 +179,12 @@
         <label class="settings-row"><span>Show unofficial CTs</span> <input type="checkbox" class="unofficials" /></label>
         <label class="settings-row"><span>Generate a total purchase list</span> <input type="checkbox" class="total_purchase_list" /></label>
       </section>
+    </dialog>
+    <dialog class="theoryInputsDialog">
+      <h1>Theory inputs</h1>
+      <button class="theoryInputsCloseBtn" aria-label="Close">&times;</button>
+      <p class="theoryInputsNote">Used by "All" mode. Hover a name for what the input does.</p>
+      <div class="theoryInputsDialogContent"></div>
     </dialog>
     <dialog class="boughtVars">
       <button class="boughtVarsCloseBtn" aria-label="Close">&times;</button>
@@ -215,6 +220,8 @@
       <ul>
         <li><strong>New simulation engine:</strong> simulations now run in Rust, compiled to WebAssembly. Every theory is checked to give exactly the same results as sim 3.0.</li>
         <li><strong>All theories:</strong> T1 to T8 and the custom theories run in Rust, with the same results as sim 3.0 and faster (about 1.1–3×, depending on the theory).</li>
+        <li><strong>New theories:</strong> the unofficial custom theories FS, BD, ILC and NLI from sim 3.0 (shown with "Show unofficial CTs").</li>
+        <li><strong>Theory inputs:</strong> inputs that only some theories have sit next to the theory's other inputs, and in a "Theory inputs" dialog in All mode. MF's reset depth moved there from the settings, as in sim 3.0, and NLI asks for your lifetime &alpha;.</li>
         <li><strong>Modes:</strong> All, Single sim, Chain, Steps, Comparison, StepChain, Amount, Time and Pub Table, including the "Best Overall / Active / Semi-Idle / Idle" strategy selection. "Test all supported theories" (All mode) runs every ported theory at e500 with sigma 500.</li>
         <li><strong>No more freezing:</strong> simulations run in the background, with progress shown while they run, and the "Stop simulating" button works again. Errors are highlighted.</li>
         <li><strong>New look:</strong> redesigned layout, 14 themes (8 new), and the theme picker moved to the header.</li>

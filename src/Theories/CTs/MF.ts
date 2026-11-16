@@ -497,7 +497,8 @@ class mfSim extends theoryClass<theory> {
 
   constructor(data: theoryData, resetBundle: resetBundle) {
     super(data);
-    this.mfResetDepth = this.settings.mf_reset_depth;
+    // The reset depth is a theory input, which only the Rust sim reads
+    this.mfResetDepth = 0;
     this.c = 0;
     this.x = 0;
     this.i = 0;

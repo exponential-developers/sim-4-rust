@@ -50,7 +50,27 @@ fn create_error(msg: &str) -> String {
  */
 #[wasm_bindgen]
 pub fn sim_strat(theory: &str, strat: &str, sigma: u32, rho: f64) -> String {
+    sim_strat_with_inputs(theory, strat, sigma, rho, "{}")
+}
+
+/** `sim_strat` with the theory's own inputs as a JSON object (e.g. `{"depth": "2"}`) */
+#[wasm_bindgen]
+pub fn sim_strat_with_inputs(
+    theory: &str,
+    strat: &str,
+    sigma: u32,
+    rho: f64,
+    theory_inputs: &str,
+) -> String {
     use theories::traditional::{SimParams, TheoryInput};
+    let inputs: api::query::TheoryInputs = match serde_json::from_str(theory_inputs) {
+        Ok(inputs) => inputs,
+        Err(err) => return create_error(&format!("Bad theory inputs: {err}")),
+    };
+    let mut params = SimParams::default();
+    if let Err(err) = sim::apply_theory_inputs(&mut params, &inputs) {
+        return create_error(&err);
+    }
     let Ok(theory) =
         serde_json::from_value::<api::config::TheoryType>(serde_json::Value::from(theory))
     else {
@@ -61,7 +81,7 @@ pub fn sim_strat(theory: &str, strat: &str, sigma: u32, rho: f64) -> String {
         last_pub_rho: rho,
         last_pub_tau: None,
         rho_cap: f64::INFINITY,
-        params: SimParams::default(),
+        params,
     };
     let res = match sim::run_strat(theory, strat, &input) {
         Ok(res) => res,

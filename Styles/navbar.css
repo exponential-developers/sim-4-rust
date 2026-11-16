@@ -86,6 +86,7 @@
 .settings,
 .instructions,
 .changelog,
+.theoryInputsDialog,
 .boughtVars {
   background-color: var(--surface);
   color: var(--text);
@@ -100,11 +101,13 @@
 .settings::backdrop,
 .instructions::backdrop,
 .changelog::backdrop,
+.theoryInputsDialog::backdrop,
 .boughtVars::backdrop {
   background-color: var(--backdrop);
 }
 
-.settings {
+.settings,
+.theoryInputsDialog {
   width: min(32rem, 94vw);
   max-height: 90vh;
   padding: 1.75rem;
@@ -119,6 +122,7 @@
   line-height: 1.55;
 }
 .settings h1,
+.theoryInputsDialog h1,
 .instructions h1,
 .changelog h1 {
   font-size: 1.35rem;
@@ -145,6 +149,7 @@
 .settingsCloseBtn,
 .instructionsCloseBtn,
 .changelogCloseBtn,
+.theoryInputsCloseBtn,
 .boughtVarsCloseBtn {
   position: absolute;
   top: 1rem;
@@ -164,6 +169,7 @@
 .settingsCloseBtn:hover,
 .instructionsCloseBtn:hover,
 .changelogCloseBtn:hover,
+.theoryInputsCloseBtn:hover,
 .boughtVarsCloseBtn:hover {
   color: var(--text);
   background-color: var(--accent-soft);

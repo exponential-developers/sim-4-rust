@@ -15,8 +15,8 @@ const ITER = Number(process.argv[2] || 3);
 const THEORIES = process.argv.slice(3).length ? process.argv.slice(3) : Object.keys(STRATS);
 
 const rel = (a, b) => Math.abs(a - b) / Math.max(Math.abs(a), Math.abs(b), 1e-300);
-const rust = (theory, strat, sigma, rho) => {
-  const r = JSON.parse(wasm.sim_strat(theory, strat, sigma, rho));
+const rust = (theory, strat, sigma, rho, inputs = {}) => {
+  const r = JSON.parse(wasm.sim_strat_with_inputs(theory, strat, sigma, rho, JSON.stringify(inputs)));
   if (r.response_type === "failure") throw new Error(r.data);
   return r;
 };
@@ -36,11 +36,11 @@ async function time(fn) {
 
     let ok = 0, n = 0, totalJs = 0, totalWasm = 0;
     const rows = [];
-    for (const [rho, sigma] of STRAT_CASES[theory]) {
+    for (const [rho, sigma, inputs = {}] of STRAT_CASES[theory]) {
       let jsMs = 0, wasmMs = 0;
       for (const strat of strats) {
-        const a = await sim3.simStrat(theory, strat, sigma, rho);
-        const b = rust(theory, strat, sigma, rho);
+        const a = await sim3.simStrat(theory, strat, sigma, rho, inputs);
+        const b = rust(theory, strat, sigma, rho, inputs);
         n++;
         if (a.strat === b.strat && a.boughtVars === b.boughtVars && a.time === b.time && a.tauH === b.tauH && a.pubRho === b.pubRho) ok++;
         else {
@@ -49,8 +49,8 @@ async function time(fn) {
             + `\n  sim-3: ${JSON.stringify(a)}\n  rust : ${JSON.stringify(b)}`);
         }
         if (SLOW.has(strat)) continue;
-        jsMs += await time(() => sim3.simStrat(theory, strat, sigma, rho));
-        wasmMs += await time(() => rust(theory, strat, sigma, rho));
+        jsMs += await time(() => sim3.simStrat(theory, strat, sigma, rho, inputs));
+        wasmMs += await time(() => rust(theory, strat, sigma, rho, inputs));
       }
       totalJs += jsMs; totalWasm += wasmMs;
       rows.push({ rho: `e${rho}`, sigma, "sim-3 JS (ms)": +jsMs.toFixed(2), "Rust wasm (ms)": +wasmMs.toFixed(2), speedup: +(jsMs / wasmMs).toFixed(2) });

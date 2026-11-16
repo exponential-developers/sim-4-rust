@@ -54,14 +54,14 @@ npm run build
 
 | Path | What it is |
 |---|---|
-| `wasm/src/theories/` | Theory simulations. `traditional.rs` is the shared base (sim-3's `theory.ts` + `traditionalTheory.ts`); `t1.rs` to `t8.rs` and the custom theories (`wsp.rs`, `sl.rs`, `ef.rs`, `csr2.rs`, `fi.rs`, `fp.rs`, `rz.rs`, `mf.rs`, `bap.rs`, `tc.rs`, `bt.rs`) are the ported theories (`t3.rs` shows a theory with several currencies, `t5.rs` one with a pub table, `t6.rs` weighted buying and strat names that carry an input, `t8.rs` a numerically integrated attractor, `ef.rs`/`csr2.rs`/`fp.rs` forks that try stopping to buy near a forced publication point, `mf.rs` forks at resets, `rz.rs` the zeta function and black holes). `strat_enum!` (in `theories/mod.rs`) declares the strat enum of the newer theories. `pubtable.rs` decodes sim-3's pub tables. `data/` holds data files copied unchanged from sim-3 (pub tables, RZ's zeros). |
-| `wasm/src/sim/mod.rs` | Sim modes (single, chain, step, all, step_chain, amount, time, comparison, pub_table), "Best ..." strat selection, and the list of ported theories (`PORTED_THEORIES`, `run_strat`). |
+| `wasm/src/theories/` | Theory simulations. `traditional.rs` is the shared base (sim-3's `theory.ts` + `traditionalTheory.ts`); `t1.rs` to `t8.rs` and the custom theories (`wsp.rs`, `sl.rs`, `ef.rs`, `csr2.rs`, `fi.rs`, `fp.rs`, `rz.rs`, `mf.rs`, `bap.rs`, `bt.rs`, `tc.rs`, `fs.rs`, `bd.rs`, `ilc.rs`, `nli.rs`) are the ported theories (`t3.rs` shows a theory with several currencies, `t5.rs` one with a pub table, `t6.rs` weighted buying and strat names that carry an input, `t8.rs` a numerically integrated attractor, `ef.rs`/`csr2.rs`/`fp.rs` forks that try stopping to buy near a forced publication point, `mf.rs` forks at resets, `rz.rs` the zeta function and black holes, `fs.rs` three currencies and costs that follow a sequence, `nli.rs` a theory without rho that is not a traditional theory). `strat_enum!` (in `theories/mod.rs`) declares the strat enum of the newer theories. `pubtable.rs` decodes sim-3's pub tables. `data/` holds data files copied unchanged from sim-3 (pub tables, RZ's zeros). |
+| `wasm/src/sim/mod.rs` | Sim modes (single, chain, step, all, step_chain, amount, time, comparison, pub_table), "Best ..." strat selection, theory inputs (`apply_theory_inputs`), and the list of ported theories (`PORTED_THEORIES`, `run_strat`). |
 | `wasm/src/api/` | JSON request/response types (`query.rs`, `response.rs`), `data.json` config (`config.rs`), and the parser for strat conditions (`condition.rs`). |
 | `wasm/src/utils/` | `LogNum`, cost/value models, `Variable`, and `fastmath.rs` (see "Exact results" below). |
-| `wasm/src/lib.rs` | Functions exported to JavaScript: `set_config`, `run_query`, `run_query_with_progress`, `ported_theories`, `sim_strat` (benchmarks/tests). |
+| `wasm/src/lib.rs` | Functions exported to JavaScript: `set_config`, `run_query`, `run_query_with_progress`, `ported_theories`, `sim_strat` and `sim_strat_with_inputs` (benchmarks/tests). |
 | `wasm/tests/sim3_parity.rs` + `wasm/tests/fixtures/sim3_results.json` | Parity tests against saved sim-3 results. |
-| `src/` | Website (TypeScript). `Sim/worker.ts` runs the wasm module in a Web Worker; `Sim/simWorker.ts` talks to it from the page; `Sim/main.ts` handles Simulate/Stop; `Sim/parse.ts` builds queries; `Sim/write.ts` renders results; `Sim/cache.ts` is the "All" mode cache. |
-| `src/Data/data.json` | Theory config: `tau_factor`, strats and their conditions, modes, themes. Also sent to the wasm module at startup. |
+| `src/` | Website (TypeScript). `Sim/worker.ts` runs the wasm module in a Web Worker; `Sim/simWorker.ts` talks to it from the page; `Sim/main.ts` handles Simulate/Stop; `Sim/parse.ts` builds queries; `Sim/write.ts` renders results; `Sim/cache.ts` is the "All" mode cache; `UI/theoryInputs.ts` shows and saves the theory inputs. |
+| `src/Data/data.json` | Theory config: `tau_factor`, strats and their conditions, theory inputs (`specificInputs`, as in sim-3), modes, themes. Also sent to the wasm module at startup. The theory order is the order of "All" mode's values and must match `TheoryType` in `wasm/src/api/config.rs`. |
 | `src/Sim/simulate.ts`, `src/Theories/` | The old TypeScript simulator. **Not used by the page** (kept as a reference); it is still type-checked, so it must keep compiling. |
 | `bench/` | Node scripts that compare the Rust sim with sim-3 and time both, and generate the parity fixtures. |
 | `Styles/` | CSS. Every color is a token defined per theme in `themes.css`. |
@@ -166,10 +166,13 @@ variable gets bought and then the whole publication. To keep results identical:
    `name()` / `from_name()` matching `data.json`, a sim struct holding a `TraditionalCore`, and a
    `simulate_<theory>(strat, input)` function reproducing sim-3's top-level function (multi-pass
    coasting, forks, etc.).
-3. Register it in `wasm/src/theories/mod.rs`, and in `wasm/src/sim/mod.rs` (`PORTED_THEORIES` and
-   `run_strat`).
-4. Make the theory's strats in `src/Data/data.json` match sim-3's (names, order, conditions). The
-   order decides ties between strats with equal tau/h.
+3. Register it in `wasm/src/theories/mod.rs`, in `wasm/src/sim/mod.rs` (`PORTED_THEORIES` and
+   `run_strat`), and in `TheoryType` (`wasm/src/api/config.rs`) at its data.json position.
+   In the website, add it to `reverseMulti` (`src/Utils/helpers.ts`) and to `simFunction` in
+   `src/Sim/simulate.ts` (`rustOnly` for theories the old TypeScript sim doesn't have).
+4. Make the theory's entry in `src/Data/data.json` match sim-3's (strat names, order, conditions,
+   theory inputs) and add its `tau_factor`. The strat order decides ties between strats with equal
+   tau/h. A theory input the sim reads goes in `apply_theory_inputs` and `SimParams`.
 5. Add the theory to `bench/sim3-entry.js` (`THEORIES`) and `bench/cases.js`, check it with
    `bench/run.js` and `bench/compare-modes.js`, then regenerate the fixtures.
 6. Very slow strats (many sims per result, e.g. T2Haxolotl) go in `SLOW` in `bench/cases.js`.
@@ -208,6 +211,12 @@ variable gets bought and then the whole publication. To keep results identical:
   reaches Rust and back again, which can differ from the typed tau in the last bit.
 - EF stops forking at a depth of 100 instead of failing with sim-3's "Max coasting research depth
   reached" error.
-- MF's reset depth comes from the "MF reset depth" setting (sim-3: a theory specific input). The
-  bench only checks depth 0 against sim-3.
+- Theory inputs (sim-3's `specificInputs`) are supported for whole theories (MF's reset depth,
+  NLI's lifetime α), not per strat: T6's idle recovery stop is in the strat name instead (see above).
+- NLI has no rho. sim-4 gives it a tau factor of 1, so its "rho" values (inputs, pub rho) are tau
+  values. Its pub table mode returns an error, like sim-3; its comparison mode works, where sim-3's
+  fails.
+- FS forks can't buy the variables paid with F or L (c3, f1, f2, l1, l2, c4), because sim-3's
+  `copyFrom` replaces those currencies after the variables were copied. This is kept so results
+  match.
 - Time and chain modes return an error instead of looping forever when no strat makes progress.

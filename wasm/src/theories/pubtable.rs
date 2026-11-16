@@ -131,6 +131,18 @@ pub struct PubTable {
 
 impl PubTable {
     pub fn decode_format1(coded: &CodedTable) -> PubTable {
+        Self::decode(coded, None)
+    }
+
+    /**
+     * A format 1 table prepared with a suffix other than zeros (sim-3 `prepareTable(table,
+     * suffix)`): the suffix is appended to both the keys and the values, so it shifts the target.
+     */
+    pub fn decode_format1_with_suffix(coded: &CodedTable, suffix: &str) -> PubTable {
+        Self::decode(coded, Some(suffix))
+    }
+
+    fn decode(coded: &CodedTable, suffix: Option<&str>) -> PubTable {
         let data = decode_values(coded);
         let mut step = coded.s;
         // Align the results to step
@@ -159,17 +171,28 @@ impl PubTable {
             cur_key += step;
         }
 
-        let pad = "0".repeat(4 - digits);
+        let pad = suffix.map_or_else(|| "0".repeat(4 - digits), str::to_owned);
         let mut entries = HashMap::with_capacity(pre_table.len());
         for (key, index) in pre_table {
             // rev_keys[index] is undefined (NaN) for an index outside the table
             let target = usize::try_from(index)
                 .ok()
                 .and_then(|i| rev_keys.get(i))
-                .map_or(f64::NAN, |k| k.parse::<f64>().unwrap_or(f64::NAN));
+                .map_or(f64::NAN, |k| {
+                    let value = match suffix {
+                        Some(suffix) => format!("{k}{suffix}"),
+                        None => k.clone(),
+                    };
+                    value.parse::<f64>().unwrap_or(f64::NAN)
+                });
             entries.insert(format!("{key}{pad}"), target);
         }
         PubTable { entries, digits }
+    }
+
+    /** The entry for a key exactly as written, e.g. `"12.3404"` */
+    pub fn get(&self, key: &str) -> Option<f64> {
+        self.entries.get(key).copied()
     }
 
     /** `target`, but None when the table has no entry */

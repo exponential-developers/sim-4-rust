@@ -106,6 +106,10 @@ describe("multiplier inputs (reverseMulti)", () => {
     expect(reverseMulti("FP", value, sigma)).toBe(((value - Math.log10(5)) / 0.331) / 0.3);
     expect(reverseMulti("TC", value, sigma)).toBe(((value - -Math.log10(2)) / (0.2 / 0.45)) / 0.45);
     expect(reverseMulti("MF", value, sigma)).toBe((value / 0.17) / 1);
+    expect(reverseMulti("FS", value, sigma)).toBe((value / (1 / Math.sqrt(5))) / (1 / ((1 + Math.sqrt(5)) / 2)));
+    expect(reverseMulti("BD", value, sigma)).toBe((value / 0.375) / 0.4);
+    expect(reverseMulti("NLI", value, sigma)).toBe(value / 0.2);
+    expect(reverseMulti("ILC", value, sigma)).toBe(((value - -7 * Math.log10(Math.E)) / 0.39) / 2);
   });
 
   it("rejects unknown theories", () => {

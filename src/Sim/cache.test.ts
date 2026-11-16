@@ -4,7 +4,6 @@ import { cacheFilterQuery, cacheFilterResponse, setCache } from "./cache";
 const settings: Settings = {
   dt: 1.5,
   ddt: 1.0001,
-  mf_reset_depth: 0,
   bought_vars_delta: 5,
   theme: "dark",
   sim_all_strats: "all",
@@ -14,7 +13,7 @@ const settings: Settings = {
 };
 
 function allQuery(values: number[], overrides: Partial<SimAllQuery> = {}): SimAllQuery {
-  return { queryType: "all", values, sigma: 100, very_active: false, semi_idle: true, strat_type: "all", settings, ...overrides };
+  return { queryType: "all", values, sigma: 100, very_active: false, semi_idle: true, strat_type: "all", settings, theory_inputs: {}, ...overrides };
 }
 
 function result(theory: theoryType, tauH: number): simAllResult {
@@ -54,12 +53,21 @@ describe("All mode cache", () => {
 
   it("recomputes everything when a setting that affects results changes", () => {
     setCache(allQuery([500, 400]), allResponse([result("T1", 1), result("T2", 2)]));
-    for (const change of [{ dt: 2 }, { ddt: 1.0002 }, { bought_vars_delta: 10 }, { sim_all_strats: "active" as const }, { mf_reset_depth: 1 }]) {
+    for (const change of [{ dt: 2 }, { ddt: 1.0002 }, { bought_vars_delta: 10 }, { sim_all_strats: "active" as const }]) {
       const { cached } = cacheFilterQuery(allQuery([500, 400], { settings: { ...settings, ...change } }));
       expect(cached, JSON.stringify(change)).toEqual([]);
     }
     expect(cacheFilterQuery(allQuery([500, 400], { semi_idle: false })).cached).toEqual([]);
     expect(cacheFilterQuery(allQuery([500, 400], { very_active: true })).cached).toEqual([]);
+  });
+
+  it("recomputes a theory when one of its own inputs changes", () => {
+    const values: number[] = [...new Array<number>(15).fill(0), 300]; // MF only
+    const response = allResponse([result("MF", 1)]);
+    setCache(allQuery(values, { theory_inputs: { MF: { depth: "0" } } }), response);
+    const mf = values.length - 1;
+    expect(cacheFilterQuery(allQuery(values, { theory_inputs: { MF: { depth: "0" } } })).cached[mf]).toBe(true);
+    expect(cacheFilterQuery(allQuery(values, { theory_inputs: { MF: { depth: "2" } } })).cached[mf]).toBe(false);
   });
 
   it("recomputes main theories when sigma changes", () => {

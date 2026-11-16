@@ -731,6 +731,19 @@
     },
     "MF": {
       "tau_factor": 1,
+      "specificInputs": {
+        "depth": {
+          "label": "Reset depth",
+          "type": "slider",
+          "validation": {
+            "type": "int",
+            "min": 0,
+            "max": 5
+          },
+          "step": 1,
+          "hint": "higher values can give better reset points but slow down the sim significantly"
+        }
+      },
       "strats": {
         "MF": {
           "stratFilterCondition": "Idle"
@@ -911,6 +924,142 @@
         },
         "TCdCoast": {
           "stratFilterCondition": "Active || Very-Active"
+        }
+      }
+    },
+    "FS": {
+      "tau_factor": 0.6180339887498948,
+      "UI_visible": false,
+      "strats": {
+        "FS": {
+          "stratFilterCondition": "Idle"
+        },
+        "FSCoast": {
+          "stratFilterCondition": "false"
+        },
+        "FSd": {
+          "stratFilterCondition": "false"
+        },
+        "FSdCoast": {
+          "stratFilterCondition": "false"
+        },
+        "FSdPTCoast": {
+          "stratFilterCondition": "Very-Active && rho < 13"
+        },
+        "FSStopNM": {
+          "stratFilterCondition": "false"
+        },
+        "FSStopNMCoast": {
+          "stratFilterCondition": "!Idle && rho > 970"
+        },
+        "FSPTStopNMCoast": {
+          "stratFilterCondition": "Semi-Idle && rho <= 970"
+        },
+        "FSPTAStopNMCoast": {
+          "stratFilterCondition": "(Active || Very-Active) && rho <= 970"
+        },
+        "FSdStopNM": {
+          "stratFilterCondition": "false"
+        },
+        "FSdStopNMCoast": {
+          "stratFilterCondition": "(Active || Very-Active) && rho > 970"
+        },
+        "FSdPTStopNMCoast": {
+          "stratFilterCondition": "(Active || Very-Active) && rho <= 970"
+        }
+      }
+    },
+    "BD": {
+      "tau_factor": 0.4,
+      "UI_visible":false,
+      "strats": {
+        "BD": {
+          "stratFilterCondition": "Idle"
+        },
+        "BDCoast": {
+          "stratFilterCondition": "Semi-Idle"
+        },
+        
+        "BD2": {
+          "stratFilterCondition": "false"
+        },
+        "BD2Coast": {
+          "stratFilterCondition": "Semi-Idle || Active || Very-Active"
+        },
+
+        "BDManageKSingleMS": {
+          "stratFilterCondition": "false"
+        },
+        "BDManageKSingleMSCoast": {
+          "stratFilterCondition": "rho >= 775 && (Active || Very-Active)"
+        }
+      }
+    },
+    "ILC": {
+      "tau_factor": 2,
+      "UI_visible":false,
+      "strats": {
+        "ILC": {
+          "stratFilterCondition": "false"
+        },
+        "ILCd": {
+          "stratFilterCondition": "false"
+        },
+        "ILCCoast": {
+          "stratFilterCondition": "tau >= 600"
+        },
+        "ILCdCoast": {
+          "stratFilterCondition": "tau >= 600"
+        },
+        "ILCPTCoast": {
+          "stratFilterCondition": "tau < 600"
+        },
+        "ILCdPTCoast": {
+          "stratFilterCondition": "(Active || Very-Active) && tau < 600"
+        }
+      }
+    },
+    "NLI": {
+      "tau_factor": 1,
+      "UI_visible": false,
+      "supportsRho": false,
+      "specificInputs": {
+        "lifetime_alpha": {
+          "label": "Lifetime α",
+          "type": "textbox",
+          "validation": {
+            "type": "exp",
+            "min": 0,
+            "max": "1e10000"
+          },
+          "placeholder": "",
+          "hint": "used to determine available milestones and permanent upgrades"
+        }
+      },
+      "strats": {
+        "NLI": {
+          "stratFilterCondition": "tau < 525"
+        },
+        "NLInoA2RB2H": {
+          "stratFilterCondition": "tau > 40 && tau < 120"
+        },
+        "NLInoB2H": {
+          "stratFilterCondition": "tau > 30 && tau < 450"
+        },
+        "NLInoA2A3RB2": {
+          "stratFilterCondition": "tau > 70 && tau < 115"
+        },
+        "NLInoA2A3B2": {
+          "stratFilterCondition": "tau > 70 && tau < 350"
+        },
+        "NLInoA3B2": {
+          "stratFilterCondition": "tau > 290 && tau < 450"
+        },
+        "NLInoA3": {
+          "stratFilterCondition": "tau > 390 && tau < 530"
+        },
+        "NLInoA1HA2H": {
+          "stratFilterCondition": "tau > 470"
         }
       }
     }

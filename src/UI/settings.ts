@@ -58,9 +58,6 @@ const dtOtp = qs(".dtOtp");
 const ddtSlider = qs<HTMLInputElement>(".ddt");
 const ddtOtp = qs(".ddtOtp");
 
-const mfDepthSlider = qs<HTMLInputElement>(".mfDepth");
-const mfDepthOtp = qs(".mfDepthOtp");
-
 const boughtVarsDeltaSlider = qs<HTMLInputElement>(".boughtVarsDelta");
 const boughtVarsDeltaOtp = qs(".boughtVarsDeltaOtp");
 
@@ -72,8 +69,6 @@ event(ddtSlider, "input", () => {
   ddtOtp.textContent = formatNumber(getddtFromSlider(parseFloat(ddtSlider.value)), 7)
 });
 
-event(mfDepthSlider, "input", () => mfDepthOtp.textContent = mfDepthSlider.value);
-
 event(boughtVarsDeltaSlider, "input", () => boughtVarsDeltaOtp.textContent = `e${boughtVarsDeltaSlider.value}ρ`);
 
 event(qs(".resetSettings"), "pointerdown", () => {
@@ -83,6 +78,4 @@ event(qs(".resetSettings"), "pointerdown", () => {
   ddtOtp.textContent = "1.0001";
   boughtVarsDeltaSlider.value = "5";
   boughtVarsDeltaOtp.textContent = "e5ρ";
-  mfDepthSlider.value = "0";
-  mfDepthOtp.textContent = "0";
 });

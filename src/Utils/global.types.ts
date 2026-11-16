@@ -8,10 +8,34 @@ declare global {
     [key in theoryType]: keyof (typeof jsonData.theories)[key]["strats"];
   };
 
+  /** A theory's own input (data.json `specificInputs`, as in sim-3) */
+  type SpecificInput = {
+    label: string;
+    hint?: string;
+  } & (
+    | {
+        type: "slider";
+        validation: { type: "int" | "float"; min: number; max: number };
+        step: number;
+        default?: number;
+      }
+    | {
+        type: "textbox";
+        validation: { type: "int" | "float" | "exp" | "string"; min?: number | string; max?: number | string };
+        placeholder?: string;
+      }
+  );
+
+  /** Values of a theory's own inputs by id, as entered (e.g. { depth: "2" }) */
+  type TheoryInputs = Record<string, string>;
+
   type TheoryDataStructure = {
     [key: string]: {
       tau_factor: number;
       UI_visible?: boolean;
+      /** False for theories without rho (NLI): inputs are tau values */
+      supportsRho?: boolean;
+      specificInputs?: Record<string, SpecificInput>;
       strats: {
         [key: string]: {
           stratFilterCondition: string;
@@ -25,6 +49,8 @@ declare global {
   type BaseSimQuery = {
     sigma: number;
     settings: Settings;
+    /** The theory's own inputs (single-theory modes) */
+    theory_inputs?: TheoryInputs;
   }
 
   type SingleSimQuery = BaseSimQuery & {
@@ -54,9 +80,12 @@ declare global {
     step: number;
   }
 
-  type SimAllQuery = BaseSimQuery & {
+  type SimAllQuery = Omit<BaseSimQuery, "theory_inputs"> & {
+    /** Each theory's own inputs */
+    theory_inputs: Partial<Record<theoryType, TheoryInputs>>;
     queryType: "all";
     values: number[];
+
     very_active: boolean;
     semi_idle: boolean;
     strat_type: SettingsSimAllStratsMode;
@@ -169,7 +198,6 @@ declare global {
   type Settings = {
     dt: number;
     ddt: number;
-    mf_reset_depth: number;
     bought_vars_delta: number;
     theme: string;
     sim_all_strats: SettingsSimAllStratsMode;
@@ -190,6 +218,8 @@ declare global {
     tau_h: number;
     time: number;
     bought_vars: varBuy[];
+    /** Theory inputs for the next publication (NLI's lifetime α) */
+    theory_inputs?: TheoryInputs;
   }
 
   // Deprecated in TS

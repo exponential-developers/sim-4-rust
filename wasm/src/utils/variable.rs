@@ -82,6 +82,11 @@ impl Variable {
         self.level as f64 >= self.start_cap_at
     }
 
+    /** True if the level is strictly below the original cap */
+    pub fn under_original_cap(&self) -> bool {
+        (self.level as f64) < self.original_cap
+    }
+
     /** True if the level is strictly above the original cap */
     pub fn above_original_cap(&self) -> bool {
         self.level as f64 > self.original_cap

@@ -1,3 +1,5 @@
+use std::collections::BTreeMap;
+
 use serde::Serialize;
 
 use crate::api::config::TheoryType;
@@ -19,6 +21,12 @@ pub struct SimResult {
     pub tau_h: f64,
     pub time: f64,
     pub bought_vars: Vec<VarBuy>,
+    /**
+     * Theory inputs to use for the next publication (NLI's lifetime α), which chains pass on
+     * (sim-3 `theorySpecificInputs` of a result)
+     */
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub theory_inputs: Option<BTreeMap<String, String>>,
 }
 
 impl Default for SimResult {
@@ -34,6 +42,7 @@ impl Default for SimResult {
             tau_h: 1.,
             time: 1.,
             bought_vars: Vec::new(),
+            theory_inputs: None,
         }
     }
 }

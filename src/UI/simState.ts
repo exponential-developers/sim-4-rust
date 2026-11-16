@@ -12,9 +12,6 @@ const dtOtp = qs(".dtOtp");
 const ddtSlider = qs<HTMLInputElement>(".ddt");
 const ddtOtp = qs(".ddtOtp");
 
-const mfDepthSlider = qs<HTMLInputElement>(".mfDepth");
-const mfDepthOtp = qs(".mfDepthOtp");
-
 const boughtVarsDeltaSlider = qs<HTMLInputElement>(".boughtVarsDelta");
 const boughtVarsDeltaOtp = qs(".boughtVarsDeltaOtp");
 
@@ -32,6 +29,7 @@ type SavedSimState = {
   settings: {
     dt: string;
     ddt: string;
+    /** MF's reset depth, now a theory input (theoryInputs.ts keeps an old value) */
     mfResetDepth?: string;
     boughtVarsDelta?: string | number;
     simAllStrats?: string;
@@ -130,7 +128,6 @@ export function setSimState() {
       settings: {
         dt: dtOtp.textContent,
         ddt: ddtOtp.textContent,
-        mfResetDepth: mfDepthOtp.textContent,
         boughtVarsDelta: boughtVarsDeltaSlider.value,
         simAllStrats: simAllStrats.value,
         completedCTs: completedCTs.value,
@@ -152,12 +149,10 @@ export function getSimState() {
 
   dtOtp.textContent = settings.dt;
   ddtOtp.textContent = settings.ddt;
-  mfDepthOtp.textContent = settings.mfResetDepth ?? "0";
   boughtVarsDeltaOtp.textContent = `e${settings.boughtVarsDelta ?? 5}ρ`;
   // Determines the slider position based on the stored value (see helpers.ts)
   dtSlider.value = String(round(Math.log2((Number(settings.dt) - 0.15) / (4.9 / (1 + 2 ** parseFloat(dtSlider.max)))), 4));
   ddtSlider.value = String(round(Math.log((Number(settings.ddt) - 1) / (0.3 / 3 ** parseFloat(ddtSlider.max))) / Math.log(3), 4));
-  mfDepthSlider.value = mfDepthOtp.textContent ?? "0";
   boughtVarsDeltaSlider.value = String(settings.boughtVarsDelta ?? 5);
 
   themeSelector.value = settings.theme ?? defaultTheme;

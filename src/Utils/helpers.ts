@@ -260,6 +260,17 @@ export function reverseMulti(theory: string, value: number, sigma: number) {
       return sim3CtMulti(1.25, 0, 0.4);
     case "TC":
       return sim3CtMulti(0.2 / 0.45, -l10(2), 0.45);
+    case "FS": {
+      const phi = (1 + Math.sqrt(5)) / 2;
+      return sim3CtMulti(1 / Math.sqrt(5), 0, 1 / phi);
+    }
+    case "BD":
+      return sim3CtMulti(0.375, 0, 0.4);
+    case "ILC":
+      return sim3CtMulti(0.39, -7 * l10(Math.E), 2);
+    case "NLI":
+      // No rho: sim-4 gives NLI a tau factor of 1
+      return sim3CtMulti(0.2, 0, 1);
   }
   throw new Error(`Failed parsing multiplier. Please contact the author of the sim.`);
 }

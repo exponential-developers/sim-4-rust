@@ -17,12 +17,20 @@ const DATA_JSON: &str = include_str!("../../src/Data/data.json");
 
 fn settings() -> Value {
     json!({
-        "dt": 1.5, "ddt": 1.0001, "mf_reset_depth": 0, "bought_vars_delta": 5,
+        "dt": 1.5, "ddt": 1.0001, "bought_vars_delta": 5,
         "sim_all_strats": "all", "completed_cts": "no", "show_a23": false, "show_unofficials": false
     })
 }
 
 /** Runs a query through the website's JSON API and returns the response data */
+/** Adds a case's theory inputs (only saved when it has some) to a query */
+fn with_inputs(mut data: Value, case: &Value) -> Value {
+    if !case["theory_inputs"].is_null() {
+        data["theory_inputs"] = case["theory_inputs"].clone();
+    }
+    data
+}
+
 fn api(query_type: &str, mut data: Value) -> Value {
     wasm::set_config(DATA_JSON);
     data["settings"] = settings();
@@ -54,17 +62,27 @@ fn run_all_saved_cases() {
     for c in f["strats"].as_array().unwrap() {
         let (theory, strat) = (c["theory"].as_str().unwrap(), c["strat"].as_str().unwrap());
         let rho = c["rho"].as_f64().unwrap();
-        let r: Value = serde_json::from_str(&wasm::sim_strat(
+        let inputs = if c["theory_inputs"].is_null() {
+            "{}".to_owned()
+        } else {
+            c["theory_inputs"].to_string()
+        };
+        let r: Value = serde_json::from_str(&wasm::sim_strat_with_inputs(
             theory,
             strat,
             c["sigma"].as_u64().unwrap() as u32,
             rho,
+            &inputs,
         ))
         .unwrap();
         let label = format!("{theory} {strat} e{rho}");
-        // T8's SingleMS strats have nothing to simulate when no swap point is near the last pub
+        // No result is only fine where sim-3 has none either (T8's SingleMS strats with no swap
+        // point near the last pub, ILC's pub table strats past the table)
         if r["strat"] == "Result undefined" {
-            assert!(strat.contains("SingleMS"), "{label}: no result");
+            assert_eq!(
+                c["expected"]["strat"], "Result undefined",
+                "{label}: no result"
+            );
             assert_eq!(r["tauH"].as_f64().unwrap(), 0., "{label}");
             continue;
         }
@@ -94,7 +112,7 @@ fn run_all_saved_cases() {
     for c in f["best"].as_array().unwrap() {
         let rho = c["rho"].as_f64().unwrap();
         let data = json!({ "theory": c["theory"], "strat": c["strat"], "sigma": c["sigma"], "rho": rho, "cap": null, "last_strat": null });
-        let r = &api("single", data)["result"];
+        let r = &api("single", with_inputs(data, c))["result"];
         let label = format!("{} {} e{rho}", c["theory"], c["strat"]);
         assert_sensible(
             &label,
@@ -107,7 +125,7 @@ fn run_all_saved_cases() {
 
     for c in f["chains"].as_array().unwrap() {
         let data = json!({ "theory": c["theory"], "strat": c["strat"], "sigma": c["sigma"], "rho": c["rho"], "cap": c["cap"], "hard_cap": c["hard_cap"] });
-        let r = api("chain", data);
+        let r = api("chain", with_inputs(data, c));
         assert!(
             !r["results"].as_array().unwrap().is_empty(),
             "chain {}: no results",
@@ -118,7 +136,10 @@ fn run_all_saved_cases() {
 
     for c in f["modes"].as_array().unwrap() {
         let (mode, extra) = (c["mode"].as_str().unwrap(), c["extra"].as_array().unwrap());
-        let mut data = json!({ "theory": c["theory"], "strat": c["strat"], "sigma": c["sigma"], "rho": c["rho"] });
+        let mut data = with_inputs(
+            json!({ "theory": c["theory"], "strat": c["strat"], "sigma": c["sigma"], "rho": c["rho"] }),
+            c,
+        );
         let keys: &[&str] = match mode {
             "step" | "pub_table" => &["cap", "step"],
             "amount" => &["amount"],
@@ -161,6 +182,6 @@ fn run_all_saved_cases() {
     assert!(err["data"].as_str().unwrap().contains("Unknown theory"));
     assert_eq!(
         wasm::ported_theories(),
-        r#"["T1","T2","T3","T4","T5","T6","T7","T8","WSP","SL","EF","CSR2","FI","FP","RZ","MF","BaP","TC","BT"]"#
+        r#"["T1","T2","T3","T4","T5","T6","T7","T8","WSP","SL","EF","CSR2","FI","FP","RZ","MF","BaP","BT","TC","FS","BD","ILC","NLI"]"#
     );
 }

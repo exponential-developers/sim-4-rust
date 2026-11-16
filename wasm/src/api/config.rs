@@ -28,8 +28,12 @@ pub enum TheoryType {
     RZ,
     MF,
     BaP,
-    TC,
     BT,
+    TC,
+    FS,
+    BD,
+    ILC,
+    NLI,
 }
 
 /** Conditions deciding when a strat is used by the "Best ..." strat categories */
@@ -47,6 +51,9 @@ pub struct StratConfig {
 #[derive(Debug, Deserialize)]
 pub struct ConfigTheories {
     pub tau_factor: f64,
+    /** False for theories without rho (NLI): their strat conditions see rho as 0, like sim-3 */
+    #[serde(rename = "supportsRho", default = "default_true")]
+    pub supports_rho: bool,
     /** Strats in data.json order (order decides ties between equally good strats) */
     #[serde(default, deserialize_with = "ordered_strats")]
     pub strats: Vec<(String, StratConfig)>,
@@ -59,6 +66,10 @@ by the wasm module
 pub struct Config {
     pub theories: HashMap<TheoryType, ConfigTheories>,
     pub strat_categories: Vec<String>,
+}
+
+fn default_true() -> bool {
+    true
 }
 
 /** Deserializes a JSON object into a list of (key, value), keeping the file order */

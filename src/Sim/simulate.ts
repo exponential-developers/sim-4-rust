@@ -25,6 +25,10 @@ import tc from "../Theories/Unofficial-CTs/TC";
 
 const output = qs(".output");
 
+/** Theories that only exist in the Rust sim */
+const rustOnly = (data: theoryData): Promise<simResult> =>
+    Promise.reject(new Error(`${data.theory} is only implemented in the Rust sim`));
+
 const simFunction: { [key in theoryType]: ((data: theoryData) => Promise<simResult>) } = {
     T1: t1,
     T2: t2,
@@ -44,7 +48,11 @@ const simFunction: { [key in theoryType]: ((data: theoryData) => Promise<simResu
     MF: mf,
     BaP: bap,
     BT: bt,
-    TC: tc
+    TC: tc,
+    FS: rustOnly,
+    BD: rustOnly,
+    ILC: rustOnly,
+    NLI: rustOnly
 }
 
 async function singleSim(query: SingleSimQuery): Promise<SingleSimResponse> {

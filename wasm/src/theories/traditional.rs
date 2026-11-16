@@ -22,8 +22,10 @@ pub struct SimParams {
     pub bought_vars_delta: f64,
     /** Show the a2 and a3 levels in EF's strat column */
     pub show_a23: bool,
-    /** MF: how many resets ahead the sim looks (0 to 5) */
+    /** MF: how many resets ahead the sim looks (0 to 5, MF's "depth" theory input) */
     pub mf_reset_depth: i32,
+    /** NLI: the player's lifetime α as log10 (NLI's "lifetime_alpha" theory input), if given */
+    pub nli_lifetime_alpha: Option<f64>,
 }
 
 impl Default for SimParams {
@@ -35,6 +37,7 @@ impl Default for SimParams {
             bought_vars_delta: 5.,
             show_a23: false,
             mf_reset_depth: 0,
+            nli_lifetime_alpha: None,
         }
     }
 }
@@ -312,6 +315,15 @@ pub fn get_last_level(name: &str, bought: &[VarBuy]) -> i32 {
     crate::utils::get_last_purchase(name, bought).unwrap_or(0)
 }
 
+/** Cost (log10) of the last purchase of a variable, 0 if there is none (sim-3 `getLastLevelCost`) */
+pub fn get_last_level_cost(name: &str, bought: &[VarBuy]) -> f64 {
+    bought
+        .iter()
+        .rev()
+        .find(|b| b.var_name == name)
+        .map_or(0., |b| b.cost.value)
+}
+
 /**
  * Records, during simulations, the earliest time each rho step above `last_pub` is reached
  * (sim-3 `StepPubTableCollector`). Used by the pub table mode.
@@ -432,6 +444,8 @@ pub struct TraditionalCore {
 
     /** Whether the "t > 2 * pubT" sim end condition is checked */
     pub do_sim_end_conditions: bool,
+    /** The sim ends once t exceeds this many times the time of the best publication point */
+    pub sim_end_t_factor: f64,
     /** Theory-specific publication point: the pub ends when max rho reaches it */
     pub pub_target: Option<f64>,
 
@@ -489,6 +503,7 @@ impl TraditionalCore {
             forced_pub_min_rho: None,
             pub_end_cur_mult: None,
             do_sim_end_conditions: true,
+            sim_end_t_factor: 2.,
             pub_target: None,
             best_fork_res: None,
             track_cur_mult: true,
@@ -526,7 +541,8 @@ impl TraditionalCore {
 
     #[inline]
     pub fn sim_end_conditions(&self) -> bool {
-        self.t > self.pub_t * 2. || self.sim_end_cur_mult.is_some_and(|m| self.cur_mult > m)
+        self.t > self.pub_t * self.sim_end_t_factor
+            || self.sim_end_cur_mult.is_some_and(|m| self.cur_mult > m)
     }
 
     /** True when the simulation loop should stop */
@@ -654,6 +670,7 @@ impl TraditionalCore {
             tau_h: self.max_tau_h,
             time: self.pub_t,
             bought_vars: self.bought_vars.clone(),
+            theory_inputs: None,
         }
     }
 }

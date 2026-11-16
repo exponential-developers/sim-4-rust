@@ -30,12 +30,16 @@ macro_rules! strat_enum {
 }
 
 pub mod bap;
+pub mod bd;
 pub mod bt;
 pub mod csr2;
 pub mod ef;
 pub mod fi;
 pub mod fp;
+pub mod fs;
+pub mod ilc;
 pub mod mf;
+pub mod nli;
 pub mod pubtable;
 pub mod rz;
 pub mod sl;
@@ -65,6 +69,33 @@ mod tests {
             .keys()
             .cloned()
             .collect()
+    }
+
+    /**
+     * "All" mode sends one value per theory in data.json order and the sim reads value i as
+     * `TheoryType` i, so both orders must match
+     */
+    #[test]
+    fn theory_types_follow_data_json_order() {
+        use crate::api::config::TheoryType;
+        // serde_json sorts object keys, so read the theory names from the text: they are the keys
+        // indented by 4 spaces, before "strat_categories"
+        let text = include_str!("../../../src/Data/data.json");
+        let theories = &text[..text.find("\"strat_categories\"").unwrap()];
+        let names: Vec<&str> = theories
+            .lines()
+            .filter_map(|l| {
+                l.strip_prefix("    \"")?
+                    .split_once("\": {")
+                    .map(|(n, _)| n)
+            })
+            .collect();
+        assert!(names.len() > 20, "{names:?}");
+        for (i, name) in names.iter().enumerate() {
+            let theory = TheoryType::try_from(i).unwrap_or_else(|_| panic!("no TheoryType {i}"));
+            assert_eq!(serde_json::to_value(theory).unwrap(), *name, "theory {i}");
+        }
+        assert!(TheoryType::try_from(names.len()).is_err());
     }
 
     /**
@@ -115,5 +146,9 @@ mod tests {
         "TC" => tc::TcStrat,
         "MF" => mf::MfStrat,
         "RZ" => rz::RzStrat,
+        "FS" => fs::FsStrat,
+        "BD" => bd::BdStrat,
+        "ILC" => ilc::IlcStrat,
+        "NLI" => nli::NliStrat,
     }
 }

@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { parseQuery } from "./parse";
 import { getR9multiplier } from "../Utils/helpers";
+import jsonData from "../Data/data.json" assert { type: "json" };
 
 const q = <T extends HTMLElement>(selector: string) => document.querySelector(selector) as T;
 
@@ -32,7 +33,7 @@ describe("single theory modes", () => {
     const query = parseQuery();
     expect(query).toMatchObject({ queryType: "single", theory: "T1", strat: "T1Ratio", sigma: 90, rho: 150 });
     // settings come from the settings dialog's defaults
-    expect(query.settings).toMatchObject({ dt: 1.5, ddt: 1.0001, mf_reset_depth: 0, bought_vars_delta: 5, sim_all_strats: "all" });
+    expect(query.settings).toMatchObject({ dt: 1.5, ddt: 1.0001, bought_vars_delta: 5, sim_all_strats: "all" });
   });
 
   it("accepts rho, tau and multiplier inputs in several formats", () => {
@@ -114,7 +115,49 @@ describe("All mode", () => {
   });
 
   it("names the first value that doesn't match a theory", () => {
-    const values = Array.from({ length: 25 }, (_, i) => String(i + 1));
-    expect(() => all(`500 ${values.join(" ")}`)).toThrow(/Invalid value 20 /);
+    const theoryCount = Object.keys(jsonData.theories).length;
+    const values = Array.from({ length: theoryCount + 2 }, (_, i) => String(i + 1));
+    expect(() => all(`500 ${values.join(" ")}`)).toThrow(new RegExp(`Invalid value ${theoryCount + 1} `));
+  });
+
+  it("sends each theory's own inputs", () => {
+    localStorage.setItem("theoryInputs", JSON.stringify({ MF: { depth: "3" } }));
+    const query = all("500 500");
+    expect(query.queryType === "all" && query.theory_inputs).toEqual({ MF: { depth: "3" }, NLI: {} });
+  });
+});
+
+describe("theory inputs", () => {
+  beforeEach(() => localStorage.removeItem("theoryInputs"));
+
+  it("sends the selected theory's inputs, with their defaults", () => {
+    inputs({ mode: "Single sim", theory: "MF" });
+    expect(parseQuery()).toMatchObject({ theory: "MF", theory_inputs: { depth: "0" } });
+    localStorage.setItem("theoryInputs", JSON.stringify({ MF: { depth: "2" } }));
+    expect(parseQuery()).toMatchObject({ theory_inputs: { depth: "2" } });
+    inputs({ mode: "Chain", theory: "T1" });
+    expect(parseQuery()).toMatchObject({ theory_inputs: {} });
+  });
+
+  it("checks values like sim-3", () => {
+    inputs({ mode: "Single sim", theory: "NLI", input: "e150" });
+    localStorage.setItem("theoryInputs", JSON.stringify({ NLI: { lifetime_alpha: "e300" } }));
+    expect(parseQuery()).toMatchObject({ theory_inputs: { lifetime_alpha: "e300" } });
+    localStorage.setItem("theoryInputs", JSON.stringify({ NLI: { lifetime_alpha: "lots" } }));
+    expect(() => parseQuery()).toThrow(/Bad input for NLI - Lifetime α/);
+    localStorage.setItem("theoryInputs", JSON.stringify({ NLI: { lifetime_alpha: "" } }));
+    expect(parseQuery()).toMatchObject({ theory_inputs: {} });
+  });
+
+  it("takes tau values for NLI, which has no rho", () => {
+    const tau = (input: string) => {
+      inputs({ mode: "Single sim", theory: "NLI", input });
+      const query = parseQuery();
+      return query.queryType === "single" ? query.rho : NaN;
+    };
+    expect(tau("e150")).toBe(150);
+    expect(tau("150t")).toBe(150);
+    expect(tau("30m")).toBe(30 / 0.2);
+    expect(() => tau("150r")).toThrow(/Cannot use rho/);
   });
 });

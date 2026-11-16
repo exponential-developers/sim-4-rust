@@ -36,3 +36,8 @@ export function set_config(config: string): string;
  * 
  */
 export function sim_strat(theory: string, strat: string, sigma: number, rho: number): string;
+
+/**
+ * `sim_strat` with the theory's own inputs as a JSON object (e.g. `{"depth": "2"}`) 
+ */
+export function sim_strat_with_inputs(theory: string, strat: string, sigma: number, rho: number, theory_inputs: string): string;

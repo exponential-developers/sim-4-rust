@@ -36,6 +36,11 @@ const STRATS = {
   FP: ["FP", "FPcoast", "FPd", "FPdMS", "FPmodBurstC1", "FPmodBurstC1MS"],
   BT: ["BT", "BTd"],
   TC: ["TC", "TCd", "TCCoast", "TCdCoast"],
+  FS: ["FS", "FSCoast", "FSd", "FSdCoast", "FSdPTCoast", "FSStopNM", "FSStopNMCoast", "FSPTStopNMCoast",
+    "FSPTAStopNMCoast", "FSdStopNM", "FSdStopNMCoast", "FSdPTStopNMCoast"],
+  BD: ["BD", "BDCoast", "BD2", "BD2Coast", "BDManageKSingleMS", "BDManageKSingleMSCoast"],
+  ILC: ["ILC", "ILCd", "ILCCoast", "ILCdCoast", "ILCPTCoast", "ILCdPTCoast"],
+  NLI: ["NLI", "NLInoA2RB2H", "NLInoB2H", "NLInoA2A3RB2", "NLInoA2A3B2", "NLInoA3B2", "NLInoA3", "NLInoA1HA2H"],
   RZ: ["RZ", "RZd", "RZBH", "RZBHLong", "RZdBHLong", "RZdBH", "RZSpiralswap", "RZMS", "RZdMS", "RZdBHRewind"],
   MF: [
     "MF", "MFRC", "MFd", "MFd2",
@@ -70,6 +75,12 @@ const STRAT_CASES = {
   FP: [[25, 30], [100, 60], [400, 120], [800, 180], [1250, 230], [1700, 270], [2100, 300]],
   BT: [[15, 25], [60, 55], [200, 100], [500, 160], [900, 210], [1400, 260], [1470, 270]],
   TC: [[15, 25], [60, 55], [150, 90], [400, 150], [620, 180], [800, 220], [1100, 260]],
+  FS: [[10, 20], [30, 40], [80, 60], [200, 100], [400, 150], [650, 190], [900, 230]],
+  BD: [[15, 25], [60, 55], [150, 90], [400, 150], [800, 200], [1200, 250], [1450, 280]],
+  ILC: [[10, 20], [40, 40], [90, 65], [150, 90], [220, 110], [300, 130], [400, 150]],
+  // NLI has no rho: its values are tau. A third element gives the theory's own inputs.
+  NLI: [[20, 0], [60, 0], [150, 0, { lifetime_alpha: "e180" }], [300, 0, { lifetime_alpha: "1.5e420" }],
+    [520, 0, { lifetime_alpha: "e760" }], [2400, 0, { lifetime_alpha: "e1200" }]],
   MF: [[30, 40], [300, 120], [540, 170]],
   RZ: [[20, 30], [60, 60], [150, 90], [300, 120], [500, 150], [650, 160]],
 };
@@ -97,7 +108,11 @@ const BEST_CASES = {
   FP: [[20, 30], [90, 60], [300, 110], [700, 170], [1220, 230], [1900, 280]],
   BT: [[10, 20], [40, 40], [150, 80], [450, 150], [1000, 220], [1460, 270]],
   TC: [[10, 20], [50, 50], [120, 80], [350, 140], [650, 190], [900, 230]],
-  MF: [[10, 20], [60, 50], [200, 100], [450, 150], [600, 190]],
+  FS: [[8, 20], [25, 35], [60, 55], [150, 90], [350, 140], [600, 190], [950, 240]],
+  BD: [[10, 20], [40, 40], [120, 80], [350, 140], [700, 190], [1100, 240], [1400, 270]],
+  ILC: [[8, 20], [30, 35], [70, 55], [120, 80], [200, 105], [280, 125], [380, 145]],
+  NLI: [[25, 0], [80, 0], [200, 0, { lifetime_alpha: "e260" }], [450, 0, { lifetime_alpha: "e650" }]],
+  MF: [[10, 20], [60, 50], [200, 100], [450, 150], [600, 190], [30, 40, { depth: "1" }], [300, 120, { depth: "2" }]],
   RZ: [[10, 20], [40, 40], [100, 70], [250, 110], [450, 140]],
 };
 
@@ -139,6 +154,15 @@ const CHAINS = [
   ["RZ", "Best Idle", 60, 20, 120, false],
   ["BT", "Best Overall", 60, 20, 150, false],
   ["TC", "Best Overall", 60, 20, 150, false],
+  ["FS", "Best Overall", 60, 10, 150, false],
+  ["FS", "Best Idle", 90, 100, 300, true],
+  ["BD", "Best Overall", 60, 20, 200, false],
+  ["BD", "Best Semi-Idle", 90, 150, 400, true],
+  ["ILC", "Best Overall", 60, 100, 140, false],
+  ["ILC", "Best Active", 90, 180, 220, true],
+  ["NLI", "Best Overall", 0, 20, 90, false],
+  ["NLI", "Best Semi-Idle", 0, 150, 260, true, { lifetime_alpha: "e200" }],
+  ["MF", "Best Overall", 60, 20, 80, false, { depth: "1" }],
 ];
 
 // Other modes: [mode, theory, strat, sigma, rho, extra...]
@@ -215,6 +239,18 @@ const MODES = [
   ["comparison", "BT", null, 100, 150],
   ["step", "TC", "Best Overall", 80, 20, 100, 20],
   ["comparison", "TC", null, 100, 150],
+  ["step", "FS", "Best Overall", 80, 20, 100, 20],
+  ["comparison", "FS", null, 100, 150],
+  ["amount", "FS", "Best Active", 100, 150, 3],
+  ["step", "BD", "Best Overall", 80, 20, 100, 20],
+  ["comparison", "BD", null, 100, 150],
+  ["time", "BD", "BD2", 100, 60, 86400],
+  ["step", "ILC", "Best Overall", 80, 20, 100, 20],
+  ["comparison", "ILC", null, 100, 150],
+  ["step_chain", "ILC", "Best Overall", 90, 120, 160, 20, false],
+  ["step", "NLI", "Best Overall", 0, 20, 80, 20],
+  ["amount", "NLI", "NLI", 0, 100, 3, { lifetime_alpha: "e150" }],
+  ["step_chain", "NLI", "Best Overall", 0, 30, 90, 30, false],
 ];
 
 module.exports = { STRATS, STRAT_CASES, SLOW, CATEGORIES, BEST_CASES, CHAINS, MODES };

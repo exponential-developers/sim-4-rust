@@ -2,10 +2,15 @@
  * Contains structures for the different types of queries that can be sent to the wasm module
  */
 
+use std::collections::{BTreeMap, HashMap};
+
 use serde::Deserialize;
 
 use crate::api::config::TheoryType;
 use crate::utils::{lognum::LogNum, settings::SimSettings};
+
+/** A theory's own inputs (sim-3 `specificInputs`) by id, as text, e.g. {"depth": "2"} */
+pub type TheoryInputs = BTreeMap<String, String>;
 
 #[derive(Debug, Deserialize)]
 pub struct SingleSimQuery {
@@ -21,6 +26,9 @@ pub struct SingleSimQuery {
     pub tau: Option<f64>,
     pub cap: Option<LogNum>,
     pub last_strat: Option<String>,
+    /** The theory's own inputs (data.json `specificInputs`), as entered */
+    #[serde(default)]
+    pub theory_inputs: TheoryInputs,
     pub settings: SimSettings,
 }
 
@@ -32,6 +40,9 @@ pub struct ChainSimQuery {
     pub rho: LogNum,
     pub cap: LogNum,
     pub hard_cap: bool,
+    /** The theory's own inputs (data.json `specificInputs`), as entered */
+    #[serde(default)]
+    pub theory_inputs: TheoryInputs,
     pub settings: SimSettings,
 }
 
@@ -43,6 +54,9 @@ pub struct StepSimQuery {
     pub rho: LogNum,
     pub cap: LogNum,
     pub step: LogNum,
+    /** The theory's own inputs (data.json `specificInputs`), as entered */
+    #[serde(default)]
+    pub theory_inputs: TheoryInputs,
     pub settings: SimSettings,
 }
 
@@ -52,6 +66,9 @@ pub struct SimAllQuery {
     pub sigma: i64, // Type could change
     pub very_active: bool,
     pub semi_idle: bool,
+    /** Each theory's own inputs */
+    #[serde(default)]
+    pub theory_inputs: HashMap<TheoryType, TheoryInputs>,
     pub settings: SimSettings,
 }
 
@@ -63,6 +80,9 @@ pub struct AmountSimQuery {
     pub sigma: i64,
     pub rho: LogNum,
     pub amount: u32,
+    /** The theory's own inputs (data.json `specificInputs`), as entered */
+    #[serde(default)]
+    pub theory_inputs: TheoryInputs,
     pub settings: SimSettings,
 }
 
@@ -74,6 +94,9 @@ pub struct TimeSimQuery {
     pub sigma: i64,
     pub rho: LogNum,
     pub time: f64,
+    /** The theory's own inputs (data.json `specificInputs`), as entered */
+    #[serde(default)]
+    pub theory_inputs: TheoryInputs,
     pub settings: SimSettings,
 }
 
@@ -87,6 +110,9 @@ pub struct StepChainSimQuery {
     pub cap: LogNum,
     pub step: LogNum,
     pub hard_cap: bool,
+    /** The theory's own inputs (data.json `specificInputs`), as entered */
+    #[serde(default)]
+    pub theory_inputs: TheoryInputs,
     pub settings: SimSettings,
 }
 
@@ -96,6 +122,9 @@ pub struct ComparisonSimQuery {
     pub theory: TheoryType,
     pub sigma: i64,
     pub rho: LogNum,
+    /** The theory's own inputs (data.json `specificInputs`), as entered */
+    #[serde(default)]
+    pub theory_inputs: TheoryInputs,
     pub settings: SimSettings,
 }
 
@@ -108,6 +137,9 @@ pub struct PubTableSimQuery {
     pub rho: LogNum,
     pub cap: LogNum,
     pub step: f64,
+    /** The theory's own inputs (data.json `specificInputs`), as entered */
+    #[serde(default)]
+    pub theory_inputs: TheoryInputs,
     pub settings: SimSettings,
 }
 

@@ -18,12 +18,20 @@ fn fixtures() -> Value {
 
 fn settings() -> Value {
     json!({
-        "dt": 1.5, "ddt": 1.0001, "mf_reset_depth": 0, "bought_vars_delta": 5,
+        "dt": 1.5, "ddt": 1.0001, "bought_vars_delta": 5,
         "sim_all_strats": "all", "completed_cts": "no", "show_a23": false, "show_unofficials": false
     })
 }
 
 /** Calls the same JSON API as the website and returns the response data */
+/** Adds a case's theory inputs (only saved when it has some) to a query */
+fn with_inputs(mut data: Value, case: &Value) -> Value {
+    if !case["theory_inputs"].is_null() {
+        data["theory_inputs"] = case["theory_inputs"].clone();
+    }
+    data
+}
+
 fn api(query_type: &str, mut data: Value) -> Value {
     wasm::set_config(DATA_JSON);
     data["settings"] = settings();
@@ -132,8 +140,15 @@ fn named_strats_match_sim3() {
             c["sigma"].as_u64().unwrap() as u32,
             c["rho"].as_f64().unwrap(),
         );
-        let actual: Value =
-            serde_json::from_str(&wasm::sim_strat(theory, strat, sigma, rho)).unwrap();
+        let inputs = if c["theory_inputs"].is_null() {
+            "{}".to_owned()
+        } else {
+            c["theory_inputs"].to_string()
+        };
+        let actual: Value = serde_json::from_str(&wasm::sim_strat_with_inputs(
+            theory, strat, sigma, rho, &inputs,
+        ))
+        .unwrap();
         failures.extend(diff(
             &format!("{theory} {strat} e{rho} sigma={sigma}"),
             &c["expected"],
@@ -153,7 +168,7 @@ fn best_strat_selection_matches_sim3() {
             "theory": c["theory"], "strat": c["strat"], "sigma": c["sigma"], "rho": c["rho"],
             "cap": null, "last_strat": null
         });
-        let actual = summary(&api("single", data)["result"]);
+        let actual = summary(&api("single", with_inputs(data, c))["result"]);
         failures.extend(diff(
             &format!(
                 "{} {} e{} sigma={}",
@@ -180,7 +195,7 @@ fn chains_match_sim3() {
             "theory": c["theory"], "strat": c["strat"], "sigma": c["sigma"], "rho": c["rho"],
             "cap": c["cap"], "hard_cap": c["hard_cap"]
         });
-        let actual = api("chain", data);
+        let actual = api("chain", with_inputs(data, c));
         let expected = &c["expected"];
         let (exp_results, act_results) = (
             expected["results"].as_array().unwrap(),
@@ -236,7 +251,10 @@ fn other_modes_match_sim3() {
     let mut failures = Vec::new();
     for c in cases {
         let (mode, extra) = (c["mode"].as_str().unwrap(), c["extra"].as_array().unwrap());
-        let base = json!({ "theory": c["theory"], "strat": c["strat"], "sigma": c["sigma"], "rho": c["rho"] });
+        let base = with_inputs(
+            json!({ "theory": c["theory"], "strat": c["strat"], "sigma": c["sigma"], "rho": c["rho"] }),
+            c,
+        );
         let with = |pairs: &[(&str, &Value)]| {
             let mut d = base.clone();
             for (k, v) in pairs {
@@ -269,7 +287,7 @@ fn other_modes_match_sim3() {
                 json!({ "results": summaries(&api("step_chain", with(&[("cap", &extra[0]), ("step", &extra[1]), ("hard_cap", &extra[2])]))) })
             }
             "comparison" => {
-                json!({ "results": summaries(&api("comparison", json!({ "theory": c["theory"], "sigma": c["sigma"], "rho": c["rho"] }))) })
+                json!({ "results": summaries(&api("comparison", with_inputs(json!({ "theory": c["theory"], "sigma": c["sigma"], "rho": c["rho"] }), c))) })
             }
             "pub_table" => api(
                 "pub_table",

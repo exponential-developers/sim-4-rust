@@ -4,6 +4,7 @@
  * simulated again.
  */
 import { getTheoryFromIndex, isMainTheory } from "../Utils/helpers";
+import { theoryInputDefs } from "../UI/theoryInputs";
 
 const QUERY_KEY = "cacheQuery";
 const RESPONSE_KEY = "cacheResponse";
@@ -22,8 +23,12 @@ function didSettingsChange(a: Settings, b: Settings): boolean {
   return a.dt !== b.dt
     || a.ddt !== b.ddt
     || a.bought_vars_delta !== b.bought_vars_delta
-    || a.sim_all_strats !== b.sim_all_strats
-    || a.mf_reset_depth !== b.mf_reset_depth;
+    || a.sim_all_strats !== b.sim_all_strats;
+}
+
+/** Whether any of a theory's own inputs changed (sim-3 `didSpecificInputsChange`) */
+function didTheoryInputsChange(theory: theoryType, a?: TheoryInputs, b?: TheoryInputs): boolean {
+  return theoryInputDefs(theory).some(([id]) => a?.[id] !== b?.[id]);
 }
 
 /**
@@ -48,6 +53,7 @@ export function cacheFilterQuery(query: SimQuery): { query: SimQuery; cached: bo
     if (isMainTheory(theory) && query.sigma !== prev.sigma) reuse = false;
     if (!isMainTheory(theory) && (query.settings.completed_cts === "no") !== (prev.settings.completed_cts === "no")) reuse = false;
     if (theory === "EF" && query.settings.show_a23 !== prev.settings.show_a23) reuse = false;
+    if (didTheoryInputsChange(theory, query.theory_inputs?.[theory], prev.theory_inputs?.[theory])) reuse = false;
     cached[i] = reuse;
     return reuse ? 0 : value;
   });
