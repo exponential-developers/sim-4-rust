@@ -56,7 +56,8 @@
   color: var(--text-muted);
 }
 .simElapsed[data-wide] {
-  min-width: 23ch;
+  /* "1:02:05 · 100%" */
+  min-width: 14ch;
 }
 .simElapsed:empty {
   display: none;

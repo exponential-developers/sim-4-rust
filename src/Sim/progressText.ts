@@ -1,6 +1,6 @@
 /**
  * Texts of the status line while a simulation runs (main.ts): the progress message from the sim,
- * and the elapsed time with the share done and an estimate of the time left.
+ * and the elapsed time with the share done.
  */
 import { formatElapsed } from "../Utils/helpers";
 
@@ -17,26 +17,11 @@ export function splitDetail(message: string): { outer: string; detail: string | 
   return { outer: message.slice(0, at), detail: last };
 }
 
-/** A duration for the estimate: "45s", "4m 50s" or "1h 05m" */
-export function formatDuration(ms: number): string {
-  const total = Math.max(0, Math.round(ms / 1000));
-  const [h, m, s] = [Math.floor(total / 3600), Math.floor(total / 60) % 60, total % 60];
-  if (h > 0) return `${h}h ${String(m).padStart(2, "0")}m`;
-  if (m > 0) return `${m}m ${String(s).padStart(2, "0")}s`;
-  return `${s}s`;
-}
-
 /**
- * "16s · 5% · ~4m 50s left": the time elapsed, then the share done and the time left when the
- * share is known. The estimate waits for a few seconds and a percent of progress, and assumes the
- * rest goes as fast as what was done.
+ * "16s · 5%": the time elapsed, then the share done when it is known. (No estimate of the time
+ * left: later steps and publications usually take longer than earlier ones, so it was misleading.)
  */
 export function describeProgress(elapsedMs: number, fraction: number): string {
-  let text = formatElapsed(elapsedMs);
-  if (!Number.isFinite(fraction)) return text;
-  text += ` · ${Math.floor(fraction * 100)}%`;
-  if (elapsedMs >= 3000 && fraction >= 0.01 && fraction < 1) {
-    text += ` · ~${formatDuration((elapsedMs * (1 - fraction)) / fraction)} left`;
-  }
-  return text;
+  const elapsed = formatElapsed(elapsedMs);
+  return Number.isFinite(fraction) ? `${elapsed} · ${Math.floor(fraction * 100)}%` : elapsed;
 }

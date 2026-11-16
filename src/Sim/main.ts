@@ -89,10 +89,10 @@ const run = {
       setInterval(() => this.addLiveResults(), LIVE_INTERVAL),
     ];
   },
-  /** Elapsed time, share done and time left */
+  /** Elapsed time and share done */
   updateClock() {
     elapsedOutput.textContent = describeProgress(performance.now() - this.start, this.fraction);
-    // With the share done and time left the text is longer: a fixed width keeps the status after it in place
+    // With the share done the text is longer: a fixed width keeps the status after it in place
     elapsedOutput.toggleAttribute("data-wide", Number.isFinite(this.fraction));
   },
   /** Adds the results finished since the last call to the table */
