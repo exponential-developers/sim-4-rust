@@ -3,8 +3,7 @@ name: Build and Deploy to Github Pages
 on:
   workflow_dispatch: 
   push:
-    # TEMPORARY: also deploy from the migration branch (remove this branch name when done)
-    branches: [ "master", "blackseal-sim3-migration" ]
+    branches: [ "master" ]
 
 permissions:
   id-token: write

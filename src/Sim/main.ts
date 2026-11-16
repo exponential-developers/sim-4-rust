@@ -6,7 +6,8 @@ import { qs, event } from "../Utils/DOMhelpers";
 import { runQuery, stopQuery, getPortedTheories } from "./simWorker";
 import { loadSaveFile } from "../UI/buttonEvents";
 import { cacheFilterQuery, cacheFilterResponse, setCache } from "./cache";
-import jsonData from "../Data/data.json" assert { type: "json" };
+import { PartialResults } from "./partial";
+import jsonData from "../Data/data.json" with { type: "json" };
 import { formatElapsed } from "../Utils/helpers";
 
 const output = qs(".output");
@@ -101,10 +102,26 @@ export async function simCall() {
     // "All" mode: theories unchanged since the last run reuse their previous result
     const { query: filteredQuery, cached } = cacheFilterQuery(query);
     // Runs in a Web Worker so the page stays responsive; progress messages are shown meanwhile
-    const APIresponse = await runQuery(formatSimQuery(filteredQuery), (message, fraction) => run.progress(message, fraction));
+    // Results finished so far: shown if the simulation is stopped
+    const partial = new PartialResults();
+    const APIresponse = await runQuery(
+      formatSimQuery(filteredQuery),
+      (message, fraction) => run.progress(message, fraction),
+      (json) => partial.add(json),
+    );
     const took = run.end();
     if (APIresponse === null) {
-      setStatus(`Sim stopped after ${took}.`);
+      const response = partial.response(filteredQuery.queryType);
+      if (response === null) {
+        setStatus(`Sim stopped after ${took}.`);
+      } else {
+        // Not cached: the next "All" run must simulate the theories that were left out
+        writeSimResponse(cacheFilterResponse(filteredQuery, cached, response));
+        const what = filteredQuery.queryType === "single"
+          ? `the best of the ${partial.count} strats finished`
+          : `the ${partial.count} result${partial.count === 1 ? "" : "s"} finished`;
+        setStatus(`Sim stopped after ${took}: showing ${what}.`);
+      }
     }
     else {
       const parsed_response = JSON.parse(APIresponse) as API_response;

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { parseQuery } from "./parse";
 import { getR9multiplier } from "../Utils/helpers";
-import jsonData from "../Data/data.json" assert { type: "json" };
+import jsonData from "../Data/data.json" with { type: "json" };
 
 const q = <T extends HTMLElement>(selector: string) => document.querySelector(selector) as T;
 

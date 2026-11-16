@@ -1,4 +1,4 @@
-import jsonData from "../Data/data.json" assert { type: "json" };
+import jsonData from "../Data/data.json" with { type: "json" };
 
 declare global {
   type conditionFunction = () => boolean;
@@ -252,5 +252,7 @@ declare global {
     | { type: "ready"; portedTheories: string[] }
     /** `fraction`: share of the work done (0 to 1), NaN when unknown */
     | { type: "progress"; id: number; message: string; fraction: number }
+    /** A finished part of the response (JSON), sent as soon as it is done (src/Sim/partial.ts) */
+    | { type: "finished"; id: number; json: string }
     | { type: "result"; id: number; response: string };
 }

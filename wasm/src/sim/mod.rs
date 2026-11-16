@@ -58,7 +58,7 @@ fn theory_config(theory: TheoryType) -> Result<&'static ConfigTheories, String> 
 }
 
 mod progress;
-pub use progress::{Progress, ProgressSink};
+pub use progress::{FinishedSink, Progress, ProgressSink};
 
 /** Theories that have been ported to the Rust sim, in data.json order */
 pub const PORTED_THEORIES: [TheoryType; 23] = [
@@ -318,6 +318,7 @@ fn single_sim(query: SingleSimQuery, progress: &Progress) -> Result<SingleSimRes
             );
         }
         let res = run_strat(query.theory, strat, &input)?;
+        progress.finished(&serde_json::json!({ "kind": "result", "result": &res }));
         if res.tau_h > best.tau_h {
             best = res;
         }
@@ -411,6 +412,7 @@ fn chain_from_tau(query: ChainFromTau, progress: &Progress) -> Result<ChainSimRe
         time += res.time;
         last_strat.clear();
         last_strat.push_str(res.strat.split(' ').next().unwrap_or(""));
+        finished_pub(progress, &res, start, tau, time);
         if let Some(next_inputs) = &res.theory_inputs {
             theory_inputs.extend(next_inputs.clone());
         }
@@ -462,6 +464,7 @@ fn step_sim(query: StepSimQuery, progress: &Progress) -> Result<StepSimResponse,
         tau = (tau / tau_factor + query.step.value) * tau_factor;
         last_strat.clear();
         last_strat.push_str(res.strat.split(' ').next().unwrap_or(""));
+        progress.finished(&serde_json::json!({ "kind": "result", "result": &res }));
         results.push(res);
     }
 
@@ -530,6 +533,7 @@ fn amount_sim(query: AmountSimQuery, progress: &Progress) -> Result<ChainSimResp
         tau = res.pub_rho.value * tau_factor;
         time += res.time;
         last_strat = res.strat.split(' ').next().unwrap_or("").to_owned();
+        finished_pub(progress, &res, start, tau, time);
         results.push(res);
     }
 
@@ -579,10 +583,23 @@ fn time_sim(query: TimeSimQuery, progress: &Progress) -> Result<ChainSimResponse
         tau = pub_tau;
         time += res.time;
         last_strat = res.strat.split(' ').next().unwrap_or("").to_owned();
+        finished_pub(progress, &res, start, tau, time);
         results.push(res);
     }
 
     chain_response(start, tau, time, results)
+}
+
+/** Sends a finished publication of a chain, with the chain's totals so far */
+fn finished_pub(progress: &Progress, res: &SimResult, start_tau: f64, tau: f64, time: f64) {
+    let delta_tau = tau - start_tau;
+    progress.finished(&serde_json::json!({
+        "kind": "pub",
+        "result": res,
+        "delta_tau": delta_tau,
+        "average_rate": delta_tau / (time / 3600.),
+        "total_time": time,
+    }));
 }
 
 fn chain_response(
@@ -675,6 +692,7 @@ fn step_chain_sim(
                 best = candidate;
             }
         }
+        progress.finished(&serde_json::json!({ "kind": "result", "result": &best }));
         results.push(best);
         // sim-3 adds the step to tau
         tau += query.step.value;
@@ -712,23 +730,23 @@ fn comparison_sim(
             &format!("Simulating {strat} ({}/{count})", i + 1),
             i as f64 / count as f64,
         );
-        results.push(
-            single_sim(
-                SingleSimQuery {
-                    theory: query.theory,
-                    strat: strat.to_owned(),
-                    theory_inputs: query.theory_inputs.clone(),
-                    sigma: query.sigma,
-                    tau: None,
-                    rho: query.rho,
-                    cap: None,
-                    last_strat: None,
-                    settings: query.settings.clone(),
-                },
-                progress,
-            )?
-            .result,
-        );
+        let res = single_sim(
+            SingleSimQuery {
+                theory: query.theory,
+                strat: strat.to_owned(),
+                theory_inputs: query.theory_inputs.clone(),
+                sigma: query.sigma,
+                tau: None,
+                rho: query.rho,
+                cap: None,
+                last_strat: None,
+                settings: query.settings.clone(),
+            },
+            &progress.part("", 0., 0.),
+        )?
+        .result;
+        progress.finished(&serde_json::json!({ "kind": "result", "result": &res }));
+        results.push(res);
     }
     // Stable sort, highest tau/h first
     results.sort_by(|a, b| {
@@ -804,6 +822,9 @@ fn pub_table_sim(query: PubTableSimQuery, progress: &Progress) -> Result<PubTabl
                 }
             }
             pub_table.push([min_time, min_target]);
+            progress.finished(&serde_json::json!({
+                "kind": "pub_table_row", "row": [min_time, min_target], "cap": cap, "start": start, "step": step,
+            }));
         }
         Ok(())
     })();
@@ -916,7 +937,7 @@ fn sim_all(query: SimAllQuery, progress: &Progress) -> Result<SimAllResponse, St
             SimResult::default()
         };
 
-        results.push(SimAllResult {
+        let res = SimAllResult {
             theory,
             ratio: if query.settings.sim_all_strats == SimAllStrats::All {
                 active_res.tau_h / idle_res.tau_h
@@ -926,7 +947,12 @@ fn sim_all(query: SimAllQuery, progress: &Progress) -> Result<SimAllResponse, St
             last_pub: rho,
             active: active_res,
             idle: idle_res,
-        })
+        };
+        progress.finished(&serde_json::json!({
+            "kind": "all_result", "result": &res, "sigma": query.sigma,
+            "strat_type": query.settings.sim_all_strats, "completed_cts": query.settings.completed_cts,
+        }));
+        results.push(res);
     }
 
     Ok(SimAllResponse {
@@ -940,9 +966,14 @@ fn sim_all(query: SimAllQuery, progress: &Progress) -> Result<SimAllResponse, St
 /**
  * Runs a query. `sink` receives progress during long simulations: a status text
  * ("Simulating 1e85/1e150 · T1Ratio (2/5)") and the fraction done (NaN when unknown).
+ * `finished` receives each finished result as soon as it is done (see `Progress::finished`).
  */
-pub fn simulate(query: SimQuery, sink: ProgressSink) -> Result<SimResponse, String> {
-    let progress = &Progress::new(sink);
+pub fn simulate(
+    query: SimQuery,
+    sink: ProgressSink,
+    finished: Option<FinishedSink>,
+) -> Result<SimResponse, String> {
+    let progress = &Progress::new(sink, finished);
     match query {
         SimQuery::Single(q) => Ok(SimResponse::Single(single_sim(
             q,
@@ -987,13 +1018,68 @@ mod tests {
         serde_json::from_value(serde_json::json!({ "type": query_type, "data": data })).unwrap()
     }
 
+    /** Runs a query and returns its response and the finished parts it sent while running */
+    fn with_finished(q: SimQuery) -> (SimResponse, Vec<serde_json::Value>) {
+        let finished = std::cell::RefCell::new(Vec::new());
+        let on_finished = |json: &str| {
+            finished
+                .borrow_mut()
+                .push(serde_json::from_str(json).unwrap())
+        };
+        let res = simulate(q, &|_, _| {}, Some(&on_finished)).unwrap();
+        (res, finished.into_inner())
+    }
+
+    #[test]
+    fn finished_results_are_sent_while_simulating() {
+        // Comparison: one part per strat, the same results as the response (before sorting)
+        let (res, parts) = with_finished(query(
+            "comparison",
+            serde_json::json!({ "theory": "T1", "sigma": 100, "rho": 60, "settings": settings("all") }),
+        ));
+        let SimResponse::Step(res) = res else {
+            panic!("expected a step response")
+        };
+        assert_eq!(parts.len(), res.results.len());
+        assert!(parts.iter().all(|p| p["kind"] == "result"));
+        let mut sent: Vec<String> = parts
+            .iter()
+            .map(|p| p["result"]["strat"].to_string())
+            .collect();
+        let mut got: Vec<String> = res
+            .results
+            .iter()
+            .map(|r| format!("{:?}", r.strat))
+            .collect();
+        sent.sort();
+        got.sort();
+        assert_eq!(sent, got);
+
+        // Chain: one part per publication, the last one with the chain's totals
+        let (res, parts) = with_finished(query(
+            "chain",
+            serde_json::json!({
+                "theory": "T1", "strat": "Best Overall", "sigma": 100, "rho": 60, "cap": 75,
+                "hard_cap": false, "settings": settings("all")
+            }),
+        ));
+        let SimResponse::Chain(res) = res else {
+            panic!("expected a chain response")
+        };
+        assert_eq!(parts.len(), res.results.len());
+        let last = parts.last().unwrap();
+        assert_eq!(last["kind"], "pub");
+        assert_eq!(last["total_time"].as_f64(), Some(res.total_time));
+        assert_eq!(last["average_rate"].as_f64(), Some(res.average_rate));
+    }
+
     /** Single sim of a strat category at e500, sigma 500 */
     fn best(theory: &str, strat: &str) -> SimResult {
         let q = query(
             "single",
             serde_json::json!({ "theory": theory, "strat": strat, "sigma": 500, "rho": 500.0, "settings": settings("all") }),
         );
-        match simulate(q, &|_, _| {}).unwrap() {
+        match simulate(q, &|_, _| {}, None).unwrap() {
             SimResponse::Single(r) => r.result,
             _ => panic!("expected a single sim response"),
         }
@@ -1013,9 +1099,11 @@ mod tests {
             }),
         );
         let progress = std::cell::RefCell::new(Vec::new());
-        let res = match simulate(q, &|msg: &str, fraction: f64| {
-            progress.borrow_mut().push((msg.to_owned(), fraction))
-        })
+        let res = match simulate(
+            q,
+            &|msg: &str, fraction: f64| progress.borrow_mut().push((msg.to_owned(), fraction)),
+            None,
+        )
         .unwrap()
         {
             SimResponse::All(r) => r,
@@ -1084,7 +1172,7 @@ mod tests {
                 "settings": settings("all")
             }),
         );
-        let err = simulate(q, &|_, _| {}).unwrap_err();
+        let err = simulate(q, &|_, _| {}, None).unwrap_err();
         assert!(err.contains("step length"), "{err}");
     }
 

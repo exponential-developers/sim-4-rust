@@ -2,7 +2,7 @@
  * Web Worker running the Rust sim (WebAssembly), so the page stays responsive during simulations.
  * Messages are described in simWorker.ts.
  */
-import jsonData from "../Data/data.json" assert { type: "json" };
+import jsonData from "../Data/data.json" with { type: "json" };
 import { run_query_with_progress, set_config, ported_theories } from "../../wasm/pkg/wasm";
 
 // postMessage of a worker (the DOM typings describe the window version)
@@ -13,8 +13,11 @@ set_config(JSON.stringify(jsonData));
 self.onmessage = (event: MessageEvent<WorkerRequest>) => {
   const request = event.data;
   if (request.type === "query") {
-    const response = run_query_with_progress(request.query, (message: string, fraction: number) =>
-      post({ type: "progress", id: request.id, message, fraction }));
+    const response = run_query_with_progress(
+      request.query,
+      (message: string, fraction: number) => post({ type: "progress", id: request.id, message, fraction }),
+      (json: string) => post({ type: "finished", id: request.id, json }),
+    );
     post({ type: "result", id: request.id, response });
   }
 };

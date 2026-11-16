@@ -17,10 +17,11 @@ export function run_query(input: string): string;
  *
  * * Same as `run_query`, calling `progress(message, fraction)` during simulations with a status
  * * text such as "Simulating 1e85/1e150 · T1Ratio (2/5)" and the fraction of the work done (0 to 1,
- * * NaN when unknown).
+ * * NaN when unknown), and `finished(json)` with each result as soon as it is done (so a stopped
+ * * simulation can show them; see `Progress::finished`).
  * 
  */
-export function run_query_with_progress(input: string, progress: Function): string;
+export function run_query_with_progress(input: string, progress: Function, finished: Function): string;
 
 /**
  *

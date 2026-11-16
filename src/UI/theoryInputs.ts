@@ -6,7 +6,7 @@
  * Values are kept per theory in localStorage, so both places show the same values and they are
  * remembered between visits.
  */
-import data from "../Data/data.json" assert { type: "json" };
+import data from "../Data/data.json" with { type: "json" };
 import { ce, event, qs, removeAllChilds } from "../Utils/DOMhelpers";
 import { parseLog10String } from "../Utils/helpers";
 

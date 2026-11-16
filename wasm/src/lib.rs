@@ -102,32 +102,47 @@ pub fn sim_strat_with_inputs(
  */
 #[wasm_bindgen]
 pub fn run_query(input: &str) -> String {
-    run_query_impl(input, &|_, _| {})
+    run_query_impl(input, &|_, _| {}, None)
 }
 
 /**
  * Same as `run_query`, calling `progress(message, fraction)` during simulations with a status
  * text such as "Simulating 1e85/1e150 · T1Ratio (2/5)" and the fraction of the work done (0 to 1,
- * NaN when unknown).
+ * NaN when unknown), and `finished(json)` with each result as soon as it is done (so a stopped
+ * simulation can show them; see `Progress::finished`).
  */
 #[wasm_bindgen]
-pub fn run_query_with_progress(input: &str, progress: &js_sys::Function) -> String {
-    run_query_impl(input, &|msg: &str, fraction: f64| {
-        let _ = progress.call2(
-            &JsValue::NULL,
-            &JsValue::from_str(msg),
-            &JsValue::from_f64(fraction),
-        );
-    })
+pub fn run_query_with_progress(
+    input: &str,
+    progress: &js_sys::Function,
+    finished: &js_sys::Function,
+) -> String {
+    run_query_impl(
+        input,
+        &|msg: &str, fraction: f64| {
+            let _ = progress.call2(
+                &JsValue::NULL,
+                &JsValue::from_str(msg),
+                &JsValue::from_f64(fraction),
+            );
+        },
+        Some(&|json: &str| {
+            let _ = finished.call1(&JsValue::NULL, &JsValue::from_str(json));
+        }),
+    )
 }
 
-fn run_query_impl(input: &str, progress: sim::ProgressSink) -> String {
+fn run_query_impl(
+    input: &str,
+    progress: sim::ProgressSink,
+    finished: Option<sim::FinishedSink>,
+) -> String {
     let query = match serde_json::from_str::<SimQuery>(input) {
         Ok(query) => query,
         Err(err) => return create_error(&format!("Error parsing query: {err}")),
     };
 
-    let res = match simulate(query, progress) {
+    let res = match simulate(query, progress, finished) {
         Ok(res) => res,
         Err(err) => return create_error(&err),
     };
