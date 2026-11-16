@@ -275,6 +275,16 @@ export function reverseMulti(theory: string, value: number, sigma: number) {
   throw new Error(`Failed parsing multiplier. Please contact the author of the sim.`);
 }
 
+/** A duration as "42s", "3:05" or "1:02:05" (the elapsed time of a simulation) */
+export function formatElapsed(ms: number): string {
+  const total = Math.floor(ms / 1000);
+  const [h, m, s] = [Math.floor(total / 3600), Math.floor(total / 60) % 60, total % 60];
+  const pad = (n: number) => String(n).padStart(2, "0");
+  if (h > 0) return `${h}:${pad(m)}:${pad(s)}`;
+  if (m > 0) return `${m}:${pad(s)}`;
+  return `${s}s`;
+}
+
 /** Checks if a string corresponds to a main theory */
 export function isMainTheory(theory: string): boolean {
   return /T[1-8]/.test(theory);

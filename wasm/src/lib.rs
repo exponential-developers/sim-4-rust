@@ -102,21 +102,26 @@ pub fn sim_strat_with_inputs(
  */
 #[wasm_bindgen]
 pub fn run_query(input: &str) -> String {
-    run_query_impl(input, &|_| {})
+    run_query_impl(input, &|_, _| {})
 }
 
 /**
- * Same as `run_query`, calling `progress(message)` with status text such as
- * "Simulating 1e85/1e150" during long simulations (chain, steps, all).
+ * Same as `run_query`, calling `progress(message, fraction)` during simulations with a status
+ * text such as "Simulating 1e85/1e150 · T1Ratio (2/5)" and the fraction of the work done (0 to 1,
+ * NaN when unknown).
  */
 #[wasm_bindgen]
 pub fn run_query_with_progress(input: &str, progress: &js_sys::Function) -> String {
-    run_query_impl(input, &|msg: &str| {
-        let _ = progress.call1(&JsValue::NULL, &JsValue::from_str(msg));
+    run_query_impl(input, &|msg: &str, fraction: f64| {
+        let _ = progress.call2(
+            &JsValue::NULL,
+            &JsValue::from_str(msg),
+            &JsValue::from_f64(fraction),
+        );
     })
 }
 
-fn run_query_impl(input: &str, progress: sim::Progress) -> String {
+fn run_query_impl(input: &str, progress: sim::ProgressSink) -> String {
     let query = match serde_json::from_str::<SimQuery>(input) {
         Ok(query) => query,
         Err(err) => return create_error(&format!("Error parsing query: {err}")),

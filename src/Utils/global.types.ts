@@ -250,6 +250,7 @@ declare global {
   /** Messages sent by the sim worker */
   type WorkerResponse =
     | { type: "ready"; portedTheories: string[] }
-    | { type: "progress"; id: number; message: string }
+    /** `fraction`: share of the work done (0 to 1), NaN when unknown */
+    | { type: "progress"; id: number; message: string; fraction: number }
     | { type: "result"; id: number; response: string };
 }

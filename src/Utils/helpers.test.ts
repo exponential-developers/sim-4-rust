@@ -3,6 +3,7 @@ import {
   add,
   binaryInsertionSearch,
   convertTime,
+  formatElapsed,
   getIndexFromTheory,
   getR9multiplier,
   getTheoryFromIndex,
@@ -114,5 +115,14 @@ describe("multiplier inputs (reverseMulti)", () => {
 
   it("rejects unknown theories", () => {
     expect(() => reverseMulti("T99", 10, 10)).toThrow();
+  });
+});
+
+describe("formatElapsed", () => {
+  it("shows seconds, then minutes, then hours", () => {
+    expect(formatElapsed(0)).toBe("0s");
+    expect(formatElapsed(42_900)).toBe("42s");
+    expect(formatElapsed(185_000)).toBe("3:05");
+    expect(formatElapsed(3_725_000)).toBe("1:02:05");
   });
 });

@@ -13,7 +13,8 @@ set_config(JSON.stringify(jsonData));
 self.onmessage = (event: MessageEvent<WorkerRequest>) => {
   const request = event.data;
   if (request.type === "query") {
-    const response = run_query_with_progress(request.query, (message: string) => post({ type: "progress", id: request.id, message }));
+    const response = run_query_with_progress(request.query, (message: string, fraction: number) =>
+      post({ type: "progress", id: request.id, message, fraction }));
     post({ type: "result", id: request.id, response });
   }
 };

@@ -57,6 +57,9 @@ fn theory_config(theory: TheoryType) -> Result<&'static ConfigTheories, String> 
         .ok_or_else(|| format!("{theory:?} is missing from data.json"))
 }
 
+mod progress;
+pub use progress::{Progress, ProgressSink};
+
 /** Theories that have been ported to the Rust sim, in data.json order */
 pub const PORTED_THEORIES: [TheoryType; 23] = [
     TheoryType::T1,
@@ -264,7 +267,8 @@ fn get_strats(
         .collect())
 }
 
-fn single_sim(query: SingleSimQuery) -> Result<SingleSimResponse, String> {
+/** `progress` gets which strat runs when there are several (a "Best ..." category) */
+fn single_sim(query: SingleSimQuery, progress: &Progress) -> Result<SingleSimResponse, String> {
     if !is_ported(query.theory) {
         return Err(format!(
             "{:?} has not been ported to the Rust sim yet",
@@ -305,7 +309,14 @@ fn single_sim(query: SingleSimQuery) -> Result<SingleSimResponse, String> {
 
     // Keep the result with the highest tau/h; on ties the first strat wins (sim-3 `singleSim`)
     let mut best = default_result();
-    for strat in strats {
+    let count = strats.len();
+    for (i, strat) in strats.into_iter().enumerate() {
+        if count > 1 {
+            progress.report(
+                &format!("{strat} ({}/{count})", i + 1),
+                i as f64 / count as f64,
+            );
+        }
         let res = run_strat(query.theory, strat, &input)?;
         if res.tau_h > best.tau_h {
             best = res;
@@ -315,7 +326,7 @@ fn single_sim(query: SingleSimQuery) -> Result<SingleSimResponse, String> {
     Ok(SingleSimResponse { result: best })
 }
 
-fn chain_sim(query: ChainSimQuery, progress: Progress) -> Result<ChainSimResponse, String> {
+fn chain_sim(query: ChainSimQuery, progress: &Progress) -> Result<ChainSimResponse, String> {
     let tau_factor = theory_config(query.theory)?.tau_factor;
     chain_from_tau(
         ChainFromTau {
@@ -345,7 +356,7 @@ struct ChainFromTau<'a> {
 }
 
 /** sim-3 `chainSim`: simulates publications until tau reaches the cap */
-fn chain_from_tau(query: ChainFromTau, progress: Progress) -> Result<ChainSimResponse, String> {
+fn chain_from_tau(query: ChainFromTau, progress: &Progress) -> Result<ChainSimResponse, String> {
     let tau_factor = theory_config(query.theory)?.tau_factor;
     let start = query.start_tau;
     let cap = query.cap.value * tau_factor;
@@ -361,26 +372,31 @@ fn chain_from_tau(query: ChainFromTau, progress: Progress) -> Result<ChainSimRes
             value: tau / tau_factor,
             sign: 1,
         };
-        progress(&format!(
+        let text = format!(
             "Simulating {}/{}",
             log_to_exp(rho.value, 0),
             log_to_exp(query.cap.value, 0)
-        ));
-        let res = single_sim(SingleSimQuery {
-            theory: query.theory,
-            strat: query.strat.to_owned(),
-            theory_inputs: theory_inputs.clone(),
-            rho,
-            tau: Some(tau),
-            sigma: query.sigma,
-            settings: query.settings.clone(),
-            cap: if query.hard_cap {
-                Some(query.cap)
-            } else {
-                None
+        );
+        let done = (tau - start) / (cap - start);
+        progress.report(&text, done);
+        let res = single_sim(
+            SingleSimQuery {
+                theory: query.theory,
+                strat: query.strat.to_owned(),
+                theory_inputs: theory_inputs.clone(),
+                rho,
+                tau: Some(tau),
+                sigma: query.sigma,
+                settings: query.settings.clone(),
+                cap: if query.hard_cap {
+                    Some(query.cap)
+                } else {
+                    None
+                },
+                last_strat: Some(last_strat.clone()),
             },
-            last_strat: Some(last_strat.clone()),
-        })?
+            &progress.part(&text, done, done),
+        )?
         .result;
 
         let pub_tau = res.pub_rho.value * tau_factor;
@@ -404,10 +420,11 @@ fn chain_from_tau(query: ChainFromTau, progress: Progress) -> Result<ChainSimRes
     chain_response(start, tau, time, results)
 }
 
-fn step_sim(query: StepSimQuery, progress: Progress) -> Result<StepSimResponse, String> {
+fn step_sim(query: StepSimQuery, progress: &Progress) -> Result<StepSimResponse, String> {
     let tau_factor = theory_config(query.theory)?.tau_factor;
     let cap = query.cap.value * tau_factor;
     let mut tau = query.rho.value * tau_factor;
+    let start = tau;
     let mut last_strat = String::new();
 
     let mut results: Vec<SimResult> = Vec::new();
@@ -418,22 +435,27 @@ fn step_sim(query: StepSimQuery, progress: Progress) -> Result<StepSimResponse, 
             value: tau / tau_factor,
             sign: 1,
         };
-        progress(&format!(
+        let text = format!(
             "Simulating {}/{}",
             log_to_exp(rho.value, 0),
             log_to_exp(query.cap.value, 0)
-        ));
-        let res = single_sim(SingleSimQuery {
-            theory: query.theory,
-            strat: query.strat.clone(),
-            theory_inputs: query.theory_inputs.clone(),
-            rho,
-            tau: Some(tau),
-            sigma: query.sigma,
-            settings: query.settings.clone(),
-            cap: None,
-            last_strat: Some(last_strat.clone()),
-        })?
+        );
+        let done = (tau - start) / (cap - start);
+        progress.report(&text, done);
+        let res = single_sim(
+            SingleSimQuery {
+                theory: query.theory,
+                strat: query.strat.clone(),
+                theory_inputs: query.theory_inputs.clone(),
+                rho,
+                tau: Some(tau),
+                sigma: query.sigma,
+                settings: query.settings.clone(),
+                cap: None,
+                last_strat: Some(last_strat.clone()),
+            },
+            &progress.part(&text, done, done),
+        )?
         .result;
 
         // The next step adds the step to rho
@@ -472,7 +494,7 @@ pub(crate) fn convert_time(secs: f64) -> String {
 }
 
 /** Chain of exactly `amount` publications (sim-3 `amountSim`) */
-fn amount_sim(query: AmountSimQuery, progress: Progress) -> Result<ChainSimResponse, String> {
+fn amount_sim(query: AmountSimQuery, progress: &Progress) -> Result<ChainSimResponse, String> {
     let tau_factor = theory_config(query.theory)?.tau_factor;
     let start = query.rho.value * tau_factor;
     let mut tau = start;
@@ -481,21 +503,29 @@ fn amount_sim(query: AmountSimQuery, progress: Progress) -> Result<ChainSimRespo
     let mut results: Vec<SimResult> = Vec::new();
 
     for i in 0..query.amount {
-        progress(&format!("Simulating {}/{} pubs", i + 1, query.amount));
-        let res = single_sim(SingleSimQuery {
-            theory: query.theory,
-            strat: query.strat.clone(),
-            theory_inputs: query.theory_inputs.clone(),
-            rho: LogNum {
-                value: tau / tau_factor,
-                sign: 1,
+        let text = format!("Simulating {}/{} pubs", i + 1, query.amount);
+        let (done, next) = (
+            i as f64 / query.amount as f64,
+            (i + 1) as f64 / query.amount as f64,
+        );
+        progress.report(&text, done);
+        let res = single_sim(
+            SingleSimQuery {
+                theory: query.theory,
+                strat: query.strat.clone(),
+                theory_inputs: query.theory_inputs.clone(),
+                rho: LogNum {
+                    value: tau / tau_factor,
+                    sign: 1,
+                },
+                tau: Some(tau),
+                sigma: query.sigma,
+                settings: query.settings.clone(),
+                cap: None,
+                last_strat: Some(last_strat.clone()),
             },
-            tau: Some(tau),
-            sigma: query.sigma,
-            settings: query.settings.clone(),
-            cap: None,
-            last_strat: Some(last_strat.clone()),
-        })?
+            &progress.part(&text, done, next),
+        )?
         .result;
         tau = res.pub_rho.value * tau_factor;
         time += res.time;
@@ -507,7 +537,7 @@ fn amount_sim(query: AmountSimQuery, progress: Progress) -> Result<ChainSimRespo
 }
 
 /** Chain until the total time is reached (sim-3 `timeSim`) */
-fn time_sim(query: TimeSimQuery, progress: Progress) -> Result<ChainSimResponse, String> {
+fn time_sim(query: TimeSimQuery, progress: &Progress) -> Result<ChainSimResponse, String> {
     let tau_factor = theory_config(query.theory)?.tau_factor;
     let start = query.rho.value * tau_factor;
     let mut tau = start;
@@ -517,22 +547,27 @@ fn time_sim(query: TimeSimQuery, progress: Progress) -> Result<ChainSimResponse,
     let stop = convert_time(query.time);
 
     while time < query.time {
-        progress(&format!("Simulating {}/{}", convert_time(time), stop));
+        let text = format!("Simulating {}/{}", convert_time(time), stop);
+        let done = time / query.time;
+        progress.report(&text, done);
         let rho = LogNum {
             value: tau / tau_factor,
             sign: 1,
         };
-        let res = single_sim(SingleSimQuery {
-            theory: query.theory,
-            strat: query.strat.clone(),
-            theory_inputs: query.theory_inputs.clone(),
-            rho,
-            tau: Some(tau),
-            sigma: query.sigma,
-            settings: query.settings.clone(),
-            cap: None,
-            last_strat: Some(last_strat.clone()),
-        })?
+        let res = single_sim(
+            SingleSimQuery {
+                theory: query.theory,
+                strat: query.strat.clone(),
+                theory_inputs: query.theory_inputs.clone(),
+                rho,
+                tau: Some(tau),
+                sigma: query.sigma,
+                settings: query.settings.clone(),
+                cap: None,
+                last_strat: Some(last_strat.clone()),
+            },
+            &progress.part(&text, done, done),
+        )?
         .result;
         let pub_tau = res.pub_rho.value * tau_factor;
         if !is_greater(pub_tau, tau) || !is_greater(res.time, 0.) {
@@ -572,24 +607,33 @@ fn chain_response(
  * For each step from rho up to cap - step, chains to cap and keeps the number of pubs with the
  * best tau/h (sim-3 `stepChainSim`)
  */
-fn step_chain_sim(query: StepChainSimQuery, progress: Progress) -> Result<StepSimResponse, String> {
+fn step_chain_sim(
+    query: StepChainSimQuery,
+    progress: &Progress,
+) -> Result<StepSimResponse, String> {
     let tau_factor = theory_config(query.theory)?.tau_factor;
     let cap = query.cap.value * tau_factor;
     // sim-3 `calculateNextStep`: adds the step (times mult) to rho
     let next_step = |tau: f64, mult: f64| (tau / tau_factor + query.step.value * mult) * tau_factor;
     let mut tau = query.rho.value * tau_factor;
+    let start = tau;
+    let last_step = next_step(cap, -1.);
     let mut results: Vec<SimResult> = Vec::new();
 
-    while tau < next_step(cap, -1.) + 0.000001 {
+    while tau < last_step + 0.000001 {
         let rho = LogNum {
             value: tau / tau_factor,
             sign: 1,
         };
-        progress(&format!(
+        let text = format!(
             "Simulating {}/{}",
             log_to_exp(rho.value, 0),
             log_to_exp(query.cap.value, 0)
-        ));
+        );
+        // Each step's chain fills the share up to the next step
+        let share = |tau: f64| (tau - start) / (last_step + query.step.value - start);
+        let done = share(tau);
+        progress.report(&text, done);
         let chain = chain_from_tau(
             ChainFromTau {
                 theory: query.theory,
@@ -601,7 +645,7 @@ fn step_chain_sim(query: StepChainSimQuery, progress: Progress) -> Result<StepSi
                 settings: &query.settings,
                 theory_inputs: &query.theory_inputs,
             },
-            &|_| {},
+            &progress.part(&text, done, share(tau + query.step.value)),
         )?;
 
         let (mut tau_acc, mut time_acc) = (0f64, 0f64);
@@ -640,7 +684,10 @@ fn step_chain_sim(query: StepChainSimQuery, progress: Progress) -> Result<StepSi
 }
 
 /** Every strat allowed at this rho (forced conditions only), sorted by tau/h (sim-3 `comparisonSim`) */
-fn comparison_sim(query: ComparisonSimQuery) -> Result<StepSimResponse, String> {
+fn comparison_sim(
+    query: ComparisonSimQuery,
+    progress: &Progress,
+) -> Result<StepSimResponse, String> {
     let tau = query.rho.value * theory_config(query.theory)?.tau_factor;
     let args = ConditionArgs {
         very_active: false,
@@ -659,19 +706,27 @@ fn comparison_sim(query: ComparisonSimQuery) -> Result<StepSimResponse, String> 
         .collect();
 
     let mut results = Vec::new();
-    for strat in strats {
+    let count = strats.len();
+    for (i, strat) in strats.into_iter().enumerate() {
+        progress.report(
+            &format!("Simulating {strat} ({}/{count})", i + 1),
+            i as f64 / count as f64,
+        );
         results.push(
-            single_sim(SingleSimQuery {
-                theory: query.theory,
-                strat: strat.to_owned(),
-                theory_inputs: query.theory_inputs.clone(),
-                sigma: query.sigma,
-                tau: None,
-                rho: query.rho,
-                cap: None,
-                last_strat: None,
-                settings: query.settings.clone(),
-            })?
+            single_sim(
+                SingleSimQuery {
+                    theory: query.theory,
+                    strat: strat.to_owned(),
+                    theory_inputs: query.theory_inputs.clone(),
+                    sigma: query.sigma,
+                    tau: None,
+                    rho: query.rho,
+                    cap: None,
+                    last_strat: None,
+                    settings: query.settings.clone(),
+                },
+                progress,
+            )?
             .result,
         );
     }
@@ -685,7 +740,7 @@ fn comparison_sim(query: ComparisonSimQuery) -> Result<StepSimResponse, String> 
 }
 
 /** Fastest time to reach cap from each step below it (sim-3 `pubTableSim`) */
-fn pub_table_sim(query: PubTableSimQuery, progress: Progress) -> Result<PubTableResponse, String> {
+fn pub_table_sim(query: PubTableSimQuery, progress: &Progress) -> Result<PubTableResponse, String> {
     if !theory_config(query.theory)?.supports_rho {
         return Err("This mode is not supported for this theory".to_owned());
     }
@@ -694,35 +749,41 @@ fn pub_table_sim(query: PubTableSimQuery, progress: Progress) -> Result<PubTable
         return Err("The step length must be greater than 0".to_owned());
     }
     let mut current = cap - step;
+    let first = current;
     let mut last_strat = String::new();
     // Cap is reachable in 0 time
     let mut pub_table: Vec<[f64; 2]> = vec![[0., 0.]];
 
     let result = (|| -> Result<(), String> {
         while current > start - 0.00001 {
-            progress(&format!(
+            let text = format!(
                 "Simulating {}/{}",
                 log_to_exp(current, 0),
                 log_to_exp(start, 0)
-            ));
+            );
+            let done = (first - current) / (first - start + step);
+            progress.report(&text, done);
             let collector = std::rc::Rc::new(std::cell::RefCell::new(PubTableCollector::new(
                 current, step, cap,
             )));
             set_current_collector(Some(collector.clone()));
-            let res = single_sim(SingleSimQuery {
-                theory: query.theory,
-                strat: query.strat.clone(),
-                theory_inputs: query.theory_inputs.clone(),
-                sigma: query.sigma,
-                tau: None,
-                rho: LogNum {
-                    value: current,
-                    sign: 1,
+            let res = single_sim(
+                SingleSimQuery {
+                    theory: query.theory,
+                    strat: query.strat.clone(),
+                    theory_inputs: query.theory_inputs.clone(),
+                    sigma: query.sigma,
+                    tau: None,
+                    rho: LogNum {
+                        value: current,
+                        sign: 1,
+                    },
+                    cap: None,
+                    last_strat: Some(last_strat.clone()),
+                    settings: query.settings.clone(),
                 },
-                cap: None,
-                last_strat: Some(last_strat.clone()),
-                settings: query.settings.clone(),
-            })?
+                &progress.part(&text, done, done),
+            )?
             .result;
             set_current_collector(None);
             current -= step;
@@ -757,9 +818,11 @@ fn pub_table_sim(query: PubTableSimQuery, progress: Progress) -> Result<PubTable
     })
 }
 
-fn sim_all(query: SimAllQuery, progress: Progress) -> Result<SimAllResponse, String> {
+fn sim_all(query: SimAllQuery, progress: &Progress) -> Result<SimAllResponse, String> {
     let mut results: Vec<SimAllResult> = Vec::new();
 
+    // The theories to simulate, first, so the progress can count them
+    let mut todo: Vec<(TheoryType, LogNum)> = Vec::new();
     for (i, rho) in query.values.iter().enumerate() {
         let theory = if let Ok(theory) = TheoryType::try_from(i) {
             theory
@@ -787,7 +850,18 @@ fn sim_all(query: SimAllQuery, progress: Progress) -> Result<SimAllResponse, Str
         {
             continue;
         }
-        progress(&format!("Simulating {theory:?}"));
+        todo.push((theory, *rho));
+    }
+
+    let count = todo.len() as f64;
+    let both = query.settings.sim_all_strats == SimAllStrats::All;
+    for (k, (theory, rho)) in todo.into_iter().enumerate() {
+        let text = format!("Simulating {theory:?} ({}/{})", k + 1, count);
+        let (done, next) = (k as f64 / count, (k + 1) as f64 / count);
+        progress.report(&text, done);
+        // With both active and idle strats, each gets half of the theory's share
+        let half = if both { 0.5 } else { 1. };
+        let theory_progress = progress.part(&text, done, next);
         let theory_inputs = query
             .theory_inputs
             .get(&theory)
@@ -795,42 +869,48 @@ fn sim_all(query: SimAllQuery, progress: Progress) -> Result<SimAllResponse, Str
             .unwrap_or_default();
 
         let active_res = if query.settings.sim_all_strats != SimAllStrats::Idle {
-            single_sim(SingleSimQuery {
-                theory,
-                theory_inputs: theory_inputs.clone(),
-                strat: if query.very_active {
-                    "Best Overall".to_owned()
-                } else {
-                    "Best Active".to_owned()
+            single_sim(
+                SingleSimQuery {
+                    theory,
+                    theory_inputs: theory_inputs.clone(),
+                    strat: if query.very_active {
+                        "Best Overall".to_owned()
+                    } else {
+                        "Best Active".to_owned()
+                    },
+                    sigma: query.sigma,
+                    tau: None,
+                    rho,
+                    cap: None,
+                    last_strat: None,
+                    settings: query.settings.clone(),
                 },
-                sigma: query.sigma,
-                tau: None,
-                rho: *rho,
-                cap: None,
-                last_strat: None,
-                settings: query.settings.clone(),
-            })?
+                &theory_progress.part("active", 0., half),
+            )?
             .result
         } else {
             SimResult::default()
         };
 
         let idle_res = if query.settings.sim_all_strats != SimAllStrats::Active {
-            single_sim(SingleSimQuery {
-                theory,
-                theory_inputs: theory_inputs.clone(),
-                strat: if query.semi_idle {
-                    "Best Semi-Idle".to_owned()
-                } else {
-                    "Best Idle".to_owned()
+            single_sim(
+                SingleSimQuery {
+                    theory,
+                    theory_inputs: theory_inputs.clone(),
+                    strat: if query.semi_idle {
+                        "Best Semi-Idle".to_owned()
+                    } else {
+                        "Best Idle".to_owned()
+                    },
+                    sigma: query.sigma,
+                    tau: None,
+                    rho,
+                    cap: None,
+                    last_strat: None,
+                    settings: query.settings.clone(),
                 },
-                sigma: query.sigma,
-                tau: None,
-                rho: *rho,
-                cap: None,
-                last_strat: None,
-                settings: query.settings.clone(),
-            })?
+                &theory_progress.part("idle", 1. - half, 1.),
+            )?
             .result
         } else {
             SimResult::default()
@@ -843,7 +923,7 @@ fn sim_all(query: SimAllQuery, progress: Progress) -> Result<SimAllResponse, Str
             } else {
                 1.
             },
-            last_pub: *rho,
+            last_pub: rho,
             active: active_res,
             idle: idle_res,
         })
@@ -857,19 +937,24 @@ fn sim_all(query: SimAllQuery, progress: Progress) -> Result<SimAllResponse, Str
     })
 }
 
-/** Receives progress messages ("Simulating 1e85/1e150") during long simulations */
-pub type Progress<'a> = &'a dyn Fn(&str);
-
-pub fn simulate(query: SimQuery, progress: Progress) -> Result<SimResponse, String> {
+/**
+ * Runs a query. `sink` receives progress during long simulations: a status text
+ * ("Simulating 1e85/1e150 · T1Ratio (2/5)") and the fraction done (NaN when unknown).
+ */
+pub fn simulate(query: SimQuery, sink: ProgressSink) -> Result<SimResponse, String> {
+    let progress = &Progress::new(sink);
     match query {
-        SimQuery::Single(q) => Ok(SimResponse::Single(single_sim(q)?)),
+        SimQuery::Single(q) => Ok(SimResponse::Single(single_sim(
+            q,
+            &progress.prefixed("Simulating "),
+        )?)),
         SimQuery::Chain(q) => Ok(SimResponse::Chain(chain_sim(q, progress)?)),
         SimQuery::Step(q) => Ok(SimResponse::Step(step_sim(q, progress)?)),
         SimQuery::All(q) => Ok(SimResponse::All(sim_all(q, progress)?)),
         SimQuery::StepChain(q) => Ok(SimResponse::Step(step_chain_sim(q, progress)?)),
         SimQuery::Amount(q) => Ok(SimResponse::Chain(amount_sim(q, progress)?)),
         SimQuery::Time(q) => Ok(SimResponse::Chain(time_sim(q, progress)?)),
-        SimQuery::Comparison(q) => Ok(SimResponse::Step(comparison_sim(q)?)),
+        SimQuery::Comparison(q) => Ok(SimResponse::Step(comparison_sim(q, progress)?)),
         SimQuery::PubTable(q) => Ok(SimResponse::PubTable(pub_table_sim(q, progress)?)),
     }
 }
@@ -908,7 +993,7 @@ mod tests {
             "single",
             serde_json::json!({ "theory": theory, "strat": strat, "sigma": 500, "rho": 500.0, "settings": settings("all") }),
         );
-        match simulate(q, &|_| {}).unwrap() {
+        match simulate(q, &|_, _| {}).unwrap() {
             SimResponse::Single(r) => r.result,
             _ => panic!("expected a single sim response"),
         }
@@ -928,12 +1013,35 @@ mod tests {
             }),
         );
         let progress = std::cell::RefCell::new(Vec::new());
-        let res =
-            match simulate(q, &|msg: &str| progress.borrow_mut().push(msg.to_owned())).unwrap() {
-                SimResponse::All(r) => r,
-                _ => panic!("expected an all response"),
-            };
-        assert_eq!(*progress.borrow(), ["Simulating T1", "Simulating T2"]);
+        let res = match simulate(q, &|msg: &str, fraction: f64| {
+            progress.borrow_mut().push((msg.to_owned(), fraction))
+        })
+        .unwrap()
+        {
+            SimResponse::All(r) => r,
+            _ => panic!("expected an all response"),
+        };
+        let progress = progress.borrow();
+        // One message per theory, then one per strat of its "Best" categories
+        let theories: Vec<&str> = progress
+            .iter()
+            .map(|(msg, _)| msg.as_str())
+            .filter(|msg| !msg.contains('·'))
+            .collect();
+        assert_eq!(theories, ["Simulating T1 (1/2)", "Simulating T2 (2/2)"]);
+        assert!(
+            progress
+                .iter()
+                .any(|(msg, _)| msg.starts_with("Simulating T2 (2/2) · ") && msg.ends_with(')')),
+            "{progress:?}"
+        );
+        // The fraction done only grows, from 0 to under 1
+        assert_eq!(progress[0].1, 0.);
+        assert!(
+            progress.windows(2).all(|w| w[0].1 <= w[1].1),
+            "{progress:?}"
+        );
+        assert!(progress.last().unwrap().1 < 1.);
         res
     }
 
@@ -976,7 +1084,7 @@ mod tests {
                 "settings": settings("all")
             }),
         );
-        let err = simulate(q, &|_| {}).unwrap_err();
+        let err = simulate(q, &|_, _| {}).unwrap_err();
         assert!(err.contains("step length"), "{err}");
     }
 

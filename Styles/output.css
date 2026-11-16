@@ -23,6 +23,41 @@
   color: var(--danger);
   font-weight: 500;
 }
+/* Progress of the running simulation, after the status text */
+.simProgress {
+  width: min(12rem, 40vw);
+  height: 0.45rem;
+  border: none;
+  border-radius: 999px;
+  overflow: hidden;
+  background-color: var(--accent-soft);
+  accent-color: var(--accent);
+}
+.simProgress[hidden] {
+  display: none;
+}
+.simProgress::-webkit-progress-bar {
+  background-color: var(--accent-soft);
+}
+.simProgress::-webkit-progress-value {
+  background-color: var(--accent);
+  border-radius: 999px;
+  transition: width 0.2s ease;
+}
+.simProgress::-moz-progress-bar {
+  background-color: var(--accent);
+  border-radius: 999px;
+}
+.simElapsed {
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+@media (prefers-reduced-motion: reduce) {
+  .simProgress::-webkit-progress-value {
+    transition: none;
+  }
+}
 @keyframes spin {
   to {
     transform: rotate(360deg);

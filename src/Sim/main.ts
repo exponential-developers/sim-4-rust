@@ -7,8 +7,11 @@ import { runQuery, stopQuery, getPortedTheories } from "./simWorker";
 import { loadSaveFile } from "../UI/buttonEvents";
 import { cacheFilterQuery, cacheFilterResponse, setCache } from "./cache";
 import jsonData from "../Data/data.json" assert { type: "json" };
+import { formatElapsed } from "../Utils/helpers";
 
 const output = qs(".output");
+const progressBar = qs<HTMLProgressElement>(".simProgress");
+const elapsedOutput = qs(".simElapsed");
 
 //Buttons
 const simulateButton = qs(".simulate");
@@ -48,6 +51,34 @@ function setStatus(text: string, state: "running" | "error" | "" = "") {
   output.dataset.state = state;
 }
 
+/** Elapsed time and progress bar of the running simulation */
+const run = {
+  start: 0,
+  timer: undefined as ReturnType<typeof setInterval> | undefined,
+  begin() {
+    this.start = performance.now();
+    progressBar.hidden = true;
+    progressBar.value = 0;
+    elapsedOutput.textContent = "0s";
+    this.timer = setInterval(() => elapsedOutput.textContent = formatElapsed(performance.now() - this.start), 1000);
+  },
+  /** Shows a progress message; the bar only appears when the share done is known */
+  progress(message: string, fraction: number) {
+    setStatus(message, "running");
+    if (Number.isFinite(fraction)) {
+      progressBar.hidden = false;
+      progressBar.value = fraction;
+    }
+  },
+  /** Stops the clock and returns how long the run took */
+  end(): string {
+    clearInterval(this.timer);
+    progressBar.hidden = true;
+    elapsedOutput.textContent = "";
+    return formatElapsed(performance.now() - this.start);
+  },
+};
+
 export async function simCall() {
   if (global.simulating) {
     // Stops the worker; the pending runQuery below then resolves with null
@@ -57,6 +88,7 @@ export async function simCall() {
 
   global.simulating = true;
   setStatus("Simulating...", "running");
+  run.begin();
   simulateButton.textContent = "Stop simulating";
 
   try {
@@ -69,9 +101,10 @@ export async function simCall() {
     // "All" mode: theories unchanged since the last run reuse their previous result
     const { query: filteredQuery, cached } = cacheFilterQuery(query);
     // Runs in a Web Worker so the page stays responsive; progress messages are shown meanwhile
-    const APIresponse = await runQuery(formatSimQuery(filteredQuery), (message) => setStatus(message, "running"));
+    const APIresponse = await runQuery(formatSimQuery(filteredQuery), (message, fraction) => run.progress(message, fraction));
+    const took = run.end();
     if (APIresponse === null) {
-      setStatus("Sim stopped.");
+      setStatus(`Sim stopped after ${took}.`);
     }
     else {
       const parsed_response = JSON.parse(APIresponse) as API_response;
@@ -80,11 +113,12 @@ export async function simCall() {
       }
       const response = cacheFilterResponse(filteredQuery, cached, formatSimResponse(parsed_response.data));
       setCache(query, response);
-      setStatus("");
+      setStatus(`Done in ${took}.`);
       writeSimResponse(response);
     }
   }
   catch (err) {
+    run.end();
     setStatus(err instanceof Error ? err.message : String(err), "error");
   }
 
