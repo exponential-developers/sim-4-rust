@@ -52,28 +52,53 @@ function setStatus(text: string, state: "running" | "error" | "" = "") {
   output.dataset.state = state;
 }
 
+/** At most this many milliseconds between status updates (fast chains send hundreds a second) */
+const STATUS_INTERVAL = 100;
+
 /** Elapsed time and progress bar of the running simulation */
 const run = {
   start: 0,
   timer: undefined as ReturnType<typeof setInterval> | undefined,
+  /** Latest progress not shown yet, and when the status was last updated */
+  latest: null as { message: string; fraction: number } | null,
+  pending: undefined as ReturnType<typeof setTimeout> | undefined,
+  shownAt: 0,
   begin() {
     this.start = performance.now();
+    this.latest = null;
+    this.shownAt = 0;
     progressBar.hidden = true;
     progressBar.value = 0;
     elapsedOutput.textContent = "0s";
     this.timer = setInterval(() => elapsedOutput.textContent = formatElapsed(performance.now() - this.start), 1000);
   },
-  /** Shows a progress message; the bar only appears when the share done is known */
-  progress(message: string, fraction: number) {
+  /** Shows the latest progress; the bar only appears when the share done is known */
+  show() {
+    this.pending = undefined;
+    if (this.latest === null) return;
+    const { message, fraction } = this.latest;
+    this.latest = null;
+    this.shownAt = performance.now();
     setStatus(message, "running");
     if (Number.isFinite(fraction)) {
       progressBar.hidden = false;
       progressBar.value = fraction;
     }
   },
+  /** A progress message from the sim: shown now, or with the next update if one was just shown */
+  progress(message: string, fraction: number) {
+    this.latest = { message, fraction };
+    if (this.pending !== undefined) return;
+    const wait = STATUS_INTERVAL - (performance.now() - this.shownAt);
+    if (wait <= 0) this.show();
+    else this.pending = setTimeout(() => this.show(), wait);
+  },
   /** Stops the clock and returns how long the run took */
   end(): string {
     clearInterval(this.timer);
+    clearTimeout(this.pending);
+    this.pending = undefined;
+    this.latest = null;
     progressBar.hidden = true;
     elapsedOutput.textContent = "";
     return formatElapsed(performance.now() - this.start);

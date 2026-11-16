@@ -49,9 +49,14 @@
   border-radius: 999px;
 }
 .simElapsed {
+  /* Room for "59:59" so the text after it doesn't shift as the seconds tick */
+  min-width: 4ch;
   font-size: 0.8rem;
   font-variant-numeric: tabular-nums;
   color: var(--text-muted);
+}
+.simElapsed:empty {
+  display: none;
 }
 @media (prefers-reduced-motion: reduce) {
   .simProgress::-webkit-progress-value {

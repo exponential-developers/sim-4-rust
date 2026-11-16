@@ -109,10 +109,10 @@
       <div class="panel-footer">
         <button class="simulate">Simulate</button>
         <button class="clearInput">Clear all inputs</button>
-        <span class="output"></span>
-        <!-- Progress of the running simulation (main.ts) -->
+        <!-- Progress of the running simulation (main.ts), before the status text so they don't move as it changes -->
         <progress class="simProgress" max="1" value="0" aria-label="Simulation progress" hidden></progress>
         <span class="simElapsed" aria-label="Time elapsed"></span>
+        <span class="output"></span>
       </div>
       </section>
       <section class="results">
