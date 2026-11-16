@@ -1,6 +1,6 @@
 /**
  * Runs sim queries in a Web Worker (worker.ts) so long simulations don't freeze the page.
- * Stopping a simulation terminates the worker and starts a fresh one.
+ * Stopping a simulation terminates the worker and starts a fresh one; so does a crash.
  */
 
 let worker: Worker;
@@ -19,12 +19,33 @@ let pending: {
   onFinished: FinishedHandler;
 } | null = null;
 
+/**
+ * Variable purchases asked for, by request id. They are sent again to a new worker if the worker
+ * is replaced before answering (a stopped simulation), since a result can always be replayed.
+ */
+const boughtVarsRequests = new Map<number, { replay: string; resolve: (response: string) => void }>();
+
+const failure = (message: string) => JSON.stringify({ response_type: "failure", data: message });
+
+/** Ends the running query with a failure and starts a new worker (after a crash) */
+function crashed(message: string) {
+  const current = pending;
+  pending = null;
+  current?.resolve(failure(message));
+  worker.terminate();
+  startWorker();
+}
+
 function startWorker() {
   worker = new Worker(new URL("./worker.ts", import.meta.url));
   ready = new Promise((resolve) => {
     worker.addEventListener("message", (event: MessageEvent<WorkerResponse>) => {
       const msg = event.data;
       if (msg.type === "ready") resolve(msg.portedTheories);
+      else if (msg.type === "bought_vars") {
+        boughtVarsRequests.get(msg.id)?.resolve(msg.response);
+        boughtVarsRequests.delete(msg.id);
+      }
       else if (pending && msg.id === pending.id) {
         if (msg.type === "progress") pending.onProgress(msg.message, msg.fraction);
         else if (msg.type === "finished") pending.onFinished(msg.json);
@@ -32,10 +53,24 @@ function startWorker() {
           const { resolve: done } = pending;
           pending = null;
           done(msg.response);
+          // The WebAssembly module may be broken after a failure: start over with a new one
+          if (msg.failed) {
+            worker.terminate();
+            startWorker();
+          }
         }
       }
     });
   });
+  // Errors the worker couldn't catch itself (e.g. out of memory)
+  worker.addEventListener("error", (event) => {
+    event.preventDefault();
+    crashed(`The simulation failed${event.message ? `: ${event.message}` : ""}. It may have run out of memory.`);
+  });
+  // Purchases still waiting for an answer from the previous worker
+  for (const [id, { replay }] of boughtVarsRequests) {
+    worker.postMessage({ type: "bought_vars", id, replay } satisfies WorkerRequest);
+  }
 }
 
 startWorker();
@@ -50,6 +85,19 @@ export async function runQuery(query: string, onProgress: ProgressHandler, onFin
   return new Promise((resolve) => {
     pending = { id: ++nextId, resolve, onProgress, onFinished };
     worker.postMessage({ type: "query", id: pending.id, query } satisfies WorkerRequest);
+  });
+}
+
+/**
+ * The variable purchases of a result, simulated again from its `replay` (JSON). Waits for a
+ * running simulation to finish first. Resolves with the JSON response of the wasm module.
+ */
+export async function requestBoughtVars(replay: string): Promise<string> {
+  await ready;
+  return new Promise((resolve) => {
+    const id = ++nextId;
+    boughtVarsRequests.set(id, { replay, resolve });
+    worker.postMessage({ type: "bought_vars", id, replay } satisfies WorkerRequest);
   });
 }
 

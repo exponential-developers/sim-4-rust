@@ -668,6 +668,7 @@ impl AlphaSimulator {
             time: state.t,
             bought_vars: self.bought_vars_up_to(state),
             theory_inputs: lifetime_alpha_output(log_to_exp(state.max_alpha, 3)),
+            replay: None,
         }
     }
 
@@ -787,6 +788,7 @@ fn simulate_rho_phase(
         time,
         bought_vars,
         theory_inputs: lifetime_alpha_output(log_to_exp(pub_state.max_alpha, 7)),
+        replay: None,
     })
 }
 
@@ -877,6 +879,7 @@ fn simulate_parallel(strat: NliStrat, input: &NliInput) -> Result<SimResult, Str
         time: rho.pub_t,
         bought_vars,
         theory_inputs: lifetime_alpha_output(log_to_exp(pub_alpha, 7)),
+        replay: None,
     })
 }
 

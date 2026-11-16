@@ -54,7 +54,7 @@ fn summary(r: &Value) -> Value {
         "tauH": r["tau_h"],
         "pubRho": r["pub_rho"],
         "time": r["time"],
-        "boughtVars": r["bought_vars"].as_array().map_or(0, |a| a.len()),
+        "boughtVars": r["bought_vars_count"].as_u64().unwrap_or(0),
     })
 }
 

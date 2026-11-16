@@ -217,7 +217,15 @@ declare global {
     strat: string;
     tau_h: number;
     time: number;
+    /**
+     * Empty in results from the sim: they leave the purchases out (a Steps run can have millions).
+     * `replay` gets them on demand (src/Sim/simWorker.ts `requestBoughtVars`).
+     */
     bought_vars: varBuy[];
+    /** How many purchases the result has */
+    bought_vars_count?: number;
+    /** What the sim needs to simulate this result again, for its purchases (Rust `Replay`) */
+    replay?: Record<string, unknown>;
     /** Theory inputs for the next publication (NLI's lifetime α) */
     theory_inputs?: TheoryInputs;
   }
@@ -245,7 +253,10 @@ declare global {
     | { response_type: "failure"; data: string };
 
   /** Message sent to the sim worker (src/Sim/worker.ts) */
-  type WorkerRequest = { type: "query"; id: number; query: string };
+  type WorkerRequest =
+    | { type: "query"; id: number; query: string }
+    /** The purchases of a result, from its `replay` (JSON) */
+    | { type: "bought_vars"; id: number; replay: string };
 
   /** Messages sent by the sim worker */
   type WorkerResponse =
@@ -254,5 +265,8 @@ declare global {
     | { type: "progress"; id: number; message: string; fraction: number }
     /** A finished part of the response (JSON), sent as soon as it is done (src/Sim/partial.ts) */
     | { type: "finished"; id: number; json: string }
-    | { type: "result"; id: number; response: string };
+    /** `failed`: the wasm module crashed (the worker is then replaced) */
+    | { type: "result"; id: number; response: string; failed?: boolean }
+    /** Answer to a "bought_vars" request (JSON response of the wasm module) */
+    | { type: "bought_vars"; id: number; response: string };
 }

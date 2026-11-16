@@ -671,6 +671,7 @@ impl TraditionalCore {
             time: self.pub_t,
             bought_vars: self.bought_vars.clone(),
             theory_inputs: None,
+            replay: None,
         }
     }
 }

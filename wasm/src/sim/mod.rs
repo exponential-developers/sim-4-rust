@@ -37,6 +37,7 @@ use crate::utils::{
     lognum::{self, LogNum},
     result::*,
     settings::*,
+    var_buy::VarBuy,
 };
 
 /** `a > b`, and false if either is NaN (so a NaN result counts as "no progress") */
@@ -104,6 +105,38 @@ pub fn apply_theory_inputs(params: &mut SimParams, inputs: &TheoryInputs) -> Res
         _ => None,
     };
     Ok(())
+}
+
+/** The variable purchases of a result, by simulating it again (see `Replay`) */
+pub fn replay_bought_vars(replay: &Replay) -> Result<Vec<VarBuy>, String> {
+    let mut input = TheoryInput {
+        sigma: replay.sigma,
+        last_pub_rho: replay.rho,
+        last_pub_tau: replay.tau,
+        rho_cap: replay.cap.unwrap_or(f64::INFINITY),
+        params: SimParams {
+            dt: replay.dt,
+            ddt: replay.ddt,
+            bought_vars_delta: replay.bought_vars_delta,
+            show_a23: replay.show_a23,
+            ..SimParams::default()
+        },
+    };
+    apply_theory_inputs(&mut input.params, &replay.theory_inputs)?;
+    Ok(run_strat(replay.theory, &replay.strat, &input)?.bought_vars)
+}
+
+/** "15,001" */
+fn count_text(n: usize) -> String {
+    let digits = n.to_string();
+    let mut out = String::new();
+    for (i, c) in digits.chars().enumerate() {
+        if i > 0 && (digits.len() - i).is_multiple_of(3) {
+            out.push(',');
+        }
+        out.push(c);
+    }
+    out
 }
 
 /** Runs one named strat of a theory */
@@ -317,7 +350,20 @@ fn single_sim(query: SingleSimQuery, progress: &Progress) -> Result<SingleSimRes
                 i as f64 / count as f64,
             );
         }
-        let res = run_strat(query.theory, strat, &input)?;
+        let mut res = run_strat(query.theory, strat, &input)?;
+        res.replay = Some(Box::new(Replay {
+            theory: query.theory,
+            strat: strat.to_owned(),
+            sigma: query.sigma,
+            rho: query.rho.value,
+            tau: query.tau,
+            cap: query.cap.map(|c| c.value),
+            theory_inputs: query.theory_inputs.clone(),
+            dt: query.settings.dt,
+            ddt: query.settings.ddt,
+            bought_vars_delta: query.settings.bought_vars_delta as f64,
+            show_a23: query.settings.show_a23,
+        }));
         progress.finished(&serde_json::json!({ "kind": "result", "result": &res }));
         if res.tau_h > best.tau_h {
             best = res;
@@ -374,7 +420,8 @@ fn chain_from_tau(query: ChainFromTau, progress: &Progress) -> Result<ChainSimRe
             sign: 1,
         };
         let text = format!(
-            "Simulating {}/{}",
+            "Pub {} · {}/{}",
+            results.len() + 1,
             log_to_exp(rho.value, 0),
             log_to_exp(query.cap.value, 0)
         );
@@ -428,21 +475,29 @@ fn step_sim(query: StepSimQuery, progress: &Progress) -> Result<StepSimResponse,
     let mut tau = query.rho.value * tau_factor;
     let start = tau;
     let mut last_strat = String::new();
+    if !is_greater(query.step.value, 0.) {
+        return Err("The step length must be greater than 0".to_owned());
+    }
+    // Same tolerance as sim-3 (cap + 0.00001 in log10)
+    let next = |tau: f64| (tau / tau_factor + query.step.value) * tau_factor;
+    let total = std::iter::successors(Some(tau), |&t| Some(next(t)))
+        .take_while(|&t| t < cap + 0.00001)
+        .count();
 
     let mut results: Vec<SimResult> = Vec::new();
 
-    // Same tolerance as sim-3 (cap + 0.00001 in log10)
     while tau < cap + 0.00001 {
         let rho = LogNum {
             value: tau / tau_factor,
             sign: 1,
         };
         let text = format!(
-            "Simulating {}/{}",
-            log_to_exp(rho.value, 0),
-            log_to_exp(query.cap.value, 0)
+            "Step {}/{} · {}",
+            count_text(results.len() + 1),
+            count_text(total),
+            log_to_exp(rho.value, 0)
         );
-        let done = (tau - start) / (cap - start);
+        let done = results.len() as f64 / total as f64;
         progress.report(&text, done);
         let res = single_sim(
             SingleSimQuery {
@@ -461,7 +516,7 @@ fn step_sim(query: StepSimQuery, progress: &Progress) -> Result<StepSimResponse,
         .result;
 
         // The next step adds the step to rho
-        tau = (tau / tau_factor + query.step.value) * tau_factor;
+        tau = next(tau);
         last_strat.clear();
         last_strat.push_str(res.strat.split(' ').next().unwrap_or(""));
         progress.finished(&serde_json::json!({ "kind": "result", "result": &res }));
@@ -506,7 +561,7 @@ fn amount_sim(query: AmountSimQuery, progress: &Progress) -> Result<ChainSimResp
     let mut results: Vec<SimResult> = Vec::new();
 
     for i in 0..query.amount {
-        let text = format!("Simulating {}/{} pubs", i + 1, query.amount);
+        let text = format!("Pub {}/{}", i + 1, query.amount);
         let (done, next) = (
             i as f64 / query.amount as f64,
             (i + 1) as f64 / query.amount as f64,
@@ -551,7 +606,12 @@ fn time_sim(query: TimeSimQuery, progress: &Progress) -> Result<ChainSimResponse
     let stop = convert_time(query.time);
 
     while time < query.time {
-        let text = format!("Simulating {}/{}", convert_time(time), stop);
+        let text = format!(
+            "Pub {} · {}/{}",
+            results.len() + 1,
+            convert_time(time),
+            stop
+        );
         let done = time / query.time;
         progress.report(&text, done);
         let rho = LogNum {
@@ -635,6 +695,12 @@ fn step_chain_sim(
     let mut tau = query.rho.value * tau_factor;
     let start = tau;
     let last_step = next_step(cap, -1.);
+    if !is_greater(query.step.value, 0.) {
+        return Err("The step length must be greater than 0".to_owned());
+    }
+    let total = std::iter::successors(Some(tau), |&t| Some(t + query.step.value))
+        .take_while(|&t| t < last_step + 0.000001)
+        .count();
     let mut results: Vec<SimResult> = Vec::new();
 
     while tau < last_step + 0.000001 {
@@ -643,9 +709,10 @@ fn step_chain_sim(
             sign: 1,
         };
         let text = format!(
-            "Simulating {}/{}",
-            log_to_exp(rho.value, 0),
-            log_to_exp(query.cap.value, 0)
+            "Step {}/{} · {}",
+            count_text(results.len() + 1),
+            count_text(total),
+            log_to_exp(rho.value, 0)
         );
         // Each step's chain fills the share up to the next step
         let share = |tau: f64| (tau - start) / (last_step + query.step.value - start);
@@ -686,6 +753,7 @@ fn step_chain_sim(
                 time: time_acc,
                 bought_vars: Vec::new(),
                 theory_inputs: None,
+                replay: None,
             };
             // getBestResult(bestRes, curRes): the earlier result wins ties
             if candidate.tau_h > best.tau_h {
@@ -727,7 +795,7 @@ fn comparison_sim(
     let count = strats.len();
     for (i, strat) in strats.into_iter().enumerate() {
         progress.report(
-            &format!("Simulating {strat} ({}/{count})", i + 1),
+            &format!("{strat} ({}/{count})", i + 1),
             i as f64 / count as f64,
         );
         let res = single_sim(
@@ -768,6 +836,9 @@ fn pub_table_sim(query: PubTableSimQuery, progress: &Progress) -> Result<PubTabl
     }
     let mut current = cap - step;
     let first = current;
+    let total = std::iter::successors(Some(current), |&c| Some(c - step))
+        .take_while(|&c| c > start - 0.00001)
+        .count();
     let mut last_strat = String::new();
     // Cap is reachable in 0 time
     let mut pub_table: Vec<[f64; 2]> = vec![[0., 0.]];
@@ -775,9 +846,10 @@ fn pub_table_sim(query: PubTableSimQuery, progress: &Progress) -> Result<PubTabl
     let result = (|| -> Result<(), String> {
         while current > start - 0.00001 {
             let text = format!(
-                "Simulating {}/{}",
-                log_to_exp(current, 0),
-                log_to_exp(start, 0)
+                "Row {}/{} · {}",
+                count_text(pub_table.len()),
+                count_text(total),
+                log_to_exp(current, 0)
             );
             let done = (first - current) / (first - start + step);
             progress.report(&text, done);
@@ -877,7 +949,7 @@ fn sim_all(query: SimAllQuery, progress: &Progress) -> Result<SimAllResponse, St
     let count = todo.len() as f64;
     let both = query.settings.sim_all_strats == SimAllStrats::All;
     for (k, (theory, rho)) in todo.into_iter().enumerate() {
-        let text = format!("Simulating {theory:?} ({}/{})", k + 1, count);
+        let text = format!("{theory:?} ({}/{})", k + 1, count);
         let (done, next) = (k as f64 / count, (k + 1) as f64 / count);
         progress.report(&text, done);
         // With both active and idle strats, each gets half of the theory's share
@@ -965,7 +1037,7 @@ fn sim_all(query: SimAllQuery, progress: &Progress) -> Result<SimAllResponse, St
 
 /**
  * Runs a query. `sink` receives progress during long simulations: a status text
- * ("Simulating 1e85/1e150 · T1Ratio (2/5)") and the fraction done (NaN when unknown).
+ * ("Step 12/40 · 1e85 · T1Ratio (2/5)") and the fraction done (NaN when unknown).
  * `finished` receives each finished result as soon as it is done (see `Progress::finished`).
  */
 pub fn simulate(
@@ -975,10 +1047,7 @@ pub fn simulate(
 ) -> Result<SimResponse, String> {
     let progress = &Progress::new(sink, finished);
     match query {
-        SimQuery::Single(q) => Ok(SimResponse::Single(single_sim(
-            q,
-            &progress.prefixed("Simulating "),
-        )?)),
+        SimQuery::Single(q) => Ok(SimResponse::Single(single_sim(q, progress)?)),
         SimQuery::Chain(q) => Ok(SimResponse::Chain(chain_sim(q, progress)?)),
         SimQuery::Step(q) => Ok(SimResponse::Step(step_sim(q, progress)?)),
         SimQuery::All(q) => Ok(SimResponse::All(sim_all(q, progress)?)),
@@ -1028,6 +1097,82 @@ mod tests {
         };
         let res = simulate(q, &|_, _| {}, Some(&on_finished)).unwrap();
         (res, finished.into_inner())
+    }
+
+    /** Purchases as comparable values */
+    fn buys(list: &[VarBuy]) -> Vec<(String, i32, f64, &'static str, f64)> {
+        list.iter()
+            .map(|b| {
+                (
+                    b.var_name.to_string(),
+                    b.level,
+                    b.cost.value,
+                    b.symbol,
+                    b.timestamp,
+                )
+            })
+            .collect()
+    }
+
+    #[test]
+    fn results_are_sent_without_purchases_and_replay_to_the_same_ones() {
+        // A chain: each publication starts from the tau of the previous one
+        let q = query(
+            "chain",
+            serde_json::json!({
+                "theory": "T1", "strat": "Best Overall", "sigma": 100, "rho": 60, "cap": 80,
+                "hard_cap": true, "settings": settings("all")
+            }),
+        );
+        let SimResponse::Chain(chain) = simulate(q, &|_, _| {}, None).unwrap() else {
+            panic!("expected a chain response")
+        };
+        assert!(chain.results.len() > 1);
+        for res in &chain.results {
+            let replay = res.replay.as_ref().expect("replay info");
+            assert!(!res.bought_vars.is_empty());
+            assert_eq!(
+                buys(&replay_bought_vars(replay).unwrap()),
+                buys(&res.bought_vars)
+            );
+            // Sent without the purchases, but with their count and the replay info
+            let sent = serde_json::to_value(res).unwrap();
+            assert_eq!(sent["bought_vars"], serde_json::json!([]));
+            assert_eq!(sent["bought_vars_count"], res.bought_vars.len());
+            let replay_back: Replay = serde_json::from_value(sent["replay"].clone()).unwrap();
+            assert_eq!(
+                buys(&replay_bought_vars(&replay_back).unwrap()),
+                buys(&res.bought_vars)
+            );
+        }
+        // A theory input (MF's reset depth) is replayed too
+        let q = query(
+            "single",
+            serde_json::json!({
+                "theory": "MF", "strat": "MFd", "sigma": 100, "rho": 30, "cap": null,
+                "last_strat": null, "settings": settings("all"), "theory_inputs": { "depth": "1" }
+            }),
+        );
+        let SimResponse::Single(single) = simulate(q, &|_, _| {}, None).unwrap() else {
+            panic!("expected a single response")
+        };
+        let res = single.result;
+        assert!(res.strat.contains("Depth: 1"), "{}", res.strat);
+        let replayed = replay_bought_vars(res.replay.as_ref().unwrap()).unwrap();
+        assert_eq!(buys(&replayed), buys(&res.bought_vars));
+    }
+
+    #[test]
+    fn steps_need_a_positive_step() {
+        let q = query(
+            "step",
+            serde_json::json!({
+                "theory": "T1", "strat": "T1", "sigma": 100, "rho": 60, "cap": 80, "step": 0,
+                "settings": settings("all")
+            }),
+        );
+        let err = simulate(q, &|_, _| {}, None).unwrap_err();
+        assert!(err.contains("greater than 0"), "{err}");
     }
 
     #[test]
@@ -1116,11 +1261,11 @@ mod tests {
             .map(|(msg, _)| msg.as_str())
             .filter(|msg| !msg.contains('·'))
             .collect();
-        assert_eq!(theories, ["Simulating T1 (1/2)", "Simulating T2 (2/2)"]);
+        assert_eq!(theories, ["T1 (1/2)", "T2 (2/2)"]);
         assert!(
             progress
                 .iter()
-                .any(|(msg, _)| msg.starts_with("Simulating T2 (2/2) · ") && msg.ends_with(')')),
+                .any(|(msg, _)| msg.starts_with("T2 (2/2) · ") && msg.ends_with(')')),
             "{progress:?}"
         );
         // The fraction done only grows, from 0 to under 1

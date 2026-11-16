@@ -55,6 +55,9 @@
   font-variant-numeric: tabular-nums;
   color: var(--text-muted);
 }
+.simElapsed[data-wide] {
+  min-width: 23ch;
+}
 .simElapsed:empty {
   display: none;
 }

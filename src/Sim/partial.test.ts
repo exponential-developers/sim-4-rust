@@ -15,6 +15,14 @@ function partial(...parts: object[]): PartialResults {
 }
 
 describe("results finished before a simulation is stopped", () => {
+  it("hands out each new part once, for the live table", () => {
+    const p = partial({ kind: "result", result: result("a", 1) });
+    expect(p.takeNew().length).toBe(1);
+    expect(p.takeNew()).toEqual([]);
+    p.add(JSON.stringify({ kind: "result", result: result("b", 2) }));
+    expect(p.takeNew()).toMatchObject([{ result: { strat: "b" } }]);
+  });
+
   it("has nothing to show before the first result", () => {
     expect(new PartialResults().response("comparison")).toBeNull();
   });

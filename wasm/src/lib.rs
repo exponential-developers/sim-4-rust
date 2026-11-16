@@ -150,6 +150,22 @@ fn run_query_impl(
     serde_json::to_string(&ApiResponse::Success(res)).unwrap_or(DEFAULT_ERR.to_owned())
 }
 
+/**
+ * The variable purchases of a result, by simulating it again from its `replay` field (responses
+ * leave the purchases out). Returns `{"response_type": "success", "data": [...purchases]}`.
+ */
+#[wasm_bindgen]
+pub fn replay_bought_vars(replay: &str) -> String {
+    let replay: utils::result::Replay = match serde_json::from_str(replay) {
+        Ok(replay) => replay,
+        Err(err) => return create_error(&format!("Bad replay: {err}")),
+    };
+    match sim::replay_bought_vars(&replay) {
+        Ok(bought) => serde_json::json!({ "response_type": "success", "data": bought }).to_string(),
+        Err(err) => create_error(&err),
+    }
+}
+
 /** Names of the theories ported to the Rust sim, as a JSON array (e.g. ["T1","T2"]) */
 #[wasm_bindgen]
 pub fn ported_theories() -> String {

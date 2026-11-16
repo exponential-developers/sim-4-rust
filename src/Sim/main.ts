@@ -1,5 +1,6 @@
 import { parseQuery } from "./parse";
-import { writeSimResponse } from "./write";
+import { writeLiveResults, writeSimResponse } from "./write";
+import { describeProgress, splitDetail } from "./progressText";
 import { setSimState } from "../UI/simState";
 import { qs, event } from "../Utils/DOMhelpers";
 
@@ -52,50 +53,94 @@ function setStatus(text: string, state: "running" | "error" | "" = "") {
   output.dataset.state = state;
 }
 
-/** At most this many milliseconds between status updates (fast chains send hundreds a second) */
-const STATUS_INTERVAL = 100;
+/** At most this many milliseconds between progress bar updates (fast runs send hundreds a second) */
+const BAR_INTERVAL = 100;
+/** At most this many milliseconds between status text updates, so it can be read */
+const TEXT_INTERVAL = 500;
+/** The strat being simulated is shown once the rest of the message stayed the same this long */
+const DETAIL_AFTER = 500;
+/** How often finished results are added to the table while simulating */
+const LIVE_INTERVAL = 1000;
 
-/** Elapsed time and progress bar of the running simulation */
+/** Status, progress bar, elapsed time and results shown while a simulation runs */
 const run = {
   start: 0,
-  timer: undefined as ReturnType<typeof setInterval> | undefined,
-  /** Latest progress not shown yet, and when the status was last updated */
+  timers: [] as ReturnType<typeof setInterval>[],
+  /** Latest progress not shown yet */
   latest: null as { message: string; fraction: number } | null,
   pending: undefined as ReturnType<typeof setTimeout> | undefined,
-  shownAt: 0,
-  begin() {
-    this.start = performance.now();
-    this.latest = null;
-    this.shownAt = 0;
+  barAt: 0,
+  textAt: 0,
+  /** Message without the strat being simulated, and since when it is the same */
+  outer: "",
+  outerSince: 0,
+  fraction: NaN,
+  /** Results finished so far, and whether some were already put in the table */
+  partial: new PartialResults(),
+  live: false,
+  queryType: "single" as SimQuery["queryType"],
+  begin(queryType: SimQuery["queryType"], partial: PartialResults) {
+    Object.assign(this, { start: performance.now(), latest: null, barAt: 0, textAt: 0, outer: "", fraction: NaN, partial, live: false, queryType });
     progressBar.hidden = true;
     progressBar.value = 0;
-    elapsedOutput.textContent = "0s";
-    this.timer = setInterval(() => elapsedOutput.textContent = formatElapsed(performance.now() - this.start), 1000);
+    this.updateClock();
+    this.timers = [
+      setInterval(() => this.updateClock(), 1000),
+      setInterval(() => this.addLiveResults(), LIVE_INTERVAL),
+    ];
   },
-  /** Shows the latest progress; the bar only appears when the share done is known */
+  /** Elapsed time, share done and time left */
+  updateClock() {
+    elapsedOutput.textContent = describeProgress(performance.now() - this.start, this.fraction);
+    // With the share done and time left the text is longer: a fixed width keeps the status after it in place
+    elapsedOutput.toggleAttribute("data-wide", Number.isFinite(this.fraction));
+  },
+  /** Adds the results finished since the last call to the table */
+  addLiveResults() {
+    const parts = this.partial.takeNew();
+    if (parts.length === 0) return;
+    writeLiveResults(this.queryType, parts, !this.live);
+    this.live = true;
+  },
+  /** Shows the latest progress: the bar right away, the text at most every TEXT_INTERVAL */
   show() {
     this.pending = undefined;
-    if (this.latest === null) return;
-    const { message, fraction } = this.latest;
-    this.latest = null;
-    this.shownAt = performance.now();
-    setStatus(message, "running");
-    if (Number.isFinite(fraction)) {
+    const latest = this.latest;
+    if (latest === null) return;
+    const now = performance.now();
+    this.barAt = now;
+    if (Number.isFinite(latest.fraction)) {
       progressBar.hidden = false;
-      progressBar.value = fraction;
+      progressBar.value = latest.fraction;
+      this.fraction = latest.fraction;
     }
+    const { outer, detail } = splitDetail(latest.message);
+    if (outer !== this.outer) {
+      this.outer = outer;
+      this.outerSince = now;
+    }
+    const textWait = TEXT_INTERVAL - (now - this.textAt);
+    if (textWait > 0) {
+      this.pending = setTimeout(() => this.show(), textWait);
+      return;
+    }
+    this.textAt = now;
+    // In fast runs the strat changes too quickly to read: show it once the rest stays put
+    const steady = now - this.outerSince >= DETAIL_AFTER;
+    setStatus(detail !== null && steady ? latest.message : outer, "running");
+    if (detail !== null && !steady) this.pending = setTimeout(() => this.show(), DETAIL_AFTER - (now - this.outerSince));
+    else this.latest = null;
   },
-  /** A progress message from the sim: shown now, or with the next update if one was just shown */
+  /** A progress message from the sim */
   progress(message: string, fraction: number) {
     this.latest = { message, fraction };
     if (this.pending !== undefined) return;
-    const wait = STATUS_INTERVAL - (performance.now() - this.shownAt);
-    if (wait <= 0) this.show();
-    else this.pending = setTimeout(() => this.show(), wait);
+    this.pending = setTimeout(() => this.show(), Math.max(0, BAR_INTERVAL - (performance.now() - this.barAt)));
   },
   /** Stops the clock and returns how long the run took */
   end(): string {
-    clearInterval(this.timer);
+    this.timers.forEach(clearInterval);
+    this.timers = [];
     clearTimeout(this.pending);
     this.pending = undefined;
     this.latest = null;
@@ -114,7 +159,6 @@ export async function simCall() {
 
   global.simulating = true;
   setStatus("Simulating...", "running");
-  run.begin();
   simulateButton.textContent = "Stop simulating";
 
   try {
@@ -126,32 +170,35 @@ export async function simCall() {
     const query = parseQuery();
     // "All" mode: theories unchanged since the last run reuse their previous result
     const { query: filteredQuery, cached } = cacheFilterQuery(query);
-    // Runs in a Web Worker so the page stays responsive; progress messages are shown meanwhile
-    // Results finished so far: shown if the simulation is stopped
+    // Runs in a Web Worker so the page stays responsive; progress messages are shown meanwhile.
+    // Finished results are added to the table while it runs, and kept if it is stopped or fails.
     const partial = new PartialResults();
+    run.begin(filteredQuery.queryType, partial);
     const APIresponse = await runQuery(
       formatSimQuery(filteredQuery),
       (message, fraction) => run.progress(message, fraction),
       (json) => partial.add(json),
     );
     const took = run.end();
-    if (APIresponse === null) {
+    /** Shows the results finished before a stop or a failure; returns what was shown */
+    const showFinished = (): string | null => {
       const response = partial.response(filteredQuery.queryType);
-      if (response === null) {
-        setStatus(`Sim stopped after ${took}.`);
-      } else {
-        // Not cached: the next "All" run must simulate the theories that were left out
-        writeSimResponse(cacheFilterResponse(filteredQuery, cached, response));
-        const what = filteredQuery.queryType === "single"
-          ? `the best of the ${partial.count} strats finished`
-          : `the ${partial.count} result${partial.count === 1 ? "" : "s"} finished`;
-        setStatus(`Sim stopped after ${took}: showing ${what}.`);
-      }
+      if (response === null) return null;
+      // Not cached: the next "All" run must simulate the theories that were left out
+      writeSimResponse(cacheFilterResponse(filteredQuery, cached, response));
+      return filteredQuery.queryType === "single"
+        ? `the best of the ${partial.count} strats finished`
+        : `the ${partial.count} result${partial.count === 1 ? "" : "s"} finished`;
+    };
+    if (APIresponse === null) {
+      const shown = showFinished();
+      setStatus(shown === null ? `Sim stopped after ${took}.` : `Sim stopped after ${took}: showing ${shown}.`);
     }
     else {
       const parsed_response = JSON.parse(APIresponse) as API_response;
       if (parsed_response.response_type == "failure") {
-        throw new Error(parsed_response.data);
+        const shown = showFinished();
+        throw new Error(shown === null ? parsed_response.data : `${parsed_response.data} Showing ${shown}.`);
       }
       const response = cacheFilterResponse(filteredQuery, cached, formatSimResponse(parsed_response.data));
       setCache(query, response);

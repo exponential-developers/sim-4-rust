@@ -8,6 +8,14 @@ export function ported_theories(): string;
 
 /**
  *
+ * * The variable purchases of a result, by simulating it again from its `replay` field (responses
+ * * leave the purchases out). Returns `{"response_type": "success", "data": [...purchases]}`.
+ * 
+ */
+export function replay_bought_vars(replay: string): string;
+
+/**
+ *
  * * Main API function of the wasm module: runs a JSON sim query and returns a JSON response
  * 
  */

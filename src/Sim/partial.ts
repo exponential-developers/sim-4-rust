@@ -5,7 +5,7 @@
  */
 
 /** A finished part, as sent by the sim (see the `finished` calls in wasm/src/sim/mod.rs) */
-type FinishedPart =
+export type FinishedPart =
   | { kind: "result"; result: simResult }
   | { kind: "pub"; result: simResult; delta_tau: number; average_rate: number; total_time: number }
   | {
@@ -19,10 +19,19 @@ type FinishedPart =
 
 export class PartialResults {
   private parts: FinishedPart[] = [];
+  /** How many parts `takeNew` already returned */
+  private taken = 0;
 
   /** Adds a part sent by the sim (JSON) */
   add(json: string) {
     this.parts.push(JSON.parse(json) as FinishedPart);
+  }
+
+  /** The parts added since the last call (to show results while the simulation runs) */
+  takeNew(): FinishedPart[] {
+    const parts = this.parts.slice(this.taken);
+    this.taken = this.parts.length;
+    return parts;
   }
 
   /** How many results were finished */

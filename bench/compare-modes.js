@@ -28,7 +28,7 @@ function rustQuery(type, data) {
   if (res.response_type !== "success") throw new Error(res.data);
   return res.data.data;
 }
-const rustSummary = (r) => ({ strat: r.strat, tauH: r.tau_h, pubRho: r.pub_rho, time: r.time, boughtVars: r.bought_vars.length });
+const rustSummary = (r) => ({ strat: r.strat, tauH: r.tau_h, pubRho: r.pub_rho, time: r.time, boughtVars: r.bought_vars_count });
 const same = (a, b) => a.strat === b.strat && a.tauH === b.tauH && a.pubRho === b.pubRho && a.time === b.time && a.boughtVars === b.boughtVars;
 
 /**
