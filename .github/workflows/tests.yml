@@ -7,12 +7,78 @@ on:
   workflow_dispatch:
 
 jobs:
-  checks:
+  # Decides whether the Rust jobs (rust, coverage) need to run: they take most of the time, and
+  # only files that change the sim's results matter to them. A manual run always runs everything.
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      rust: ${{ github.event_name == 'workflow_dispatch' || steps.filter.outputs.rust == 'true' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Find changed files
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          # data.json holds the strat conditions the Rust tests use; cases.js the saved test cases;
+          # this file pins the Node version the parity tests need
+          filters: |
+            rust:
+              - 'wasm/**'
+              - 'src/Data/data.json'
+              - 'bench/cases.js'
+              - '.github/workflows/tests.yml'
+
+  # Website: always runs
+  website:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
+
+      # The build compiles the wasm module
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Install wasm-pack
+        run: npm install -g wasm-pack
+
+      - name: Setup node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '26.x'
+
+      - name: Install dependencies
+        run: npm install
+
+      # Fails on new ESLint errors; existing ones are listed in eslint-suppressions.json
+      - name: Lint (ESLint)
+        run: npm run lint
+
+      - name: TypeScript tests (Vitest)
+        run: npm test
+
+      # Type-checks all TypeScript, tests included (the webpack build leaves the tests out)
+      - name: Type check
+        run: npm run typecheck
+
+      # Builds the wasm module and the website (webpack type-checks the website code)
+      - name: Build
+        run: npm run build
+
+  # Rust: formatting, lints, unit tests and the sim-3 parity tests, when the sim may have changed
+  rust:
+    needs: changes
+    if: needs.changes.outputs.rust == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -21,20 +87,16 @@ jobs:
           components: clippy, rustfmt
 
       - name: Install wasm-pack
-        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+        run: npm install -g wasm-pack
 
       # Must be the Node major version the parity fixtures were generated with (see the "source" field
       # in wasm/tests/fixtures/sim3_results.json): JavaScript engines differ in the last digit of
       # Math.log10/Math.pow, and the parity tests compare results bit for bit.
       - name: Setup node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: '26.x'
 
-      - name: Install dependencies
-        run: npm install
-
-      # ---- Rust ----
       - name: Formatting (rustfmt)
         run: cargo fmt --manifest-path wasm/Cargo.toml --check
 
@@ -53,28 +115,14 @@ jobs:
       - name: sim-3 parity tests
         run: wasm-pack test --node --release wasm --test sim3_parity
 
-      # ---- TypeScript ----
-      # Fails on new ESLint errors; existing ones are listed in eslint-suppressions.json
-      - name: Lint (ESLint)
-        run: npm run lint
-
-      - name: TypeScript tests (Vitest)
-        run: npm test
-
-      # Type-checks all TypeScript, tests included (the webpack build leaves the tests out)
-      - name: Type check
-        run: npm run typecheck
-
-      # Builds the wasm module and the website (webpack type-checks the website code)
-      - name: Build
-        run: npm run build
-
   coverage:
+    needs: changes
+    if: needs.changes.outputs.rust == 'true'
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable

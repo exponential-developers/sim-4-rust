@@ -99,7 +99,11 @@ npm test                                                      # website tests (V
 npm run typecheck                                             # tsc over src, tests included (tsconfig.test.json)
 ```
 
-All of these run in CI (`.github/workflows/tests.yml`), along with `npm run build`.
+All of these run in CI (`.github/workflows/tests.yml`), along with `npm run build`. The website
+checks (ESLint, Vitest, type check, build) run on every push to master and every pull request. The
+Rust checks and coverage, which take most of the time, only run when a file that can change the
+sim's results changed: `wasm/**`, `src/Data/data.json`, `bench/cases.js` or the workflow itself (add
+any new such file to the `changes` job's filter). Running the workflow by hand runs everything.
 
 ### Coverage
 
