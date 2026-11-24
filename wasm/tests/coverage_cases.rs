@@ -182,6 +182,6 @@ fn run_all_saved_cases() {
     assert!(err["data"].as_str().unwrap().contains("Unknown theory"));
     assert_eq!(
         wasm::ported_theories(),
-        r#"["T1","T2","T3","T4","T5","T6","T7","T8","WSP","SL","EF","CSR2","FI","FP","RZ","MF","BaP","BT","TC","FS","BD","ILC","NLI"]"#
+        r#"["T1","T2","T3","T4","T5","T6","T7","T8","WSP","SL","EF","CSR2","FI","FP","RZ","MF","BaP","BT","TC","FS","BD","ILC","NLI","TOE"]"#
     );
 }

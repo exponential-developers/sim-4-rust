@@ -41,6 +41,7 @@ const STRATS = {
   BD: ["BD", "BDCoast", "BD2", "BD2Coast", "BDManageKSingleMS", "BDManageKSingleMSCoast"],
   ILC: ["ILC", "ILCd", "ILCCoast", "ILCdCoast", "ILCPTCoast", "ILCdPTCoast"],
   NLI: ["NLI", "NLInoA2RB2H", "NLInoB2H", "NLInoA2A3RB2", "NLInoA2A3B2", "NLInoA3B2", "NLInoA3", "NLInoA1HA2H"],
+  TOE: ["TOE"],
   RZ: ["RZ", "RZd", "RZBH", "RZBHLong", "RZdBHLong", "RZdBH", "RZSpiralswap", "RZMS", "RZdMS", "RZdBHRewind"],
   MF: [
     "MF", "MFRC", "MFd", "MFd2",
@@ -81,6 +82,8 @@ const STRAT_CASES = {
   // NLI has no rho: its values are tau. A third element gives the theory's own inputs.
   NLI: [[20, 0], [60, 0], [150, 0, { lifetime_alpha: "e180" }], [300, 0, { lifetime_alpha: "1.5e420" }],
     [520, 0, { lifetime_alpha: "e760" }], [2400, 0, { lifetime_alpha: "e1200" }]],
+  // ToE: rho is γ (tau = γ^0.4). Above about e25 a publication takes weeks and the sim gets slow.
+  TOE: [[0, 0], [8, 0], [14, 0], [20, 0], [25, 0]],
   MF: [[30, 40], [300, 120], [540, 170]],
   RZ: [[20, 30], [60, 60], [150, 90], [300, 120], [500, 150], [650, 160]],
 };
@@ -112,6 +115,7 @@ const BEST_CASES = {
   BD: [[10, 20], [40, 40], [120, 80], [350, 140], [700, 190], [1100, 240], [1400, 270]],
   ILC: [[8, 20], [30, 35], [70, 55], [120, 80], [200, 105], [280, 125], [380, 145]],
   NLI: [[25, 0], [80, 0], [200, 0, { lifetime_alpha: "e260" }], [450, 0, { lifetime_alpha: "e650" }]],
+  TOE: [[14, 0]],
   MF: [[10, 20], [60, 50], [200, 100], [450, 150], [600, 190], [30, 40, { depth: "1" }], [300, 120, { depth: "2" }]],
   RZ: [[10, 20], [40, 40], [100, 70], [250, 110], [450, 140]],
 };
@@ -163,6 +167,7 @@ const CHAINS = [
   ["NLI", "Best Overall", 0, 20, 90, false],
   ["NLI", "Best Semi-Idle", 0, 150, 260, true, { lifetime_alpha: "e200" }],
   ["MF", "Best Overall", 60, 20, 80, false, { depth: "1" }],
+  ["TOE", "Best Overall", 0, 0, 20, false],
 ];
 
 // Other modes: [mode, theory, strat, sigma, rho, extra...]
@@ -251,6 +256,7 @@ const MODES = [
   ["step", "NLI", "Best Overall", 0, 20, 80, 20],
   ["amount", "NLI", "NLI", 0, 100, 3, { lifetime_alpha: "e150" }],
   ["step_chain", "NLI", "Best Overall", 0, 30, 90, 30, false],
+  ["step", "TOE", "Best Overall", 0, 0, 20, 10],
 ];
 
 module.exports = { STRATS, STRAT_CASES, SLOW, CATEGORIES, BEST_CASES, CHAINS, MODES };

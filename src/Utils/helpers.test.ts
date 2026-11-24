@@ -110,6 +110,7 @@ describe("multiplier inputs (reverseMulti)", () => {
     expect(reverseMulti("FS", value, sigma)).toBe((value / (1 / Math.sqrt(5))) / (1 / ((1 + Math.sqrt(5)) / 2)));
     expect(reverseMulti("BD", value, sigma)).toBe((value / 0.375) / 0.4);
     expect(reverseMulti("NLI", value, sigma)).toBe(value / 0.2);
+    expect(reverseMulti("TOE", value, sigma)).toBe((value / 0.5) / 0.4);
     expect(reverseMulti("ILC", value, sigma)).toBe(((value - -7 * Math.log10(Math.E)) / 0.39) / 2);
   });
 

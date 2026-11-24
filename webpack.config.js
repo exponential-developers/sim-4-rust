@@ -17,7 +17,12 @@ module.exports = {
   },
   output: {
     filename: "bundle.js",
+    // The worker (and its wasm) get a content hash in their names, so browsers load the new ones
+    // after a change instead of a cached copy (a hard refresh does not reload worker scripts)
+    chunkFilename: "[name].[contenthash].js",
     path: path.resolve(__dirname, 'build'),
+    // Remove the files of older builds
+    clean: true,
   },
   resolve: {
     extensions: ['.ts', '.js']

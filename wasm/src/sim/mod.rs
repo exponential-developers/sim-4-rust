@@ -27,6 +27,7 @@ use crate::theories::{
     t7::{T7Strat, simulate_t7},
     t8::{T8Strat, simulate_t8},
     tc::{TcStrat, simulate_tc},
+    toe::{ToeStrat, simulate_toe},
     traditional::{
         PubTableCollector, SimParams, TheoryInput, default_result, log_to_exp,
         set_current_collector,
@@ -62,7 +63,7 @@ mod progress;
 pub use progress::{FinishedSink, Progress, ProgressSink};
 
 /** Theories that have been ported to the Rust sim, in data.json order */
-pub const PORTED_THEORIES: [TheoryType; 23] = [
+pub const PORTED_THEORIES: [TheoryType; 24] = [
     TheoryType::T1,
     TheoryType::T2,
     TheoryType::T3,
@@ -86,6 +87,7 @@ pub const PORTED_THEORIES: [TheoryType; 23] = [
     TheoryType::BD,
     TheoryType::ILC,
     TheoryType::NLI,
+    TheoryType::TOE,
 ];
 
 /** Whether a theory has been ported to the Rust sim */
@@ -260,6 +262,11 @@ pub fn run_strat(
             let strat = NliStrat::from_name(strat)
                 .ok_or_else(|| format!("Unknown NLI strat \"{strat}\""))?;
             simulate_nli(strat, input)
+        }
+        TheoryType::TOE => {
+            let strat = ToeStrat::from_name(strat)
+                .ok_or_else(|| format!("Unknown TOE strat \"{strat}\""))?;
+            Ok(simulate_toe(strat, input))
         }
     }
 }

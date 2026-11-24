@@ -34,6 +34,7 @@ pub enum TheoryType {
     BD,
     ILC,
     NLI,
+    TOE,
 }
 
 /** Conditions deciding when a strat is used by the "Best ..." strat categories */

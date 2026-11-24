@@ -271,6 +271,9 @@ export function reverseMulti(theory: string, value: number, sigma: number) {
     case "NLI":
       // No rho: sim-4 gives NLI a tau factor of 1
       return sim3CtMulti(0.2, 0, 1);
+    case "TOE":
+      // rho is γ (tau = γ^0.4)
+      return sim3CtMulti(0.5, 0, 0.4);
   }
   throw new Error(`Failed parsing multiplier. Please contact the author of the sim.`);
 }

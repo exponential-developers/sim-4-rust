@@ -52,6 +52,7 @@ pub mod t6;
 pub mod t7;
 pub mod t8;
 pub mod tc;
+pub mod toe;
 pub mod traditional;
 pub mod wsp;
 
@@ -150,5 +151,6 @@ mod tests {
         "BD" => bd::BdStrat,
         "ILC" => ilc::IlcStrat,
         "NLI" => nli::NliStrat,
+        "TOE" => toe::ToeStrat,
     }
 }

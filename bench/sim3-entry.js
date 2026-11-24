@@ -11,6 +11,7 @@ import FS from "SIM3/Theories/Unofficial-CTs/FS";
 import BD from "SIM3/Theories/Unofficial-CTs/BD";
 import ILC from "SIM3/Theories/Unofficial-CTs/ILC";
 import NLI from "SIM3/Theories/Unofficial-CTs/NLI";
+import TOE from "SIM3/Theories/Unofficial-CTs/TOE";
 import MF from "SIM3/Theories/CTs/MF";
 import RZ from "SIM3/Theories/CTs/RZ";
 import T1 from "SIM3/Theories/T1-T8/T1";
@@ -25,7 +26,7 @@ import WSP from "SIM3/Theories/CTs/WSP";
 import SL from "SIM3/Theories/CTs/SL";
 import { getStrats } from "SIM3/Sim/strats";
 
-const THEORIES = { RZ, MF, TC, BT, FS, BD, ILC, NLI, FP, FI, BaP, CSR2, EF, T1, T2, T3, T4, T5, T6, T7, T8, WSP, SL };
+const THEORIES = { RZ, MF, TC, BT, FS, BD, ILC, NLI, TOE, FP, FI, BaP, CSR2, EF, T1, T2, T3, T4, T5, T6, T7, T8, WSP, SL };
 const SETTINGS = { dt: 1.5, ddt: 1.0001, boughtVarsDelta: 5 };
 const CATEGORIES = ["Best Active", "Best Overall", "Best Semi-Idle", "Best Idle"];
 

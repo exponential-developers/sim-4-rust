@@ -52,7 +52,8 @@ const simFunction: { [key in theoryType]: ((data: theoryData) => Promise<simResu
     FS: rustOnly,
     BD: rustOnly,
     ILC: rustOnly,
-    NLI: rustOnly
+    NLI: rustOnly,
+    TOE: rustOnly
 }
 
 async function singleSim(query: SingleSimQuery): Promise<SingleSimResponse> {

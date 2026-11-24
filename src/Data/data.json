@@ -1062,6 +1062,15 @@
           "stratFilterCondition": "tau > 470"
         }
       }
+    },
+    "TOE": {
+      "tau_factor": 0.4,
+      "UI_visible": false,
+      "strats": {
+        "TOE": {
+          "stratFilterCondition": "true"
+        }
+      }
     }
   },
   "strat_categories": ["Best Overall", "Best Active", "Best Semi-Idle", "Best Idle"],
